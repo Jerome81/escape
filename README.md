@@ -1,1 +1,5 @@
-# escape
+# Escape
+
+## File Structure
+coordinator
+puzzle
