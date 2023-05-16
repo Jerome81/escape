@@ -6,7 +6,7 @@ receiver = Flask(__name__)
 
 #TODO: extract to config object (together with startup.py)
 api_url = "http://127.0.0.1:5000/"
-content_dir = "d:/code/content/outposts/"
+content_dir = "/var/lib/outposts/"
 name = "XYZ"
 
 
@@ -24,7 +24,7 @@ def get_state(cache_file = "status.sqlite3"):
 @receiver.get("/download")
 def get_download():
     try:
-        download("XYZ", api_url, content_dir)
+        download(name, api_url, content_dir)
         return "OK", 200
     except Exception as ex:
         print("Error downloading data:", ex)

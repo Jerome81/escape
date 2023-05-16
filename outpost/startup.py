@@ -6,13 +6,13 @@ import requests
 import socket
 
 outpost_def = {
-            "name": "XYZ", 
-            "type": "puzzle", 
+            "name": "puck_man", 
+            "type": "display", 
             "IP": socket.gethostbyname(socket.gethostname())
     }
 
 api_url = "http://127.0.0.1:5000/"
-content_dir = "d:/code/content/outposts/"
+content_dir = "/var/lib/outposts/"
 
 def send_status(status):
     outpost = outpost_def.copy()
