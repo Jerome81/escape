@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 from sqlitedict import SqliteDict
 from download import download
+from config import get_config
 
 receiver = Flask(__name__)
 
-#TODO: extract to config object (together with startup.py)
-api_url = "http://127.0.0.1:5000/"
-content_dir = "/var/lib/outposts/"
-name = "XYZ"
+outpost_def = get_config()
+
+api_url = outpost_def["api_url"]
+content_dir = outpost_def["content_dir"]
+name = outpost_def["name"]
 
 
 @receiver.get("/state")

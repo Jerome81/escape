@@ -1,18 +1,25 @@
 from flask import Flask, request, jsonify, send_file
 from sqlitedict import SqliteDict
 from datetime import date
+from config import get_config
 import shutil
 import os
 
 
 central = Flask(__name__)
-content_dir = "D:/code/content/"
-
+content_dir = get_config()["content_dir"]
+print(content_dir)
 
 @central.get("/outposts")
-def get_outposts():
-    return jsonify(outposts)
-
+def get_outposts(cache_file="outposts.sqlite3"):
+    try:
+        with SqliteDict(cache_file) as outposts:
+            x = outposts["XYZ"] #TODO: jsonify all entries
+            print(x)
+        return jsonify(x)
+    except Exception as ex:
+        print("Error during loading data:", ex)
+    
 @central.post("/outpost")
 def add_outpost():
     if request.is_json:
