@@ -1,1 +1,3 @@
 .vscode/
+outpost/config.json
+outpost/status.sqlite3
