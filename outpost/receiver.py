@@ -26,7 +26,7 @@ def get_state(cache_file = "status.sqlite3"):
 @receiver.get("/download")
 def get_download():
     try:
-        download(name, api_url, content_dir)
+        download(name, api_url, outpost_def)
         return "OK", 200
     except Exception as ex:
         print("Error downloading data:", ex)

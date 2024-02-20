@@ -1,0 +1,6 @@
+{
+    "name": "{{{NAME}}}", 
+    "type": "display", 
+    "api_url": "{{{API_URL}}}",
+    "content_dir": "/var/lib/outposts/"
+}
