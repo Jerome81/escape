@@ -13,7 +13,7 @@ print(content_dir)
 @central.get("/outposts")
 def get_outposts(cache_file="outposts.sqlite3"):
     try:
-        all = { "test": 1 }
+        all = {}
         with SqliteDict(cache_file) as outposts:
             for key in outposts:
                 all[key] = outposts[key]
