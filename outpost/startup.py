@@ -1,6 +1,8 @@
 from download import download
 from initializing import initializing
 from config import get_config
+from start_server import start_server
+from start_program import start_program
 
 from sqlitedict import SqliteDict
 import requests
@@ -30,6 +32,10 @@ def wait_for_internet_connection():
 if wait_for_internet_connection():
     initializing(outpost_def)   
     download(outpost_def["name"], api_url, outpost_def)
-
+    start_server(outpost_def)
+    start_program(outpost_def)
+    while(True):
+        time.sleep(2)
+        print("Alive")
 else:
     print("Couldn't establish connection to Homebase at " + api_url)

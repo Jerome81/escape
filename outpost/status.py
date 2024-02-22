@@ -16,4 +16,4 @@ def set_status(status, outpost_def, cache_file = "status.sqlite3"):
         send_status(status, outpost_def)
     except Exception as ex:
         print("Error while trying to write or send status.")
-        send_status("Error while writing status: %s - Continuing")
+        send_status("Error while writing status: %s - Continuing", outpost_def)
