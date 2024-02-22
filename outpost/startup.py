@@ -43,4 +43,3 @@ start_server(outpost_def)
 start_program(outpost_def)
 while(True):
     time.sleep(2)
-    print("Alive")
