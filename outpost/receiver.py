@@ -38,3 +38,6 @@ def get_download():
 def reboot():
     if request.args["pwd"] == "why_not":
         os.system('sudo shutdown -r now')
+        return "OK", 200
+    else:
+        return 404
