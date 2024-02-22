@@ -1,5 +1,4 @@
 import os
-import socket
 import json
 
 def get_config():
@@ -17,10 +16,6 @@ def get_config():
      
     with open(script_location + '/config.json') as json_file:
         data = json.load(json_file)
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        data["IP"] = s.getsockname()[0] # socket.gethostbyname(socket.gethostname())
         data["script_location"] = script_location
         return data
 
