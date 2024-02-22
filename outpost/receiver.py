@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify
 from sqlitedict import SqliteDict
 from download import download
@@ -32,3 +34,7 @@ def get_download():
         print("Error downloading data:", ex)
         return 500
 
+@receiver.get("/reboot")
+def reboot():
+    if request.args["pwd"] == "why_not":
+        os.system('sudo shutdown -r now')
