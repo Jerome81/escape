@@ -1,5 +1,10 @@
+import time
+import board
+import neopixel
+
 class Counter:
 
+    LED = 30
     total = 0
     total_votes = 0
     last_vote = 0
@@ -19,17 +24,22 @@ class Counter:
             return round(self.total / self.total_votes)
     
     def display_last_vote(self):
-        print("Last vote: %s" % self.last_vote)
-        #TODO play LED animation
+        for i in range(1, LED - 1):
+            pixels[i - 1] = (0, 0, 0)
+            pixels[i] = (255, 255, 0)
+            time.sleep(LED/1000)
     
     def play_loaded_animation(self):
-        print("loaded")
-        #TODO play LED animation
+        for i in range(0, LED - 1):
+            pixels[i] = (255, 255, 0)
+            time.sleep(LED/1000)
+     
 
     def show_average(self):
         average = self.average()
+        light = round(LED * (average / 100))
         print("Average is: %s" % average)
-        #TODO Display on LED
+        pixels[light] = (0, 0, 255)
     
     def turn_button_light_on(self):
         #TODO turn button lights on

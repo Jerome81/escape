@@ -27,7 +27,6 @@ def vote(number):
     if (n < 1 or n > 4):
         return "Illegal vote: %s" % number
     else:
-        n = n - 1
         db[len(db)] = n
         db.commit()
         counter.vote(n)
