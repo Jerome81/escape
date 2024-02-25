@@ -30,6 +30,8 @@ def vote(number):
         db[len(db)] = n
         db.commit()
         counter.vote(n)
+        counter.display_last_vote()
+        counter.show_average()
         return "Voted %s" % number
 
 @voteometer.get("/count")
@@ -40,8 +42,10 @@ def count():
 def average():
     return str(counter.average())
 
-@voteometer.get("/stats")
-def stats():
+@voteometer.get("/status")
+def status():
     return ("Last Used: %s / Status: %s" % (last_used, status))
 
-
+@voteometer.get("/attentionmode")
+def attentionmode():
+    counter.play_loaded_animation()
