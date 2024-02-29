@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_file
 from sqlitedict import SqliteDict
-from datetime import date
+from datetime import datetime
 from config import get_config
 import shutil
 import os
@@ -28,7 +28,7 @@ def add_outpost():
     if request.is_json:
         outpost = request.get_json()
         print(outpost)
-        outpost["last_seen"] = date.today().strftime("%d.%m.%Y")
+        outpost["last_seen"] = datetime.now().strftime("%d.%m.%Y - %H:%M:%S")
         save(outpost["name"], outpost)
         return outpost, 201
     return {"error": "Request must be JSON"}, 415
