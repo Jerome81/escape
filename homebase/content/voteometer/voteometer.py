@@ -1,3 +1,6 @@
+import threading
+
+from datetime import datetime
 from sqlitedict import SqliteDict
 from flask import Flask
 from counter import Counter
@@ -18,21 +21,26 @@ counter.play_loaded_animation()
 counter.show_average()
 status = "Ready."
 
-last_used = "TIME" #TODO
+last_used = datetime.now("%d.%m.%Y - %H:%M:%S")
 
 @voteometer.get("/vote/<number>")
 def vote(number):
-    last_used = "TIME"
+    last_used = datetime.now("%d.%m.%Y - %H:%M:%S")
     n = int(number)
     if (n < 1 or n > 4):
         return "Illegal vote: %s" % number
     else:
-        db[len(db)] = n
-        db.commit()
-        counter.vote(n)
-        counter.display_last_vote()
-        counter.show_average()
+        x = threading.Thread(target = send_vote, args=(n,))
+        x.start()
         return "Voted %s" % number
+
+def send_vote(n):
+    db[len(db)] = n
+    db.commit()
+    counter.vote(n)
+    counter.display_last_vote()
+    counter.show_average()
+        
 
 @voteometer.get("/count")
 def count():
