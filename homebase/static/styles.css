@@ -1,0 +1,52 @@
+.card {
+    font: 10pt arial;
+    width: 1000px;
+    margin: 1em 1em;
+    border: 1px solid;
+    float: left;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 10pt;
+    padding: 0.3em;
+    width: 250px;
+    background-color: #1976D2;
+    color: #FFF;
+    float: left;
+}
+
+.status {
+    width: 250px;
+    padding: 0.3em;
+    font-size: 10pt;
+    float: left; 
+}
+
+.actions {
+    width: 200px;
+    padding: 0.3em;
+    font-size: 10pt;
+    float: left; 
+}
+
+.result {
+    width: 250px;
+    padding: 0.3em;
+    font-size: 10pt;
+    float: left; 
+    margin-left: 1em;
+}
+
+.button {
+    background-color: #81bffc;
+    border-radius: 10px;
+    border-width: 1px;
+    text-align: center;
+    cursor: pointer;
+    border-color: #1976D2;
+    margin: 3px;
+    width: 100%;
+    padding: 0.3em;
+    display: grid;
+}
