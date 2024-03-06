@@ -4,8 +4,12 @@ from datetime import datetime
 from sqlitedict import SqliteDict
 from flask import Flask
 from counter import Counter
+from flask_cors import CORS, cross_origin
 
 voteometer = Flask(__name__)
+cors = CORS(voteometer)
+voteometer.config['CORS_HEADERS'] = 'Content-Type'
+
 db = SqliteDict("votes.sqlite")
 
 status = "Loading."
@@ -25,6 +29,7 @@ last_used = datetime.now().strftime("%d.%m.%Y - %H:%M:%S")
 counter.turn_button_lights_on()
 
 @voteometer.get("/vote/<number>")
+@cross_origin()
 def vote(number):
     last_used = datetime.now().strftime("%d.%m.%Y - %H:%M:%S")
     n = int(number)
@@ -47,14 +52,17 @@ def send_vote(n):
     
         
 @voteometer.get("/stats")
+@cross_origin()
 def stats():
-    return "Total votes: %s<br/>Average: %s" % (str(counter.total_votes), str(counter.average())) 
+    return "Total votes: %s<br/>Average: %s" % (str(counter.total_votes), str(counter.average())), 200
 
 @voteometer.get("/status")
+@cross_origin()
 def status():
-    return ("Last Used: %s / Status: %s" % (last_used, status))
+    return ("Last Used: %s / Status: %s" % (last_used, status)), 200
 
 @voteometer.get("/attraction_mode")
+@cross_origin()
 def attraction_mode():
     counter.play_loaded_animation()
-    return "Caught the attention of people"
+    return "Caught the attention of people", 200
