@@ -7,20 +7,21 @@ captain.config['CORS_HEADERS'] = 'Content-Type'
 
 torpedo_enabled = False
 
-last_direction = ""
-allowed_direction_cards = 3
-last_direction_card = 0
-
 direction_cards = "1234"
 
-
+@captain.get("/get_possible_directions")
 def get_possible_directions():
     return direction_cards
 
-@captain.get("/hyperspace_executed/<location>")
+@captain.get("/initiate_jump/<direction>")
+@cross_origin
+def initiate_jump(direction):
+    pass
+
+@captain.get("/jump_executed/<direction>")
 @cross_origin()
-def hyperspace_executed(location):
-    newlocation = location
+def jump_executed(direction):
+    pass
 
 @captain.post("/enable_torpedo")
 @cross_origin()

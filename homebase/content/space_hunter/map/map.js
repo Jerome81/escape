@@ -33,22 +33,16 @@ movement_map = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
-curX = 7
-curY = 5
-
-register("map", "localhost:5010")
-//const data = await load_data();
-
-//map = data[map];
-
-//movement_map = null;//get_movement_map();
+curX = 0;
+curY = 0;
+lastDirection = 1;
 
 const getData = async (url) => {
     response = await fetch("http://localhost:5002/get_data")        
     if (response.ok) {
         // Success
         data = await response.json();
-        console.log(data);
+        // console.log(data);
         return data;
     } else {
         // Error
@@ -59,17 +53,39 @@ const getData = async (url) => {
 const updateStaticMap = async (url) => {
     const json = await getData(url);       
     drawMap(json["map"]);
-    drawSpaceship(json["curX"], json["curY"]);
+    drawSpaceship(1, json["curX"], json["curY"]);
     drawMovementMap(json["movement_map"]);
 }
 
 const updateDynamicMap = async(url) => {
     const json = await getData(url);
-    drawSpaceship(json["curX"], json["curY"]);
+    
+    drawSpaceship(1, json["curX"], json["curY"]);
     drawMovementMap(json["movement_map"]);
 }
 
 updateStaticMap("http://localhost:5002/get_data");
+
+function moveSpaceshipTo(direction, newX, newY) {
+    // console.log(direction + " / " + newX + " / " + newY)
+
+    // update ship location
+    oldSpaceshipLoc = drawSpaceship(parseInt(direction), parseInt(newX), parseInt(newY));
+    
+    // update movement map
+    dir = "" + direction + opposite(lastDirection);
+    oldSpaceshipLoc.append(createMovementImage("arrow-" + dir));
+    lastDirection = direction;
+    
+}
+
+function opposite(dir) {
+    if (dir == 1) return 3;
+    if (dir == 2) return 4;
+    if (dir == 3) return 1;
+    if (dir == 4) return 2;
+    return 0;
+}
 
 function drawMap(map) {
     element = document.getElementById("map");
@@ -108,8 +124,8 @@ function drawMovementMap(movement_map) {
             if (movement_map[y - 1][x - 1] > 0) {
                 tile = document.getElementById("coord-" + x + "-" + y);
                 if (tile.children.length == 0) {
-                    console.log("creating element");
-                    text = document.createElement("img", "arrow-" + movement_map[y - 1][x - 1]);
+                    // console.log("creating element");
+                    //text = document.createElement("img", "arrow-" + movement_map[y - 1][x - 1]);
                     image = "arrow-" + movement_map[y - 1][x - 1];
                     if (y - 2 >= 0 && movement_map[y - 2][x - 1] == 3) {
                         image = image + "1";
@@ -124,13 +140,11 @@ function drawMovementMap(movement_map) {
                     if (x - 2 >= 0 && movement_map[y - 1][x - 2] == 2) {
                         image = image + "4";
                     }
-                    text.setAttribute("src", image + ".png");
-                    text.setAttribute("width", "100%");
-                    text.setAttribute("height", "100%");
-                    console.log("appending");
-                    tile.appendChild(text);
+                    
+                    // console.log("appending");
+                    tile.appendChild(createMovementImage(image));
                 } else {
-                    console.log("coord-" + x + "-" + y + " has children");
+                    // console.log("coord-" + x + "-" + y + " has children");
                 }
             }
 
@@ -138,21 +152,30 @@ function drawMovementMap(movement_map) {
     }
 }
 
-function drawSpaceship(curX, curY) {
-    e = document.getElementById("spaceship");
-    if (e != null) {
-        e.remove();
-    }
-    e = document.getElementById("coord-" + (curX + 1) + "-" + (curY + 1));
-    console.log(e);
-    if (e != null) {
+function drawSpaceship(dir, x, y) {
+    oldSpaceship = document.getElementById("spaceship"); 
+    console.log(x);
+    console.log(y);
+    console.log("coord-" + (x + 1) + "-" + (y + 1));
+    newSpaceship = document.getElementById("coord-" + (x + 1) + "-" + (y + 1));
+    console.log(oldSpaceship);
+    console.log(newSpaceship);
+    if (newSpaceship != null) {
         text = document.createElement("img", "spaceship");
-        text.setAttribute("src", "spaceship.png");
+        text.setAttribute("src", "spaceship" + dir + ".png");
         text.setAttribute("width", "100%");
         text.setAttribute("height", "100%");
         text.setAttribute("id", "spaceship");
-        e.appendChild(text);
+        newSpaceship.appendChild(text);
     }
+    tile = null;
+    if (oldSpaceship != null) {
+        tile = oldSpaceship.parentElement;
+        oldSpaceship.remove();
+    }
+    curX = x;
+    curY = y;
+    return tile;
 }
 
 function createTile(val) {
@@ -161,7 +184,7 @@ function createTile(val) {
     if (val == 0) {
         // Space       
     } else {
-        text = document.createElement("img", "" + val);
+        text = createElement("img", "" + val);
         text.setAttribute("src", val + ".png");
         text.setAttribute("alt", "" + val);
         text.setAttribute("width", "100%");
@@ -169,10 +192,8 @@ function createTile(val) {
         tile.appendChild(text);
 
     }
-
     return tile;
 }
-
 
 function createCoordTile(val) {
     tile = createElement("div", "coord");
@@ -181,6 +202,14 @@ function createCoordTile(val) {
     tile.appendChild(text);
 
     return tile;
+}
+
+function createMovementImage(image) {
+    element = createElement("img", "arrow");
+    element.setAttribute("src", image + ".png");
+    element.setAttribute("width", "100%");
+    element.setAttribute("height", "100%");
+    return element;
 }
 
 function createElement(type, clazz) {
@@ -193,18 +222,6 @@ function appendClass(tile, clazz) {
     tile.setAttribute("class", tile.getAttribute("class") + " " + clazz);
 }
 
-function register(type, url) {
-    // Using fetch
-    fetch("http://localhost:5002/register/" + type + "/" + url)
-        .then(function (response) {
-            if (response.ok) {
-                // Success
-                // return response.json();
-            } else {
-                // Error
-                throw new Error(response.statusText);
-            }
-            }
-        );
+function getCoordTile(x, y) {
+    return document.getElementById("coord-" + x + "-" + y);
 }
-

@@ -1,4 +1,5 @@
 import json
+import requests
 
 from flask import Flask
 from flask_cors import CORS, cross_origin
@@ -31,14 +32,26 @@ def get_direction_sequence():
 def get_map():
     return dc.get_data()
 
-@spaceship.get("/register/<type>/<url>")
-def register(type, url):
-    registered_modules[type] = url
+@spaceship.get("/module/<type>/<url>/<status>")
+def register(type, url, status):
+    registered_modules[type] = [ url, status ]
     return "Done"
 
 @spaceship.get("/move/<direction>")
 def move(direction):
     dc.move(direction)
+    for module in required_modules:
+        try:
+            if module in registered_modules:
+                callback = "http://" + registered_modules[module][0] + "/jump_complete/%s/%i/%i" % (direction, dc.curX, dc.curY)
+                print(callback)
+                response = requests.get(callback)
+            else:
+                print("Module '" + module + "' is not registered.")
+        except Exception as e:
+            print(e)
+            print("Couldn't notify '" + module + "' of movement.")
+
     return "Done"
 
 @spaceship.get("/status")
@@ -47,7 +60,7 @@ def status():
     body = ""
     for module in required_modules:
         if module in registered_modules:
-            body = body + "<div id='" + module + "' class='online'>" + module + " online at " + registered_modules[module] + "<div class='actions'>" + get_actions(module) + "</div></div>"
+            body = body + "<div id='" + module + "' class='online'>" + module + " online at " + registered_modules[module][0] + "<div class='status'>" + registered_modules[module][1] + "</div><div class='actions'>" + get_actions(module) + "</div></div>"
         else:
             body = body + "<div id='" + module + "' class='missing'>" + module + " missing</div>"
     

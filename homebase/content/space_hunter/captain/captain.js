@@ -34,12 +34,41 @@ function unselect(element) {
     }
 }
 
+function initiateJump() {
+    if (selectedDirection == "") {
+        console.log("No jump direction selected.");
+        return;
+    }
+
+    console.log("Jumping in direction: " + selectedDirection);
+    fetch("http://localhost:5002/move/" + selectedDirection);
+    // Call server to initiate jump.
+
+    // Disable controls.
+
+    // Wait for callback.
+}
+$( document ).ready( function() {
+    namespace = '/refresh';
+    var socket = io(namespace);
+
+    socket.on('connect', function() {
+        // $('#messages').append('<br/>' + $('<div/>').text('Requesting task to run').html());
+        socket.emit('needs_refresh', {count: '10'});
+        console.log("Connected");
+    });
+    socket.on('refresh', function(msg, cb) {
+        console.log("Refreshing");
+        updateDynamicMap("http://localhost:5002/get_data");
+    });
+});
+
 document.addEventListener('keypress', function(event) {
     console.log(`Key pressed: ${event.key}`);
     element = null;
     if (event.key == 'a') {
         console.log('highlight left');
-        selectDirection(document.querySelector("#left"), "2");
+        selectDirection(document.querySelector("#left"), "4");
     }
     if (event.key == 's') {
         console.log('highlight down');
@@ -47,13 +76,17 @@ document.addEventListener('keypress', function(event) {
     }
     if (event.key == 'd') {
         console.log('highlight right');
-        selectDirection(document.querySelector("#right"), "4");
+        selectDirection(document.querySelector("#right"), "2");
     }
     if (event.key == 'w') {
         console.log('highlight up');
         selectDirection(document.querySelector("#up"), "1");
     }
 
+    if (event.key == "Enter") {
+        console.log("Initiating Jump");
+        initiateJump();
+    }
 
 });
 
