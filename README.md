@@ -1,5 +1,5 @@
 # Escape
 
 ## File Structure
-coordinator
+earth
 puzzle

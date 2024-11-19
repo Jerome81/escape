@@ -8,29 +8,52 @@
     </head>
     <body>
         <div class="wrapper">
-            <div id="up" class="card">
+            <div id="up" class="card up">
               <img src="up.png" />
               <h2>Move Up</h2>
               <span></span>
               <p></p>
             </div>
-            <div id="right" class="card">
+            <div id="left" class="card left ">
+              <img src="left.png" />
+              <h2>Move Left</h2>
+              <span></span>
+              <p></p>
+            </div>         
+            <div id="right" class="card right">
               <img src="right.png" />
               <h2>Move Right</h2>
               <span></span>
               <p></p>
-            </div>
-            <div id="down" class="card">
-              <img src="down.png" />
-              <h2>Move Down</h2>
-              <span></span>
-              <p></p>
-            </div>            
-            <div id="left" class="card" style="display:none">
-                <img src="left.png" />
-                <h2>Move Left</h2>
+            </div> 
+            <div id="messagebox" class="card">
+                <h2 id="messageheader"></h2>
+                <span id="message"></span>
+                <p></p>
+            </div>   
+            <div id="down" class="card down">
+                <img src="down.png" />
+                <h2>Move Down</h2>
                 <span></span>
                 <p></p>
             </div>
+        </div>
+    <script>
+        $( document ).ready( function() {
+            namespace = '/refresh';
+            var socket = io(namespace);
+        
+            socket.on('connect', function() {
+                socket.emit('needs_refresh', {count: '10'});
+                console.log("Connected");
+                retrievePossibleDirections("http://localhost:5002/get_data");
+
+            });
+            socket.on('refresh', function(msg, cb) {
+                console.log("Refreshing " + msg["data"][3]);
+                updatePossibleDirections(msg["data"][3] /* possibleDirections */);
+            });
+        });
+    </script>    
     </body>
 </html>

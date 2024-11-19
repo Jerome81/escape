@@ -25,6 +25,7 @@ class DirectionCoordinatorTest(unittest.TestCase):
         d.move("2")
         self.assertEqual("3", d.get_next_direction_cards())
         d.move("3")
+        d.curY = 15 # need to relocate spaceship so we don't cross movement path
         self.assertEqual("4", d.get_next_direction_cards())
         d.move("4")
         self.assertEqual("1", d.get_next_direction_cards())
@@ -39,7 +40,7 @@ class DirectionCoordinatorTest(unittest.TestCase):
         d.move("1")
         self.assertEqual("234", d.get_next_direction_cards())
         d.move("1")
-        self.assertEqual("123", d.get_next_direction_cards())
+        self.assertEqual("234", d.get_next_direction_cards())  # Would be 123, but the move was not legal.
 
 
     def test_all_directions_possible_to_start(self):
@@ -173,6 +174,12 @@ class DirectionCoordinatorTest(unittest.TestCase):
         d.move("4")
         d.repair_complete()
         self.assertEqual('134', d.get_possible_directions()) # Can't go up, because was there already
+
+    def test_prevent_moving_into_things(self):
+        d = DirectionCoordinator("1234", max_direction_cards = 4, curX = 2, curY = 2, map = StarMap(width = 10, height = 10))
+        self.assertEqual(True, d.move("2"))
+        self.assertEqual('123', d.get_possible_directions()) 
+        self.assertEqual(False, d.move("4"))  # Tried to move backwards
 
 if __name__ == '__main__':
     unittest.main()

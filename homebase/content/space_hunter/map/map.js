@@ -64,10 +64,10 @@ const updateDynamicMap = async(url) => {
     drawMovementMap(json["movement_map"]);
 }
 
-updateStaticMap("http://localhost:5002/get_data");
+// updateStaticMap("http://localhost:5002/get_data");
 
 function moveSpaceshipTo(direction, newX, newY) {
-    // console.log(direction + " / " + newX + " / " + newY)
+    console.log(direction + " / " + newX + " / " + newY)
 
     // update ship location
     oldSpaceshipLoc = drawSpaceship(parseInt(direction), parseInt(newX), parseInt(newY));

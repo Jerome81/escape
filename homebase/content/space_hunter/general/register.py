@@ -30,9 +30,9 @@ def get_ip_address():
         print("Couldn't establish connection to Homebase at " + cache["spaceship_address"])
 
 
-def send_status(module, status):
+def send_status(module, status, port):
     if cache["ip_address"] is None:
-        cache["ip_address"] = get_ip_address() + ":5010"
+        cache["ip_address"] = get_ip_address() + ":" + port
     
     response = requests.get(cache["spaceship_address"] +"/module/" + module + "/" + cache["ip_address"] + "/" + status)
     print(response)

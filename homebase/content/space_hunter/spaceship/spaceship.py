@@ -7,6 +7,8 @@ from flask_cors import CORS, cross_origin
 from direction_coordinator import DirectionCoordinator
 from general.star_map import StarMap
 
+import paho.mqtt.client as mqtt
+
 spaceship = Flask(__name__)
 cors = CORS(spaceship)
 spaceship.config['CORS_HEADERS'] = 'Content-Type'
@@ -23,6 +25,29 @@ required_modules = [
 ]
 
 registered_modules = {}
+cache = {}
+
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, reason_code, properties):
+    print(f"Connected with result code {reason_code}")
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("spacehunter/spaceship")
+
+# The callback for when a PUBLISH message is received from the server.
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+    cache["event"] = ["jump_complete", "123"]
+
+spaceship_mq = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+spaceship_mq.on_connect = on_connect
+spaceship_mq.on_message = on_message
+
+spaceship_mq.connect("192.168.178.55", 1883, 60)
+
+print("starting message queue.")
+spaceship_mq.loop_start()
+spaceship_mq.publish("spacehunter/spaceship/register", "spaceship")
 
 @spaceship.get("/get_direction_sequence")
 def get_direction_sequence():
@@ -39,20 +64,11 @@ def register(type, url, status):
 
 @spaceship.get("/move/<direction>")
 def move(direction):
-    dc.move(direction)
-    for module in required_modules:
-        try:
-            if module in registered_modules:
-                callback = "http://" + registered_modules[module][0] + "/jump_complete/%s/%i/%i" % (direction, dc.curX, dc.curY)
-                print(callback)
-                response = requests.get(callback)
-            else:
-                print("Module '" + module + "' is not registered.")
-        except Exception as e:
-            print(e)
-            print("Couldn't notify '" + module + "' of movement.")
-
-    return "Done"
+    if dc.move(direction):
+        spaceship_mq.publish("spacehunter/spaceship", json.dumps({"event": "jump_complete", "data": [direction, dc.curX, dc.curY, dc.get_possible_directions() ]}))
+        return "OK"
+    else:
+        return "Illegal"
 
 @spaceship.get("/status")
 def status():

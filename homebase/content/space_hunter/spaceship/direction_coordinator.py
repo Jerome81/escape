@@ -21,6 +21,7 @@ class DirectionCoordinator:
     def get_data(self):
         x = {
             "last_direction": self.last_direction,
+            "possible_directions": self.get_possible_directions(),
             "map": self.map.map,
             "movement_map": self.movement_map.map,
             "curX": self.curX,
@@ -93,6 +94,10 @@ class DirectionCoordinator:
         return directions
 
     def move(self, direction):
+
+        if not direction in self.get_possible_directions():
+            return False
+
         self.last_direction = direction
 
         # Before moving, mark the current location as travelled
@@ -110,6 +115,8 @@ class DirectionCoordinator:
         self.last_direction_card = self.last_direction_card + self.allowed_direction_cards
         if (self.last_direction_card >= len(self.direction_cards)):
             self.last_direction_card = self.last_direction_card - len(self.direction_cards)
+        
+        return True  # move successful
 
     def repair_complete(self):
         # Reset movement map

@@ -6,24 +6,54 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-  }
-  
-  .wrapper {
+}
+
+#messagebox {
+    display:flex;
+    border:none;
+}
+
+#messageheader {
+    margin-top: 40px;
+    
+}
+.wrapper {
     width: 100%;
     max-width: 1240px;
     margin: 0 auto;
     padding: 15px;
     box-sizing: border-box;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    grid-gap: 20px;
+    # display: grid;
+    # grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    # grid-gap: 20px;
+
+    .up  {
+        margin-left:33%;
+    }
+
+    .left {
+        float: left;
+        margin-left:10%;
+    }
+    .right {
+        float:right;
+        margin-right: 10%;
+    }
     
+    .down  {
+        margin-left:33%;
+    }
     .card {
+        margin-top: 10px;
+      max-width: 360px;
+      max-height: 360px;
+      width: 240px;
+      height: 30%;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       display: flex;
-      flex-flow: column nowrap;
+      flex-flow: column;
       align-items: center;
       border: solid 1px #200030;
       border-radius: 10px;
@@ -33,13 +63,13 @@ body {
       img {
         display: flex;
         background-color: black;
-        width: 200px;
-        height: 200px;
+        width: 180px;
+        height: 180px;
         object-fit: contain;
         pointer-events: none;
         user-select: none;
       }
-      
+
       h2 {
         margin: 0 0 10px;
       }

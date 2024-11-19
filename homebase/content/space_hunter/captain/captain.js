@@ -1,6 +1,46 @@
 
 var selectedDirection = "";
 
+const getData = async (url) => {
+    response = await fetch("http://localhost:5002/get_data")        
+    if (response.ok) {
+        // Success
+        data = await response.json();
+        // console.log(data);
+        return data;
+    } else {
+        // Error
+        throw new Error(response.statusText);
+    }
+}
+
+const retrievePossibleDirections = async (url) => {
+    const json = await getData(url);       
+    console.log(json);
+    updatePossibleDirections(json["possible_directions"])
+}
+
+function updatePossibleDirections(dirs) {
+    if (dirs != null) {
+        enableOrDisableDirection("up", dirs.indexOf("1") >= 0);
+        enableOrDisableDirection("right", dirs.indexOf("2") >= 0);
+        enableOrDisableDirection("down", dirs.indexOf("3") >= 0);
+        enableOrDisableDirection("left", dirs.indexOf("4") >= 0);
+    } else {
+        console.log("no possible directions.");
+    }
+}
+
+function enableOrDisableDirection(dir, enable) {
+    element = document.querySelector("#" + dir);
+    if (enable) {
+        element.setAttribute("style", "display: block;");
+    } else {
+        element.setAttribute("style", "display: none;");
+    }
+}
+
+
 function selectDirection(element, direction) {
     console.log(element);
 
@@ -48,20 +88,6 @@ function initiateJump() {
 
     // Wait for callback.
 }
-$( document ).ready( function() {
-    namespace = '/refresh';
-    var socket = io(namespace);
-
-    socket.on('connect', function() {
-        // $('#messages').append('<br/>' + $('<div/>').text('Requesting task to run').html());
-        socket.emit('needs_refresh', {count: '10'});
-        console.log("Connected");
-    });
-    socket.on('refresh', function(msg, cb) {
-        console.log("Refreshing");
-        updateDynamicMap("http://localhost:5002/get_data");
-    });
-});
 
 document.addEventListener('keypress', function(event) {
     console.log(`Key pressed: ${event.key}`);

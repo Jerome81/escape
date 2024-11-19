@@ -19,6 +19,7 @@ $( document ).ready( function() {
     socket.on('connect', function() {
         socket.emit('needs_refresh', {count: '10'});
         console.log("Connected");
+        updateStaticMap("http://localhost:5002/get_data");
     });
     socket.on('refresh', function(msg, cb) {
         console.log("Refreshing");
