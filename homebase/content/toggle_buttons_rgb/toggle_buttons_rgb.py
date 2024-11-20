@@ -10,6 +10,7 @@ _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
 _solution = [False, False, False, False, False, False, False, True ]
 _currentData = []
+_lastButtonState = [] # contains the last known state of the button (i.e. is the user currently pressing it and holding it down?)
 
 _jsonData = {
     "id": deviceId,
@@ -78,17 +79,29 @@ def on_language_change(language):
 def on_solved(client):
     global _puzzleState
     _puzzleState = "SOLVED"
+    for button in buttons:
+        GPIO.output(button[BLUE], 0)
+        GPIO.output(button[GREEN], 1)
     sendPuzzleState()
     jsonData = {
-        "event": "Dock keypad solved"
+        "event": "All devices powered"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
 def on_reset():
     global _puzzleState
-    _currentData = ""
-    sendUpdate()
+    global _currentData
+    global _lastButtonState
+    _lastButtonState = []
+    _currentData = []
     _puzzleState = "INACTIVE"
+    for button in buttons:
+        GPIO.output(button[BLUE], 0)
+        GPIO.output(button[GREEN], 0)
+        setButtonState(button, button[SELECTED])
+        _currentData.append(button[SELECTED])
+        _lastButtonState.append(UP)
+    sendUpdate()
     sendPuzzleState()
 
 def on_activate():
@@ -152,8 +165,6 @@ mqttc.connect("192.168.178.11", 1883, 60)
 
 print("starting message queue.")
 mqttc.loop_start()
-
-lastButtonState = [] # contains the last known state of the button (i.e. is the user currently pressing it and holding it down?)
 UP = 1
 DOWN = 0
 
@@ -162,9 +173,8 @@ for button in buttons:
     GPIO.setup(button[RED], GPIO.OUT)
     GPIO.setup(button[GREEN], GPIO.OUT)
     GPIO.setup(button[BLUE], GPIO.OUT)
-    _currentData.append(button[SELECTED])
-    setButtonState(button, button[SELECTED])
-    lastButtonState.append(UP)
+
+on_reset()
 
 
 try:
@@ -178,18 +188,20 @@ try:
             i = 0
             for button in buttons:
                 isUp = GPIO.input(button[BUTTON])
-                if isUp != lastButtonState[i]:
-                    lastButtonState[i] = isUp
+                if isUp != _lastButtonState[i]:
+                    _lastButtonState[i] = isUp
                 else:
                     i = i + 1
                     continue
 
                 # Only act on button up.
-                if lastButtonState[i] == UP:
+                if _lastButtonState[i] == UP:
                     print("Button %s action" % i)
                     _currentData[i] = not _currentData[i]
                     setButtonState(button, _currentData[i])
                     print(_currentData)
+                    if _currentData == _solution:
+                        on_solved(mqttc)
             
             i = i + 1
                     

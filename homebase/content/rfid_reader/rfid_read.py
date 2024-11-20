@@ -102,6 +102,7 @@ def on_solved(client):
 def on_reset():
     global _puzzleState
     _puzzleState = "INACTIVE"
+    _currentData = ""
     lock_door()
     led_state()
     sendPuzzleState()
