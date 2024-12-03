@@ -5,7 +5,7 @@ import board
 import neopixel
 
 LED = 47
-BUTTON_LED = [17, 4, 6, 12]
+BUTTON_LED = [4, 6, 12, 17]
 BUTTON_LOCATION = [7, 18, 29, 40] # Up to how far should the light go when a button is pressed
 
 pixels = neopixel.NeoPixel(board.D18, LED, brightness=0.5)
@@ -43,19 +43,14 @@ class Counter:
     def play_loaded_animation(self):
         for i in range(0, len(BUTTON_LED)):
             self.turn_button_light_on(i)
-        self.turn_button_light_on(0)
-        self.turn_button_light_on(1)
-        self.turn_button_light_on(2)
-        self.turn_button_light_on(3)
-
+       
         for i in range(0, LED - 1):
             pixels[i] = (255, 255, 0)
             time.sleep(1 / LED)
         time.sleep(1)
         pixels.fill((0, 0, 0))
         
-        for i in range(0, len(BUTTON_LED)):
-            self.turn_button_light_off(i)
+        self.turn_button_lights_off()
      
 
     def show_average(self):
@@ -73,7 +68,7 @@ class Counter:
     def turn_button_lights_on(self):
         for i in range(0, len(BUTTON_LED)):
             self.turn_button_light_on(i)
-            time.sleep(0.1)
+            time.sleep(0.15)
 
     def turn_button_light_off(self, button):
         #print("Turning button lights off")
