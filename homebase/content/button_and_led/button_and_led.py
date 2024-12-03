@@ -1,57 +1,38 @@
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import json
-#import pygame
-
+import gpiozero
 import board
 import neopixel
 
 from time import sleep
 
-deviceId = "abandoned_engineroom_circuit"
+deviceId = "abandoned_engineroom_power"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
-_solution = [False, False, False, False, False, False, False, True ]
-_currentData = []
-_lastButtonState = [] # contains the last known state of the button (i.e. is the user currently pressing it and holding it down?)
+PRESSED = 0
+UNPRESSED = 1
+
+_solution = PRESSED
+_currentData = UNPRESSED
 
 lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
-lightstrip.fill((255, 255, 255))
+lightstrip.fill((255, 0, 0))
 
 _jsonData = {
     "id": deviceId,
     "description": ("Lösung: %s" % _solution),
 }
 
-BUTTON = 0
-RED = 1
-GREEN = 2
-BLUE = 3
-SELECTED = 4
+BUTTON_PIN = 14  #GPIO14
+LED_PIN = 26  #GPIO26
 
-# The same pin is used for RED and GREEN, because red is not being used to save pins.
-# GPIO PINS
-buttons = [
-    [21, 26, 26, 19, False], # button, red, green, blue, InitiallySelected
-    [20, 13, 13, 6, False],
-    [16, 5, 5, 11, False],
-    [12, 9, 9, 10, False],
-    [7, 22, 22, 27, False],
-    [8, 17, 17, 4, False],
-    [25, 3, 3, 2, False],
-    [24, 15, 15, 14, False],
-]
-
-#pygame.init()
+light = gpiozero.LED(LED_PIN)
+light.on()
 
 GPIO.setmode(GPIO.BCM)
-
-def setButtonState(button, isSelected):
-    if isSelected:
-        GPIO.output(button[BLUE], 1)
-    else:
-        GPIO.output(button[BLUE], 0)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def sendPuzzleState():
@@ -62,30 +43,17 @@ def sendPuzzleState():
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
 
     jsonData = _jsonData
     jsonData["input"] = _currentData
     jsonData["state"] = _puzzleState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
-def power_on_animation():
-    for i in range(len(lightstrip) - 1, -1, -1):
-        lightstrip[i] = (255, 255, 255)
-        sleep(0.02)
-
-def power_off_animation(): 
-    for i in range(len(lightstrip)):
-        lightstrip[i] = (0, 0, 0)
-        sleep(0.02)
 
 ### Game events ###
 def on_event(event):
-    if event == "Power up":
-        on_activate()
-
-    if event == "Power down":
-        on_reset()
+    pass
 
 ### Global commands ###
 def on_started():
@@ -98,43 +66,50 @@ def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
 
+def power_on_animation():
+    for i in range(len(lightstrip)):
+        lightstrip[i] = (255, 255, 255)
+        if GPIO.input(BUTTON_PIN) == 1:
+            return
+        sleep(0.02)
+
+def power_off_animation(): 
+    for i in range(len(lightstrip) - 1, -1, -1):
+        lightstrip[i] = (0, 0, 0)
+        if GPIO.input(BUTTON_PIN) == 0:
+            return
+        sleep(0.02)
+
+
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
+    power_on_animation()
     _puzzleState = "SOLVED"
-    for button in buttons:
-        GPIO.output(button[BLUE], 0)
-        GPIO.output(button[GREEN], 1)
-    sendPuzzleState()
+    sendUpdate()
+    light.off()
     jsonData = {
-        "event": "All devices powered"
+        "event": "Power up"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
-def on_reset():
+
+def on_reset(client):
     global _puzzleState
     global _currentData
-    global _lastButtonState
-    _lastButtonState = []
-    _currentData = []
-    _puzzleState = "INACTIVE"
+    _puzzleState = "ACTIVE"  # Always active
+    light.on()
     sendUpdate()
-    sendPuzzleState()
-    for button in buttons:
-        GPIO.output(button[BLUE], 0)
-        GPIO.output(button[GREEN], 0)
-        setButtonState(button, button[SELECTED])
-        _currentData.append(button[SELECTED])
-        _lastButtonState.append(UP)
+    jsonData = {
+        "event": "Power down"
+    }
+    client.publish("ToDevice/All", json.dumps(jsonData))
     power_off_animation()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
     sendPuzzleState()
-    #sound = pygame.mixer.Sound('/var/lib/outposts/power_up.wav')
-    #sound.play()
-    power_on_animation()
 
 
 ### Message Queue Events ###
@@ -195,15 +170,9 @@ print("starting message queue.")
 mqttc.loop_start()
 UP = 1
 DOWN = 0
+lastState = UP
 
-for button in buttons:
-    GPIO.setup(button[BUTTON], GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(button[RED], GPIO.OUT)
-    GPIO.setup(button[GREEN], GPIO.OUT)
-    GPIO.setup(button[BLUE], GPIO.OUT)
-
-on_reset()
-
+on_reset(mqttc)
 
 try:
     while True:
@@ -211,31 +180,16 @@ try:
         if _gameState == "STOPPED":
             # Always be ready
             pass 
-        
-        if _puzzleState == "ACTIVE":
-            i = 0
-            for button in buttons:
-                isUp = GPIO.input(button[BUTTON])
-                if isUp != _lastButtonState[i]:
-                    _lastButtonState[i] = isUp
-                else:
-                    i = i + 1
-                    continue
-
-                # Only act on button up.
-                if _lastButtonState[i] == UP:
-                    print("Button %s action" % i)
-                    _currentData[i] = not _currentData[i]
-                    setButtonState(button, _currentData[i])
-                    print(_currentData)
-                    if _currentData == _solution:
-                        on_solved(mqttc)
-            
-            i = i + 1
-                    
-        else:
-            sleep(1)
-        
+    
+        i = 0
+        isUp = GPIO.input(BUTTON_PIN)
+        if isUp != lastState:
+            _currentData = isUp
+            lastState = isUp
+            if isUp:
+                on_reset(mqttc)
+            else:
+                on_solved(mqttc)
         
         sleep(0.2)
 except Exception as e:
