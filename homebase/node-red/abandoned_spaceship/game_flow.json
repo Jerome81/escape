@@ -1,0 +1,807 @@
+[
+    {
+        "id": "3a0b50343819716a",
+        "type": "tab",
+        "label": "Game Flow",
+        "disabled": false,
+        "info": "Overall handling of game events.",
+        "env": []
+    },
+    {
+        "id": "dc689f6188d04642",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Oxygen Timer",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 140,
+        "wires": [
+            [
+                "d04365bfb38ea290"
+            ]
+        ]
+    },
+    {
+        "id": "3c7a66874c6450b5",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Loop",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 300,
+        "wires": [
+            [
+                "fa84c8d1165d477d",
+                "e78970e13a543bf4"
+            ]
+        ]
+    },
+    {
+        "id": "d04365bfb38ea290",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "timeForRoom",
+                "pt": "global",
+                "to": "3600000",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "gameState",
+                "pt": "global",
+                "to": "stopped",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "timeRemaining",
+                "pt": "global",
+                "to": "timeForRoom",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "currentTime",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 140,
+        "wires": [
+            [
+                "a8e9a7d39038427c"
+            ]
+        ]
+    },
+    {
+        "id": "fa84c8d1165d477d",
+        "type": "function",
+        "z": "3a0b50343819716a",
+        "name": "calcRemainingTime",
+        "func": "var currentTime = msg.payload;\nvar lastTickTime = global.get(\"lastTickTime\") || currentTime;\nvar timeRemaining = global.get(\"timeRemaining\") || 0;\nvar gameState = global.get(\"gameState\");\n\nif (gameState == \"playing\") {\n    timeRemaining -= (currentTime - lastTickTime);\n    global.set(\"timeRemaining\", timeRemaining);\n\n}\n\nmsg.timeRemaining = timeRemaining;\nglobal.set(\"lastTickTime\", currentTime);\n\nnode.status({fill: \"green\", shape:\"dot\", text:timeRemaining});\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 300,
+        "wires": [
+            [
+                "af756602358187d1"
+            ]
+        ]
+    },
+    {
+        "id": "aa8abfd7653ac939",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Play",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 420,
+        "wires": [
+            [
+                "f3db7244f2955921"
+            ]
+        ]
+    },
+    {
+        "id": "e2da3dece1713d2b",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Stop",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 520,
+        "wires": [
+            [
+                "aa5548ba653304a9"
+            ]
+        ]
+    },
+    {
+        "id": "f3db7244f2955921",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "gameState",
+                "pt": "global",
+                "to": "STARTED",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 420,
+        "wires": [
+            [
+                "eb87a026f959e661"
+            ]
+        ]
+    },
+    {
+        "id": "aa5548ba653304a9",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "gameState",
+                "pt": "global",
+                "to": "STOPPED",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 520,
+        "wires": [
+            [
+                "cc7440c09a18f288"
+            ]
+        ]
+    },
+    {
+        "id": "ba6b218d01d3d0e2",
+        "type": "ui_text",
+        "z": "3a0b50343819716a",
+        "group": "37a4c34b22d20ff1",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Oxygen Remaining",
+        "format": "{{msg.oxygenRemaining}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 810,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "7b2a339a3b0b0d0f",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "fab740f98425a50b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Start",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 380,
+        "wires": [
+            [
+                "f3db7244f2955921"
+            ]
+        ]
+    },
+    {
+        "id": "7360fbc7c0288386",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "fab740f98425a50b",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Stop",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 480,
+        "wires": [
+            [
+                "aa5548ba653304a9"
+            ]
+        ]
+    },
+    {
+        "id": "af756602358187d1",
+        "type": "function",
+        "z": "3a0b50343819716a",
+        "name": "format time",
+        "func": "var t = msg.timeRemaining;\nt = t / 1000;\nvar h = Math.floor(t / 3600);\nvar m = Math.floor(t % 3600 / 60);\nvar s = Math.floor(t % 3600 % 60);\n\nif (h > 0) {\n    msg.formattedTimeRemaining = (\"0\" + h).slice(-2) + \":\" + (\"0\" + m).slice(-2);\n} else {\n    if (m > 0) {\n        msg.formattedTimeRemaining = m + \" min\";\n    } else {\n        msg.formattedTimeRemaining = s + \" sec\";\n    }\n}\n\nmsg.oxygenRemaining = Math.floor(t * 100000 / global.get(\"timeForRoom\"));\n\nnode.status({fill: \"green\", shape:\"dot\", text:msg.oxygenRemaining});\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 300,
+        "wires": [
+            [
+                "ba6b218d01d3d0e2"
+            ]
+        ]
+    },
+    {
+        "id": "a8e9a7d39038427c",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "On setup",
+        "mode": "link",
+        "links": [],
+        "x": 595,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "eb87a026f959e661",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "On Game Start",
+        "mode": "link",
+        "links": [
+            "c281f96af67d0de3"
+        ],
+        "x": 555,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "cc7440c09a18f288",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "on Game Stop",
+        "mode": "link",
+        "links": [
+            "c281f96af67d0de3"
+        ],
+        "x": 555,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "e78970e13a543bf4",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "on Game Loop",
+        "mode": "link",
+        "links": [],
+        "x": 335,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "c281f96af67d0de3",
+        "type": "link in",
+        "z": "3a0b50343819716a",
+        "name": "Send to all devices",
+        "links": [
+            "53b805360fa84a4e",
+            "cc7440c09a18f288",
+            "eb87a026f959e661",
+            "a614a89c5677075a"
+        ],
+        "x": 85,
+        "y": 840,
+        "wires": [
+            [
+                "e82f8fee06f2c3a0"
+            ]
+        ]
+    },
+    {
+        "id": "4a15d020a1b94a70",
+        "type": "mqtt out",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "125f6c81.60151b",
+        "x": 1150,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "e82f8fee06f2c3a0",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/All",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload.gameState",
+                "pt": "msg",
+                "to": "gameState",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 230,
+        "y": 840,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "ea16e1151b93c3b9",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "75624f21de130f6c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Dock keypad solved",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Dock keypad solved\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 800,
+        "y": 400,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "ea245a70a11b3a03",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "75624f21de130f6c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Dock door unlocked",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Dock door unlocked\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 800,
+        "y": 440,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "e618afdbb080448d",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "37a4c34b22d20ff1",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Deutsch",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{ \"language\": \"deutsch\" }",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 160,
+        "y": 960,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "a466c6a64529da0b",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Reset",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 620,
+        "wires": [
+            [
+                "665ad7d045fd79c6"
+            ]
+        ]
+    },
+    {
+        "id": "665ad7d045fd79c6",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "gameState",
+                "pt": "global",
+                "to": "RESET",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 620,
+        "wires": [
+            [
+                "a614a89c5677075a"
+            ]
+        ]
+    },
+    {
+        "id": "12041d02a8294274",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "fab740f98425a50b",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 580,
+        "wires": [
+            [
+                "665ad7d045fd79c6"
+            ]
+        ]
+    },
+    {
+        "id": "a614a89c5677075a",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "on Game Stop",
+        "mode": "link",
+        "links": [
+            "c281f96af67d0de3"
+        ],
+        "x": 555,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "60c88f76f26ab253",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "37a4c34b22d20ff1",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "English",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{ \"language\": \"english\" }",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 160,
+        "y": 1000,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "42e6aee36fd4d667",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "75624f21de130f6c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Power up",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Power up\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 760,
+        "y": 480,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "4d2497fab1935794",
+        "type": "ui_button",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "group": "75624f21de130f6c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Power down",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Power down\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 910,
+        "y": 480,
+        "wires": [
+            [
+                "4a15d020a1b94a70"
+            ]
+        ]
+    },
+    {
+        "id": "37a4c34b22d20ff1",
+        "type": "ui_group",
+        "name": "Sprache",
+        "tab": "33e76ba13f360a06",
+        "order": 1,
+        "disp": true,
+        "width": "3",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "fab740f98425a50b",
+        "type": "ui_group",
+        "name": "Globale Befehle",
+        "tab": "33e76ba13f360a06",
+        "order": 2,
+        "disp": true,
+        "width": "3",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "75624f21de130f6c",
+        "type": "ui_group",
+        "name": "Events",
+        "tab": "33e76ba13f360a06",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "33e76ba13f360a06",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
