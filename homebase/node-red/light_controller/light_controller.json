@@ -1,5 +1,59 @@
 [
     {
+        "id": "7a9b17bd408e2e91",
+        "type": "tab",
+        "label": "Licht",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "52eac3a522121879",
+        "type": "mqtt out",
+        "z": "7a9b17bd408e2e91",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "03e1a78a9032f823",
+        "x": 730,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "90b1fe420690eeb5",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "ON",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 460,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
         "id": "d218d0d528f2a5d3",
         "type": "ui_button",
         "z": "7a9b17bd408e2e91",
@@ -26,6 +80,37 @@
                 "52eac3a522121879"
             ]
         ]
+    },
+    {
+        "id": "03e1a78a9032f823",
+        "type": "mqtt-broker",
+        "name": "LightController",
+        "broker": "192.168.178.106",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
     },
     {
         "id": "8e5a1661c8d2eb9d",
