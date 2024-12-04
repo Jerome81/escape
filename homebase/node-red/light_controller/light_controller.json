@@ -1,0 +1,49 @@
+[
+    {
+        "id": "d218d0d528f2a5d3",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "OFF",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "OFF",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 600,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
+        "id": "8e5a1661c8d2eb9d",
+        "type": "ui_group",
+        "name": "Alle",
+        "tab": "cecb9bc163c905c0",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cecb9bc163c905c0",
+        "type": "ui_tab",
+        "name": "Licht",
+        "icon": "light",
+        "disabled": false,
+        "hidden": false
+    }
+]
