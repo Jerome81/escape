@@ -1,0 +1,337 @@
+[
+    {
+        "id": "f2e5d1ca974b3550",
+        "type": "tab",
+        "label": "Dock Door",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "91021269d70f39ad",
+        "type": "mqtt in",
+        "z": "f2e5d1ca974b3550",
+        "name": "",
+        "topic": "FromDevice/abandoned_dock_door",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "dff97fcf3b0d371a"
+            ]
+        ]
+    },
+    {
+        "id": "dff97fcf3b0d371a",
+        "type": "ui_template",
+        "z": "f2e5d1ca974b3550",
+        "group": "bd4d91b28ef3491c",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card style=\"height: 25px;background-color: lightyellow;\">\n    <md-card-title style=\"height: 25px;background-color: lightyellow;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_dock_\".length)}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n        </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Solution unknown'}}\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 520,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ce88878f5ac64505",
+        "type": "ui_button",
+        "z": "f2e5d1ca974b3550",
+        "name": "RESET",
+        "group": "bd4d91b28ef3491c",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 460,
+        "wires": [
+            [
+                "1e799a22ebcaac06"
+            ]
+        ]
+    },
+    {
+        "id": "2dce7793bdc9e2d2",
+        "type": "ui_button",
+        "z": "f2e5d1ca974b3550",
+        "name": "SOLVE",
+        "group": "bd4d91b28ef3491c",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 400,
+        "wires": [
+            [
+                "74e307865007fb95"
+            ]
+        ]
+    },
+    {
+        "id": "74e307865007fb95",
+        "type": "change",
+        "z": "f2e5d1ca974b3550",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_dock_door",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 400,
+        "wires": [
+            [
+                "5bb7979ae703182d"
+            ]
+        ]
+    },
+    {
+        "id": "1e799a22ebcaac06",
+        "type": "change",
+        "z": "f2e5d1ca974b3550",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_dock_door",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 460,
+        "wires": [
+            [
+                "5bb7979ae703182d"
+            ]
+        ]
+    },
+    {
+        "id": "5bb7979ae703182d",
+        "type": "json",
+        "z": "f2e5d1ca974b3550",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 530,
+        "y": 460,
+        "wires": [
+            [
+                "841f5fb5066f986c"
+            ]
+        ]
+    },
+    {
+        "id": "841f5fb5066f986c",
+        "type": "link out",
+        "z": "f2e5d1ca974b3550",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13"
+        ],
+        "x": 645,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "ed7d912c9af068a9",
+        "type": "ui_button",
+        "z": "f2e5d1ca974b3550",
+        "name": "ACTIVATE",
+        "group": "bd4d91b28ef3491c",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Activate",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"ACTIVATE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 130,
+        "y": 520,
+        "wires": [
+            [
+                "7305706d414b3db2"
+            ]
+        ]
+    },
+    {
+        "id": "7305706d414b3db2",
+        "type": "change",
+        "z": "f2e5d1ca974b3550",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "ACTIVATE",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_dock_door",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 330,
+        "y": 520,
+        "wires": [
+            [
+                "5bb7979ae703182d"
+            ]
+        ]
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "bd4d91b28ef3491c",
+        "type": "ui_group",
+        "name": "Dock Door RFID",
+        "tab": "a38c3d325d960343",
+        "order": 2,
+        "disp": false,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a38c3d325d960343",
+        "type": "ui_tab",
+        "name": "Alle Rätsel",
+        "icon": "dashboard",
+        "order": 0,
+        "disabled": false,
+        "hidden": false
+    }
+]

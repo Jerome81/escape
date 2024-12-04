@@ -1,0 +1,368 @@
+[
+    {
+        "id": "3a2dfccb3eb7d2cd",
+        "type": "tab",
+        "label": "Keypad",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "51b78ad4a8465dad",
+        "type": "group",
+        "z": "3a2dfccb3eb7d2cd",
+        "name": "Dashboard controls",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "07bb6a1d8ccbe063",
+            "d2a89b140e78d237",
+            "3ee83a8ee6320d64",
+            "e0b487dffe7304d7",
+            "0aa6533c7faad29f",
+            "b498833b2fb8b448",
+            "98c11b3d99f2d911",
+            "b6ef7ef833a24922",
+            "412d2b7e694aed62"
+        ],
+        "x": 54,
+        "y": 519,
+        "w": 692,
+        "h": 242
+    },
+    {
+        "id": "07bb6a1d8ccbe063",
+        "type": "ui_button",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "RESET",
+        "group": "154291a97d619ff2",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 720,
+        "wires": [
+            [
+                "e0b487dffe7304d7"
+            ]
+        ]
+    },
+    {
+        "id": "d2a89b140e78d237",
+        "type": "ui_button",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "SOLVE",
+        "group": "154291a97d619ff2",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 660,
+        "wires": [
+            [
+                "3ee83a8ee6320d64"
+            ]
+        ]
+    },
+    {
+        "id": "3ee83a8ee6320d64",
+        "type": "change",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_dock_keypad",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 660,
+        "wires": [
+            [
+                "0aa6533c7faad29f"
+            ]
+        ]
+    },
+    {
+        "id": "e0b487dffe7304d7",
+        "type": "change",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_dock_keypad",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 720,
+        "wires": [
+            [
+                "0aa6533c7faad29f"
+            ]
+        ]
+    },
+    {
+        "id": "0aa6533c7faad29f",
+        "type": "json",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 530,
+        "y": 680,
+        "wires": [
+            [
+                "412d2b7e694aed62"
+            ]
+        ]
+    },
+    {
+        "id": "b498833b2fb8b448",
+        "type": "ui_template",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "group": "154291a97d619ff2",
+        "name": "Dashboard Panel",
+        "order": 1,
+        "width": "6",
+        "height": "5",
+        "format": "<md-card style=\"height: 25px;background-color: lightyellow;\">\n    <md-card-title style=\"height: 25px;background-color: lightyellow;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_dock_\".length)}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n        </md-card-title-text>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Unknown'}}\n    </p>\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 630,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "98c11b3d99f2d911",
+        "type": "inject",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 620,
+        "wires": [
+            [
+                "3ee83a8ee6320d64"
+            ]
+        ]
+    },
+    {
+        "id": "b6ef7ef833a24922",
+        "type": "mqtt in",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "FromDevice/abandoned_dock_keypad",
+        "topic": "FromDevice/abandoned_dock_keypad",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 560,
+        "wires": [
+            [
+                "b498833b2fb8b448"
+            ]
+        ]
+    },
+    {
+        "id": "4fd1bcceb01b0586",
+        "type": "mqtt out",
+        "z": "3a2dfccb3eb7d2cd",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "125f6c81.60151b",
+        "x": 930,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "412d2b7e694aed62",
+        "type": "link out",
+        "z": "3a2dfccb3eb7d2cd",
+        "g": "51b78ad4a8465dad",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13"
+        ],
+        "x": 665,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "23d9a8932a3d2d13",
+        "type": "link in",
+        "z": "3a2dfccb3eb7d2cd",
+        "name": "Send command to device",
+        "links": [
+            "412d2b7e694aed62",
+            "c7d2b7e01034905b",
+            "841f5fb5066f986c",
+            "9345e285735a9c3c",
+            "934fe2697f2f1138"
+        ],
+        "x": 815,
+        "y": 680,
+        "wires": [
+            [
+                "4fd1bcceb01b0586"
+            ]
+        ]
+    },
+    {
+        "id": "154291a97d619ff2",
+        "type": "ui_group",
+        "name": "Dock Keypad",
+        "tab": "a38c3d325d960343",
+        "order": 1,
+        "disp": false,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a38c3d325d960343",
+        "type": "ui_tab",
+        "name": "Alle Rätsel",
+        "icon": "dashboard",
+        "order": 0,
+        "disabled": false,
+        "hidden": false
+    }
+]

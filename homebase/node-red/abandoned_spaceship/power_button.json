@@ -1,0 +1,268 @@
+[
+    {
+        "id": "e5f34153dfcbb841",
+        "type": "tab",
+        "label": "Power Button",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "731ee2f648096008",
+        "type": "ui_button",
+        "z": "e5f34153dfcbb841",
+        "name": "RESET",
+        "group": "20f60fc41be714b7",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 180,
+        "y": 420,
+        "wires": [
+            [
+                "80ed5abb60a06211"
+            ]
+        ]
+    },
+    {
+        "id": "8c98b4583cbae05f",
+        "type": "ui_button",
+        "z": "e5f34153dfcbb841",
+        "name": "SOLVE",
+        "group": "20f60fc41be714b7",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 180,
+        "y": 360,
+        "wires": [
+            [
+                "2935e9acc5ee0d59"
+            ]
+        ]
+    },
+    {
+        "id": "2935e9acc5ee0d59",
+        "type": "change",
+        "z": "e5f34153dfcbb841",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_engineroom_power",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 360,
+        "wires": [
+            [
+                "fed087f1ddfe14e1"
+            ]
+        ]
+    },
+    {
+        "id": "80ed5abb60a06211",
+        "type": "change",
+        "z": "e5f34153dfcbb841",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_engineroom_power",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 420,
+        "wires": [
+            [
+                "fed087f1ddfe14e1"
+            ]
+        ]
+    },
+    {
+        "id": "fed087f1ddfe14e1",
+        "type": "json",
+        "z": "e5f34153dfcbb841",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 570,
+        "y": 420,
+        "wires": [
+            [
+                "934fe2697f2f1138"
+            ]
+        ]
+    },
+    {
+        "id": "934fe2697f2f1138",
+        "type": "link out",
+        "z": "e5f34153dfcbb841",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13"
+        ],
+        "x": 685,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "d19a233ef48b5f09",
+        "type": "mqtt in",
+        "z": "e5f34153dfcbb841",
+        "name": "",
+        "topic": "FromDevice/abandoned_engineroom_power",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 140,
+        "wires": [
+            [
+                "b0a87f778c134bf0"
+            ]
+        ]
+    },
+    {
+        "id": "b0a87f778c134bf0",
+        "type": "ui_template",
+        "z": "e5f34153dfcbb841",
+        "group": "20f60fc41be714b7",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card style=\"height: 25px;background-color: lightblue;\">\n<md-card-title style=\"height: 25px;background-color: lightblue;\">\n    <md-card-title-text>\n<p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_engineroom_\".length)}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n</md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?(msg.payload.description==1?\"UNPRESSED\":\"PRESSED\"):'Solution unknown'}}\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input == 1?\"UNPRESSED\":\"PRESSED\"}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 560,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "20f60fc41be714b7",
+        "type": "ui_group",
+        "name": "Power",
+        "tab": "a38c3d325d960343",
+        "order": 3,
+        "disp": false,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a38c3d325d960343",
+        "type": "ui_tab",
+        "name": "Alle Rätsel",
+        "icon": "dashboard",
+        "order": 0,
+        "disabled": false,
+        "hidden": false
+    }
+]
