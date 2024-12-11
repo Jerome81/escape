@@ -1,6 +1,8 @@
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import json
+from gpiozero import Button
+
 #import pygame
 
 import board
@@ -8,16 +10,18 @@ import neopixel
 
 from time import sleep
 
+mq_ip = "192.168.178.11"
 deviceId = "abandoned_engineroom_circuit"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
-_solution = [False, False, False, False, False, False, False, True ]
+_solution = [True, False, True, True, False, False, True, True ]
 _currentData = []
 _lastButtonState = [] # contains the last known state of the button (i.e. is the user currently pressing it and holding it down?)
 
-lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
-lightstrip.fill((255, 255, 255))
+lightstrip = neopixel.NeoPixel(board.D18, 250, brightness = 0.6, auto_write=False)
+lightstrip.fill((255, 0, 0))
+lightstrip.show()
 
 _jsonData = {
     "id": deviceId,
@@ -33,14 +37,14 @@ SELECTED = 4
 # The same pin is used for RED and GREEN, because red is not being used to save pins.
 # GPIO PINS
 buttons = [
-    [21, 26, 26, 19, False], # button, red, green, blue, InitiallySelected
-    [20, 13, 13, 6, False],
-    [16, 5, 5, 11, False],
-    [12, 9, 9, 10, False],
-    [7, 22, 22, 27, False],
-    [8, 17, 17, 4, False],
-    [25, 3, 3, 2, False],
-    [24, 15, 15, 14, False],
+    [Button(24, bounce_time = 0.05), 15, 15, 14, False], # button, red, green, blue, InitiallySelected
+    [Button(25, bounce_time = 0.05), 3, 3, 2, False],
+    [Button(23, bounce_time = 0.05), 17, 17, 4, False],
+    [Button(0, bounce_time = 0.05), 22, 22, 27, False],
+    [Button(12, bounce_time = 0.05), 9, 9, 10, False],
+    [Button(16, bounce_time = 0.05), 5, 5, 11, False],
+    [Button(20, bounce_time = 0.05), 13, 13, 6, False],
+    [Button(21, bounce_time = 0.05), 26, 26, 19, False], 
 ]
 
 #pygame.init()
@@ -49,8 +53,11 @@ GPIO.setmode(GPIO.BCM)
 
 def setButtonState(button, isSelected):
     if isSelected:
+        print("High on: %s" % button[BLUE])
         GPIO.output(button[BLUE], 1)
     else:
+        
+        print("Low on: %s" % button[BLUE])
         GPIO.output(button[BLUE], 0)
 
 
@@ -70,14 +77,34 @@ def sendUpdate():
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 def power_on_animation():
+    lightstrip.brightness = 0.6
     for i in range(len(lightstrip) - 1, -1, -1):
         lightstrip[i] = (255, 255, 255)
-        sleep(0.02)
+        if i < 106:
+            continue
+        else:          
+            lightstrip.show() 
+            sleep(0.02)
+    lightstrip.show() 
 
-def power_off_animation(): 
-    for i in range(len(lightstrip)):
+def power_off_animation():
+    for i in range(0, len(lightstrip)):
         lightstrip[i] = (0, 0, 0)
-        sleep(0.02)
+        if i < 106:
+            continue
+        else:
+            lightstrip.show()
+            sleep(0.02)
+
+def attract():
+    if _puzzleState == "ACTIVE":
+        w = [0.03, 1, 0.03, 0.5, 0.03, 0.1, 0.03, 0.03 ]
+        for i in range(len(w)):
+            lightstrip.brightness = i % 2
+            lightstrip.show()
+            sleep(w[i])
+        lightstrip.brightness = 0.6
+        lightstrip.show()
 
 ### Game events ###
 def on_event(event):
@@ -86,6 +113,9 @@ def on_event(event):
 
     if event == "Power down":
         on_reset()
+    
+    if event == "Attract":
+        attract()
 
 ### Global commands ###
 def on_started():
@@ -110,6 +140,11 @@ def on_solved(client):
         "event": "All devices powered"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
+    for i in range(105):
+        lightstrip[i] = (0, 255, 0)
+
+    lightstrip.brightness = 0.3
+    lightstrip.show()
 
 def on_reset():
     global _puzzleState
@@ -127,6 +162,36 @@ def on_reset():
         _currentData.append(button[SELECTED])
         _lastButtonState.append(UP)
     power_off_animation()
+
+def button_pressed(number):
+    global _currentData
+    if _puzzleState == "ACTIVE":
+        print("Button %s action" % number)
+        _currentData[number] = not _currentData[number]
+        setButtonState(buttons[number], _currentData[number])
+        print(_currentData)
+        if _currentData == _solution:
+            on_solved(mqttc)
+    else:
+        print("Button %s pressed but puzzle not active" % number)
+
+def on_release(number):
+    if number == 0:
+        return lambda: button_pressed(0)
+    if number == 1:
+        return lambda: button_pressed(1)
+    if number == 2:
+        return lambda: button_pressed(2)
+    if number == 3:
+        return lambda: button_pressed(3)
+    if number == 4:
+        return lambda: button_pressed(4)
+    if number == 5:
+        return lambda: button_pressed(5)
+    if number == 6:
+        return lambda: button_pressed(6)
+    if number == 7:
+        return lambda: button_pressed(7)
 
 def on_activate():
     global _puzzleState
@@ -183,61 +248,43 @@ def on_message(client, userdata, msg):
             if command == "ACTIVATE":
                 on_activate()
 
-   
+def connect(client):
+    disconnected = True
+    while disconnected:
+        try:   
+            client.connect(mq_ip, 1883, 60)
+            disconnected = False
+        except Exception as e:
+            print('An exception occured: {}'.format(e))
+            sleep(5)
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 mqttc.username_pw_set(username="outpost", password="CallingHome")
-mqttc.connect("192.168.178.11", 1883, 60)
+
+connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
 UP = 1
 DOWN = 0
 
+i = 0
 for button in buttons:
-    GPIO.setup(button[BUTTON], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    button[BUTTON].when_released = on_release(i)
     GPIO.setup(button[RED], GPIO.OUT)
     GPIO.setup(button[GREEN], GPIO.OUT)
     GPIO.setup(button[BLUE], GPIO.OUT)
+    i = i + 1
 
 on_reset()
 
 
 try:
     while True:
-        
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
-        
-        if _puzzleState == "ACTIVE":
-            i = 0
-            for button in buttons:
-                isUp = GPIO.input(button[BUTTON])
-                if isUp != _lastButtonState[i]:
-                    _lastButtonState[i] = isUp
-                else:
-                    i = i + 1
-                    continue
-
-                # Only act on button up.
-                if _lastButtonState[i] == UP:
-                    print("Button %s action" % i)
-                    _currentData[i] = not _currentData[i]
-                    setButtonState(button, _currentData[i])
-                    print(_currentData)
-                    if _currentData == _solution:
-                        on_solved(mqttc)
-            
-            i = i + 1
-                    
-        else:
-            sleep(1)
-        
-        
-        sleep(0.2)
+                
+        sleep(0.5)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
     print("Cleaning up")
