@@ -46,7 +46,7 @@
         "topic": "Lighting/All",
         "topicType": "str",
         "x": 290,
-        "y": 460,
+        "y": 540,
         "wires": [
             [
                 "52eac3a522121879"
@@ -75,6 +75,118 @@
         "topicType": "str",
         "x": 290,
         "y": 600,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
+        "id": "400cf9989faad091",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "Pulse",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Pulse",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "pulse",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 660,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
+        "id": "d6de2732688aa7dd",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "Rain",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Rain",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "rain",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 720,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
+        "id": "32ee4f3c1edd8ac6",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "Enter",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Enter",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "enter",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 780,
+        "wires": [
+            [
+                "52eac3a522121879"
+            ]
+        ]
+    },
+    {
+        "id": "f842080f88568f51",
+        "type": "ui_button",
+        "z": "7a9b17bd408e2e91",
+        "name": "Leave",
+        "group": "8e5a1661c8d2eb9d",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Leave",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "leave",
+        "payloadType": "str",
+        "topic": "Lighting/All",
+        "topicType": "str",
+        "x": 290,
+        "y": 840,
         "wires": [
             [
                 "52eac3a522121879"
