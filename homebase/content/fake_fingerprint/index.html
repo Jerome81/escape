@@ -11,7 +11,7 @@ const options = {
   clean: true,
   connectTimeout: 4000,
   // Authentication
-  clientId: 'fake_fingerprint',
+  clientId: 'fake_fingerprint2',
   username: 'outpost',
   password: 'CallingHome',
 }
@@ -40,6 +40,10 @@ client.on('message', function (topic, message) {
     img = document.getElementById("main");
     img.src = "no_power.gif"
   }
+  if (msg["event"] == "Crew door open") {
+    img = document.getElementById("main");
+    img.src = "door_open.gif"
+  }
   //client.end()
 })
 </script>
@@ -47,15 +51,14 @@ client.on('message', function (topic, message) {
 <script>
 function scanFingerprint() {
     img = document.getElementById("main");
-    if (img.src.endsWith("no_power.gif")) {
-        // Don't trigger the fingerprint scan.
-        return;
+    if (img.src.endsWith("idle.gif")) {
+        img.src = "access_denied.gif"
+        setTimeout(function() {
+            img = document.getElementById("main");
+            img.src = "idle.gif"
+        }, 9000)    
     }
-    img.src = "access_denied.gif"
-    setTimeout(function() {
-        img = document.getElementById("main");
-        img.src = "idle.gif"
-    }, 9000)
+
 }
         </script>
     </head>
