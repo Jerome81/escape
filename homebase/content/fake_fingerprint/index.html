@@ -1,0 +1,65 @@
+<html>
+    <head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+//const mqtt = require('mqtt')
+const url = 'ws://192.168.178.11:8083'
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  clientId: 'fake_fingerprint',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+const client  = mqtt.connect(url, options)
+client.on('connect', function () {
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToDevice/All', function (err) {
+    if (!err) {
+        console.log("Subscription Successful")
+    }
+  })
+})
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  msg = JSON.parse(message);
+  console.log(msg);
+  console.log(msg["event"]);
+  if (msg["event"] == "Power up") {
+    img = document.getElementById("main");
+    img.src = "idle.gif"
+  }
+  if (msg["event"] == "Power down") {
+    img = document.getElementById("main");
+    img.src = "no_power.gif"
+  }
+  //client.end()
+})
+</script>
+
+<script>
+function scanFingerprint() {
+    img = document.getElementById("main");
+    if (img.src.endsWith("no_power.gif")) {
+        // Don't trigger the fingerprint scan.
+        return;
+    }
+    img.src = "access_denied.gif"
+    setTimeout(function() {
+        img = document.getElementById("main");
+        img.src = "idle.gif"
+    }, 9000)
+}
+        </script>
+    </head>
+    <body style="padding:0px;margin:0px;">
+        <img id="main" src="no_power.gif" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false" onclick="scanFingerprint()"/>
+    </body>
+</html>
