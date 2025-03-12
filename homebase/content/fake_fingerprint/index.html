@@ -5,16 +5,19 @@
 //const mqtt = require('mqtt')
 const url = 'ws://192.168.178.11:8083'
 
+var language = "de"
+
 // Create an MQTT client instance
 const options = {
   // Clean session
   clean: true,
   connectTimeout: 4000,
   // Authentication
-  clientId: 'fake_fingerprint2',
+  clientId: 'fake_fingerprint',
   username: 'outpost',
   password: 'CallingHome',
 }
+
 const client  = mqtt.connect(url, options)
 client.on('connect', function () {
   console.log('Connected')
@@ -26,23 +29,36 @@ client.on('connect', function () {
   })
 })
 
+function change_language() {
+    img = document.getElementById("main");
+    img.src = img.src.replace("_en", "_" + language);
+    img.src = img.src.replace("_de", "_" + language);
+}
+
 // Receive messages
 client.on('message', function (topic, message) {
   // message is Buffer
   msg = JSON.parse(message);
   console.log(msg);
-  console.log(msg["event"]);
   if (msg["event"] == "Power up") {
     img = document.getElementById("main");
-    img.src = "idle.gif"
+    img.src = "idle_" + language + ".gif"
   }
-  if (msg["event"] == "Power down") {
+  if (msg["event"] == "Power down" || msg["gameState"] == "RESET") {
     img = document.getElementById("main");
-    img.src = "no_power.gif"
+    img.src = "no_power_" + language + ".gif"
   }
   if (msg["event"] == "Crew door open") {
     img = document.getElementById("main");
-    img.src = "door_open.gif"
+    img.src = "door_open_" + language + ".gif"
+  }
+  if (msg["language"] == "english") {
+    language = "en";
+    change_language();
+  }
+  if (msg["language"] == "deutsch") {
+    language = "de";
+    change_language();
   }
   //client.end()
 })
@@ -51,18 +67,17 @@ client.on('message', function (topic, message) {
 <script>
 function scanFingerprint() {
     img = document.getElementById("main");
-    if (img.src.endsWith("idle.gif")) {
-        img.src = "access_denied.gif"
+    if (img.src.indexOf("idle_") > -1) {
+        img.src = "access_denied_" + language + ".gif"
         setTimeout(function() {
             img = document.getElementById("main");
-            img.src = "idle.gif"
+            img.src = "idle_" + language + ".gif"
         }, 9000)    
     }
-
 }
         </script>
     </head>
     <body style="padding:0px;margin:0px;">
-        <img id="main" src="no_power.gif" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false" onclick="scanFingerprint()"/>
+        <img id="main" src="no_power_de.gif" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false" onclick="scanFingerprint()"/>
     </body>
 </html>

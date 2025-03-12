@@ -1,5 +1,4 @@
 import paho.mqtt.client as mqtt
-import RPi.GPIO as GPIO
 import json
 import gpiozero
 import board
@@ -8,6 +7,8 @@ import neopixel
 from time import sleep
 
 deviceId = "abandoned_engineroom_power"
+
+mq_ip = "192.168.178.11"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
@@ -31,9 +32,7 @@ LED_PIN = 26  #GPIO26
 light = gpiozero.LED(LED_PIN)
 light.on()
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
 
 def sendPuzzleState():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
@@ -69,14 +68,14 @@ def on_language_change(language):
 def power_on_animation():
     for i in range(len(lightstrip)):
         lightstrip[i] = (255, 255, 255)
-        if GPIO.input(BUTTON_PIN) == 1:
+        if not button.is_pressed:
             return
         sleep(0.02)
 
 def power_off_animation(): 
     for i in range(len(lightstrip) - 1, -1, -1):
         lightstrip[i] = (0, 0, 0)
-        if GPIO.input(BUTTON_PIN) == 0:
+        if button.is_pressed:
             return
         sleep(0.02)
 
@@ -158,13 +157,22 @@ def on_message(client, userdata, msg):
             if command == "ACTIVATE":
                 on_activate()
 
-   
+def connect(client):
+    disconnected = True
+    while disconnected:
+        try:   
+            client.connect(mq_ip, 1883, 60)
+            disconnected = False
+        except Exception as e:
+            print('An exception occured: {}'.format(e))
+            sleep(5)
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 mqttc.username_pw_set(username="outpost", password="CallingHome")
-mqttc.connect("192.168.178.11", 1883, 60)
+
+connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
@@ -174,25 +182,17 @@ lastState = UP
 
 on_reset(mqttc)
 
+button.when_pressed = lambda: on_solved(mqttc)
+button.when_released = lambda: on_reset(mqttc)
+
 try:
     while True:
         
         if _gameState == "STOPPED":
             # Always be ready
             pass 
-    
-        i = 0
-        isUp = GPIO.input(BUTTON_PIN)
-        if isUp != lastState:
-            _currentData = isUp
-            lastState = isUp
-            if isUp:
-                on_reset(mqttc)
-            else:
-                on_solved(mqttc)
-        
+       
         sleep(0.2)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
     print("Cleaning up")
-    GPIO.cleanup()

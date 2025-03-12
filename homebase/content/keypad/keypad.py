@@ -4,6 +4,7 @@ import json
 
 from time import sleep
 
+mq_ip = "192.168.178.11"
 deviceId = "abandoned_dock_keypad"
 
 _gameState = "STOPPED"
@@ -135,13 +136,22 @@ def on_message(client, userdata, msg):
             if command == "ACTIVATE":
                 on_activate()
 
-   
+def connect(client):
+    disconnected = True
+    while disconnected:
+        try:   
+            client.connect(mq_ip, 1883, 60)
+            disconnected = False
+        except Exception as e:
+            print('An exception occured: {}'.format(e))
+            sleep(5)
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 mqttc.username_pw_set(username="outpost", password="CallingHome")
-mqttc.connect("192.168.178.11", 1883, 60)
+
+connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
