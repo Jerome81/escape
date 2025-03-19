@@ -1,0 +1,7 @@
+Install:
+
+sudo apt-get install i2c-tools
+
+Check for available sensors:
+
+i2cdetect -y 1
