@@ -1,0 +1,3 @@
+Google Chrome that displays the website has to be started with, otherwise the movie won't be played.
+
+chrome.exe --autoplay-policy=no-user-gesture-required

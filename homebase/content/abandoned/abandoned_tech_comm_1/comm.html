@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+        
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Image and Movie</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #000; /* Ensure black background */
+        }
+
+        #background-image {
+            position: fixed; /* Fix the image to the viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Scale the image to cover the entire viewport */
+            z-index: 1; /* Place the image behind other content */
+        }
+
+        #text-overlay {
+            position: fixed; /* Fix the text to the viewport */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the text */
+            z-index: 2; /* Place the text above the image */
+            color: white;
+            font-size: 9vw; /* Use viewport width for responsive font size */
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Add a shadow for better readability */
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+
+        #movie-container {
+            position: fixed; /* Fix the video to the viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3; /* Place the video above the text */
+            display: none; /* Initially hide the video */
+        }
+
+        #movie {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Scale the video to cover the entire viewport */
+        }
+    </style>
+</head>
+<body>
+    <img id="background-image" src="background.webp" alt="Background Image">
+    <div id="text-overlay">I pity you fools!</div>
+    <div id="movie-container">
+        <video id="movie" src="" controls></video>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const movieContainer = document.getElementById('movie-container');
+            const movie = document.getElementById('movie');
+            const device_id = 'abandoned_tech_comm_1';
+            const url = 'ws://10.134.178.101:8083'
+            var language = "de"
+            
+            // Create an MQTT client instance
+            const options = {
+            // Clean session
+            clean: true,
+            connectTimeout: 4000,
+            // Authentication
+            clientId: device_id, 
+            username: 'outpost',
+            password: 'CallingHome',
+            }
+            
+            const client  = mqtt.connect(url, options)
+            client.on('connect', function () {
+                console.log('Connected')
+                // Subscribe to a topic
+                client.subscribe('ToDevice/All', function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                    }
+                });
+                client.subscribe('ToDevice/' + device_id, function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                    }
+                });
+            });
+                    
+            function showMovie(name) {
+                const movieContainer = document.getElementById('movie-container');
+                const movie = document.getElementById('movie');
+                movie.src = name;
+                movieContainer.style.display = 'block'; // Show the video container
+                movie.play(); // Start playing the video
+                movie.controls = false; //remove controls  
+            }
+
+            function showText(text) {
+                const textContainer = document.getElementById('text-overlay');
+                textContainer.innerText = text;
+            }
+            // Receive messages
+            client.on('message', function (topic, message) {
+                // message is Buffer
+                console.log(message);
+                msg = JSON.parse(message);
+                console.log(msg);
+                if (msg["event"] == "Power up") {
+                    showText("Power up");
+                }
+                if (msg["event"] == "Dock door unlocked") {
+                    showMovie("intruder_alert_" + language + ".mp4")
+                }
+
+                if (msg["movie"] != null) {
+                    showMovie(msg["movie"] + language + ".mp4");
+                }
+
+                if (msg["display"] != null) {
+                    showText(msg["display"]);
+                }
+
+                
+                if (msg["language"] == "english") {
+                    language = "en";
+                }
+                if (msg["language"] == "deutsch") {
+                    language = "de";
+                }
+                //client.end()
+                }
+            );
+
+            movie.onended = function() {
+                movieContainer.style.display = 'none';
+                backgroundImage.style.display = 'block';
+                textOverlay.style.display = 'block';
+            };
+        };
+    </script>
+</body>
+</html>
