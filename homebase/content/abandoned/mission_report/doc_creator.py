@@ -199,9 +199,10 @@ def copy_doc(service, document_id, new_title):
         'parents': [FOLDER_ID]  
     }
     request = service.files().copy(fileId=document_id, body=body)
-    #response = request.execute()
-    #copy_id = response.get('id')
-    copy_id = "1Glfl9MouxVsf3KHSWUyUblfx4OhTwmCHMgJwSHPVy9A"
+    response = request.execute()
+    copy_id = response.get('id')
+    # to use the same doc all the time, uncomment the following line, but comment the preceding two
+    #copy_id = "1Glfl9MouxVsf3KHSWUyUblfx4OhTwmCHMgJwSHPVy9A"
     print("New doc created: %s" % copy_id)
     return copy_id
 
