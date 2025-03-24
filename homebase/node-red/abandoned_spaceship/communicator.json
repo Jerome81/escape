@@ -1,0 +1,323 @@
+[
+    {
+        "id": "d3d6c783809cfa84",
+        "type": "tab",
+        "label": "Communicator",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1137bd36716edcc8",
+        "type": "mqtt in",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "topic": "FromDevice/abandoned_tech_comm_1",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 180,
+        "wires": [
+            [
+                "29684de8b7804920"
+            ]
+        ]
+    },
+    {
+        "id": "29684de8b7804920",
+        "type": "ui_template",
+        "z": "d3d6c783809cfa84",
+        "group": "bd4d91b28ef3491c",
+        "name": "",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "format": "    <md-card-title style=\"height: 25px;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">Kommunikator mit ISS Hofmann</style></p>    \n        </md-card-title-text>\n</md-card-title>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 580,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "21663a61cdafb155",
+        "type": "json",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 790,
+        "y": 340,
+        "wires": [
+            [
+                "310b180a2c7ce9ee"
+            ]
+        ]
+    },
+    {
+        "id": "310b180a2c7ce9ee",
+        "type": "link out",
+        "z": "d3d6c783809cfa84",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13"
+        ],
+        "x": 895,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "77d5526322bc9661",
+        "type": "ui_dropdown",
+        "z": "d3d6c783809cfa84",
+        "name": "Play Movie",
+        "label": "Play Video",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "bd4d91b28ef3491c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            },
+            {
+                "label": "Intruder alert",
+                "value": "intruder_alert_",
+                "type": "str"
+            },
+            {
+                "label": "Intruder alert failed",
+                "value": "intruder_alert_failed_",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "x": 170,
+        "y": 260,
+        "wires": [
+            [
+                "3a06c79e9a73d319"
+            ]
+        ]
+    },
+    {
+        "id": "6c2f878c913f2608",
+        "type": "change",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_comm_1",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 340,
+        "wires": [
+            [
+                "21663a61cdafb155"
+            ]
+        ]
+    },
+    {
+        "id": "6a89320ac67baff2",
+        "type": "ui_form",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "label": "Nachricht anzeigen",
+        "group": "bd4d91b28ef3491c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Display",
+                "value": "display",
+                "type": "multiline",
+                "required": true,
+                "rows": 3
+            }
+        ],
+        "formValue": {
+            "display": ""
+        },
+        "payload": "",
+        "submit": "Anzeigen",
+        "cancel": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 190,
+        "y": 400,
+        "wires": [
+            [
+                "6c2f878c913f2608"
+            ]
+        ]
+    },
+    {
+        "id": "e877a156bebf9f5d",
+        "type": "ui_button",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "group": "bd4d91b28ef3491c",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Film abspielen",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "start movie",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 180,
+        "y": 300,
+        "wires": [
+            [
+                "cddff8c77748d3a2"
+            ]
+        ]
+    },
+    {
+        "id": "cddff8c77748d3a2",
+        "type": "change",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "movie",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"movie\": payload}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 300,
+        "wires": [
+            [
+                "6c2f878c913f2608"
+            ]
+        ]
+    },
+    {
+        "id": "3a06c79e9a73d319",
+        "type": "change",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "movie",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "10.134.178.101",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "bd4d91b28ef3491c",
+        "type": "ui_group",
+        "name": "Communicator",
+        "tab": "59cec8c7f75b9d99",
+        "order": 2,
+        "disp": false,
+        "width": "9",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "59cec8c7f75b9d99",
+        "type": "ui_tab",
+        "name": "Communicator",
+        "icon": "comment",
+        "disabled": false,
+        "hidden": false
+    }
+]
