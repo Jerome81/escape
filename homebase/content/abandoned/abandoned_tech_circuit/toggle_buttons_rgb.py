@@ -77,10 +77,12 @@ def sendUpdate():
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 def power_on_animation():
-    lightstrip.brightness = 0.6
+    lightstrip.brightness = 0.8
+    color = (255, 255, 255)
     for i in range(len(lightstrip) - 1, -1, -1):
-        lightstrip[i] = (255, 255, 255)
+        lightstrip[i] = color
         if i < 106:
+            color = (255, 0, 0)
             continue
         else:          
             lightstrip.show() 
