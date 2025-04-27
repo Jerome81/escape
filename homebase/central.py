@@ -84,7 +84,10 @@ def get_outposts(cache_file="outposts.sqlite3"):
                 <div class='actions'>%s</div>
                 <div class='result' id='result""" + str(i) + """'></div>
                 </div>"""
-                cards = cards + (c % (o["name"] + " - " + o["last_seen"], o["status"] + " - " + o["IP"], get_actions(o, i, o["IP"])))
+                try:
+                    cards = cards + (c % (o["name"] + " - " + o["last_seen"], o["status"] + " - " + o["IP"], get_actions(o, i, o["IP"])))
+                except:
+                    cards = cards + (" - couldn't load data for: %s" % o["name"])
 
         
         return (page % cards)
