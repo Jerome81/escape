@@ -35,21 +35,14 @@ for pin in rowPins:
 for pin in columnPins:
     GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-def sendPuzzleState():
-    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-    jsonData = _jsonData
-    jsonData["state"] = _puzzleState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
 
     jsonData = _jsonData
     
     jsonData["input"] = _currentData
-    
     jsonData["state"] = _puzzleState
+    jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 
@@ -72,7 +65,7 @@ def on_language_change(language):
 def on_solved(client):
     global _puzzleState
     _puzzleState = "SOLVED"
-    sendPuzzleState()
+    sendUpdate()
     jsonData = {
         "event": "Dock keypad solved"
     }
@@ -81,14 +74,13 @@ def on_solved(client):
 def on_reset():
     global _puzzleState
     _currentData = ""
-    sendUpdate()
     _puzzleState = "INACTIVE"
-    sendPuzzleState()
+    sendUpdate()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    sendPuzzleState()
+    sendUpdate()
 
 ### Message Queue Events ###
 

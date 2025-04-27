@@ -152,17 +152,11 @@ def show_solution():
         sleep(0.8)
 
 ### MQ send ###
-def sendPuzzleState():
-    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-    jsonData = _jsonData
-    jsonData["state"] = _puzzleState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
     jsonData = _jsonData
     jsonData["input"] = level
+    jsonData["game_state"] = _gameState
     jsonData["state"] = _puzzleState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
@@ -184,11 +178,13 @@ def on_event(event):
 def on_started():
     l.fill((0, 0, 0))
     l.show()
+    sendUpdate()
     pass
 
 def on_stopped():
     l.fill((0, 0, 255))
     l.show()
+    sendUpdate()
     pass
 
 def on_language_change(language):
@@ -202,7 +198,7 @@ def on_solved(client):
     _puzzleState = "SOLVED"
     level = 3
     show_solution()
-    sendPuzzleState()
+    sendUpdate()
     jsonData = {
         "event": "Access granted"
     }
@@ -223,12 +219,11 @@ def on_reset():
     level = 0
     total_tries = 0
     sendUpdate()
-    sendPuzzleState()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    sendPuzzleState()
+    sendUpdate()
 
 
 ### Message Queue Events ###
@@ -305,18 +300,18 @@ button.when_pressed = lambda: on_click()
 
 level = 0
 light.off()
-
+sendUpdate()
 
 try:
     while True:
         
         if _gameState == "STOPPED":
-            # Always be ready
             continue
 
         if _puzzleState == "ACTIVE":
             go_around(level, ((0, 0, 255)), 1)
             level = level + 1
+            sendUpdate()
             if level == 3:
                 on_solved(mqttc)
 

@@ -42,17 +42,13 @@ def unlock_door():
     GPIO.setup(12, GPIO.HIGH)
     print("Door unlocked")
 
-def sendPuzzleState():
-    jsonData = _jsonData
-    jsonData["state"] = _puzzleState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-
 def sendUpdate():
     jsonData = _jsonData
     
     jsonData["input"] = _currentData
     
     jsonData["state"] = _puzzleState
+    jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
  
@@ -94,7 +90,7 @@ def on_solved(client):
     global _puzzleState
     _puzzleState = "SOLVED"
     led_state()
-    sendPuzzleState()
+    sendUpdate()
     jsonData = {
         "event": "Dock door unlocked"
     }
@@ -107,13 +103,13 @@ def on_reset():
     _currentData = ""
     lock_door()
     led_state()
-    sendPuzzleState()
+    sendUpdate()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
     led_state()
-    sendPuzzleState()
+    sendUpdate()
 
 ### Message Queue Events ###
 
