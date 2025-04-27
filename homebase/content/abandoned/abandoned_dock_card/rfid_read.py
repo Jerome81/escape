@@ -188,6 +188,7 @@ lastRead = None
 
 green.off()
 red.off()
+lock_door()
 
 try:
     while True:
