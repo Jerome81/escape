@@ -34,12 +34,6 @@ light.on()
 
 button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
 
-def sendPuzzleState():
-    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-    jsonData = _jsonData
-    jsonData["state"] = _puzzleState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
@@ -47,6 +41,7 @@ def sendUpdate():
     jsonData = _jsonData
     jsonData["input"] = _currentData
     jsonData["state"] = _puzzleState
+    jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 
@@ -108,7 +103,7 @@ def on_reset(client):
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    sendPuzzleState()
+    sendUpdate()
 
 
 ### Message Queue Events ###

@@ -24,7 +24,7 @@ DOCUMENT_ID = "13Pzz7txy-8j__LoPIHu55LGJe_C-2miZvtY-eeqvqlw"  # https://docs.goo
 # The ID of the folder into which the new doc is created
 FOLDER_ID = '1ohugy5OyUwvX2D7UWaa9_8oOp8T65c6e'  # https://drive.google.com/drive/folders/1ohugy5OyUwvX2D7UWaa9_8oOp8T65c6e
 
-mq_ip = "10.134.178.101"
+mq_ip = "192.168.178.11"
 
 deviceId = "DocWriter"
 
@@ -71,7 +71,17 @@ INTRUDER_ALERT_FAILED = {
 
 QUICKNESS_BONUS = {
     "deutsch": "Geschwindigkeitsbonus",
-    "english": "Bonus for speed"    
+    "english": "Bonus for speed"
+}
+
+ACCESS_GRANTED = {
+    "deutsch": "%s Zugriff gewährt",
+    "english": "%s Access granted"
+}
+
+ACCESS_CHECK_TRIES = {
+    "deutsch": "für Fehlversuche bei der Zugriffsüberprüfung",
+    "english": "for failed access check attempts"
 }
 
 
@@ -90,6 +100,7 @@ def add_score(text):
 
 
 def add_to_log_with_time(text):
+    print(text)
     add_to_log(text % datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 
 def add_to_score(score, text):
@@ -165,7 +176,15 @@ def on_event(event):
 
     if event == "Dock keypad solved":
         add_to_log_with_time(DOCK_KEYPAD_SOLVED[_language])
+
+    if event == "Access granted":
+        add_to_log_with_time(ACCESS_GRANTED[_language])
                 
+def add_stats(payload):
+    if 'Orbital' in payload:
+        total_tries = payload['Orbital']
+        print(total_tries)
+        add_to_score((total_tries - 3) * -10, ACCESS_CHECK_TRIES[_language])
 
 ### Google Login ###
 def login():
@@ -230,6 +249,7 @@ def on_connect(client, userdata, flags, reason_code):
     jsonData["status"] = "Connected"
 
     client.subscribe("ToDevice/All")
+    client.subscribe("Stats")
     client.publish("ToHost", json.dumps(jsonData))
 
 
@@ -253,6 +273,8 @@ def on_message(client, userdata, msg):
             on_event(payload["event"])
         if 'language' in payload:
             on_language_change(payload["language"])
+    if msg.topic == "Stats":
+        add_stats(payload)
             
   
 def connect(client):
@@ -285,7 +307,7 @@ def main():
     new_doc_title = 'Copied Document'
 
     # Copy the original document
-    doc_id = copy_doc(drive_service, DOCUMENT_ID, new_doc_title)
+    doc_id = "10u1GsKIHa-fthmwbpOJegzUKAUTQL7_udV85EXODlQ8" #copy_doc(drive_service, DOCUMENT_ID, new_doc_title)
 
     # Replace "#TEXT" with "Hello world" in the copied document
     # replace_text(docs_service, new_doc_id, 'as', 'ASS')

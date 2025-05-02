@@ -60,20 +60,13 @@ def setButtonState(button, isSelected):
         print("Low on: %s" % button[BLUE])
         GPIO.output(button[BLUE], 0)
 
-
-def sendPuzzleState():
-    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-    jsonData = _jsonData
-    jsonData["state"] = _puzzleState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
 
     jsonData = _jsonData
     jsonData["input"] = _currentData
     jsonData["state"] = _puzzleState
+    jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 def power_on_animation():
@@ -137,7 +130,7 @@ def on_solved(client):
     for button in buttons:
         GPIO.output(button[BLUE], 0)
         GPIO.output(button[GREEN], 1)
-    sendPuzzleState()
+    sendUpdate()
     jsonData = {
         "event": "All devices powered"
     }
@@ -156,7 +149,6 @@ def on_reset():
     _currentData = []
     _puzzleState = "INACTIVE"
     sendUpdate()
-    sendPuzzleState()
     for button in buttons:
         GPIO.output(button[BLUE], 0)
         GPIO.output(button[GREEN], 0)
@@ -198,7 +190,7 @@ def on_release(number):
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    sendPuzzleState()
+    sendUpdate()
     #sound = pygame.mixer.Sound('/var/lib/outposts/power_up.wav')
     #sound.play()
     power_on_animation()
