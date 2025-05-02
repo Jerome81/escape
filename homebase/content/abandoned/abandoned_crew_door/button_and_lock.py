@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 
 from time import sleep
 
-deviceId = "door_override"
+deviceId = "abandoned_crew_door"
 
 mq_ip = "192.168.5.11"
 
