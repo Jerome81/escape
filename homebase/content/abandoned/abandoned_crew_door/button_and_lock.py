@@ -7,9 +7,9 @@ import RPi.GPIO as GPIO
 
 from time import sleep
 
-deviceId = "door_override"
+deviceId = "abandoned_crew_door"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
@@ -138,7 +138,7 @@ def on_message(client, userdata, msg):
             if command == "SOLVED":
                 on_solved(client)
             if command == "RESET":
-                on_reset()
+                on_reset(client)
             if command == "ACTIVATE":
                 on_activate()
 
