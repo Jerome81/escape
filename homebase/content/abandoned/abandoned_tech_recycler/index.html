@@ -1,0 +1,206 @@
+<html>
+    <head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+//const mqtt = require('mqtt')
+const url = 'ws://192.168.178.11:8083'
+
+var language = "de";
+var pressure_correct = false;
+var stones_correct = false;
+var powered = false;
+var cartridge_produced = false;
+var correct_material_selected = false;
+var material = "";
+
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  clientId: 'recycler',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToDevice/All', function (err) {
+    if (!err) {
+        console.log("Subscription Successful")
+    }
+  })
+});
+
+
+client.on('disconnect', function () {
+  console.log('disonnected')
+});
+
+
+client.on('error', function () {
+  console.log('error')
+});
+
+function addClickListener() {
+  document.getElementById('main').addEventListener('click', function(event) {
+    const x = event.clientX;
+    const y = event.clientY;
+    // console.log(`Mouse clicked at X: ${x}, Y: ${y}`);
+    
+    img = document.getElementById("main");
+    if (img.src.indexOf("recycler_idle_") > -1) {
+      if (x > 170 && x < 371 && y > 176 && y < 217) {
+        correct_material_selected = false;
+        material = "material_1_" + language + ".png"; 
+      }
+      if (x > 421 && x < 620 && y > 176 && y < 217) {
+        correct_material_selected = false;
+        material = "material_4_" + language + ".png";
+      }
+      if (x > 170 && x < 371 && y > 257 && y < 297) {
+        correct_material_selected = false;
+        material = "material_2_" + language + ".png";
+      }
+      if (x > 298 && x < 495 && y > 335 && y < 376) {
+        correct_material_selected = false;
+        material = "material_3_" + language + ".png";
+      }
+      if (x > 420 && x < 620 && y > 257 && y < 297) {
+        correct_material_selected = true;
+        material = "";
+      }
+      updateScreen();
+      return;
+    } else {
+      if (img.src.indexOf("material_") > -1 || img.src.indexOf("pressure_wrong_") > -1 || img.src.indexOf("stones_missing_") > -1) {
+        img.src = "recycler_idle_" + language + ".png";
+        correct_material_selected = false;
+      }
+    }
+
+    if (img.src.indexOf("recycler_ready_") > -1) {
+      img.src = "production_in_progress_" + language + ".png";
+      
+      client.publish('ToDevice/All', JSON.stringify({ "event": 'Produce cartridge' }))
+    }
+  });
+}
+
+function change_language() {
+    img = document.getElementById("main");
+    img.src = img.src.replace("_en", "_" + language);
+    img.src = img.src.replace("_de", "_" + language);
+}
+
+function updateScreen() {
+  if (powered) {
+    if (cartridge_produced) {
+      img = document.getElementById("main");
+      img.src = "cartridge_produced_" + language + ".png";
+      return;
+    }
+    if (correct_material_selected) {
+      if (pressure_correct && !stones_correct) {
+        img = document.getElementById("main");
+        img.src = "stones_missing_" + language + ".png"
+      }
+      if (!pressure_correct && stones_correct) {
+        img = document.getElementById("main");
+        img.src = "pressure_wrong_" + language + ".png";
+      }
+      if (pressure_correct && stones_correct) {
+        img = document.getElementById("main");
+        img.src = "recycler_ready_" + language + ".png";
+      }
+      if (!pressure_correct && !stones_correct) {
+        img = document.getElementById("main");
+        img.src = "stones_missing_" + language + ".png";
+      }
+    } else {
+      if (material.length > 0) {
+        img = document.getElementById("main");
+        img.src = material;
+      } else {
+        img = document.getElementById("main");
+        img.src = "recycler_idle_" + language + ".png";
+        correct_material_selected = false;
+      }
+    }
+  } else {
+    img = document.getElementById("main");
+    img.src = "no_power_" + language + ".png"
+  }
+}
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  msg = JSON.parse(message);
+  console.log(msg);
+  if (msg["event"] == "All devices powered") {
+    powered = true;
+  }
+  if (msg["event"] == "Power down") {
+    powered = false;
+    cartridge_produced = false;
+  }
+
+  if ( msg["gameState"] == "RESET") {
+    powered = false;
+    cartridge_produced = false;
+    stones_correct = false;
+    pressure_correct = false;
+  }
+  
+  if (msg["event"] == "Stones set correctly") {
+    stones_correct = true;
+  }
+
+  if (msg["event"] == "Stones missing") {
+    stones_correct = false;
+  }
+
+  if (msg["event"] == "Pressure correct") {
+    pressure_correct = true;
+  }
+
+  if (msg["event"] == "Pressure incorrect") {
+    pressure_correct = false;
+  }
+
+  if (msg["event"] == "Cartridge produced") {
+    cartridge_produced = true;
+  }
+
+  if (msg["language"] == "english") {
+    language = "en";
+    console.debug("English");
+  }
+  if (msg["language"] == "deutsch") {
+    language = "de";
+    console.debug("Deutsch");
+  }
+  if (msg["event"] == "Produce cartridge") {
+    return;
+  }
+  updateScreen();
+  //client.end()
+})
+</script>
+
+    </head>
+    <body style="padding:0px;margin:0px;">
+        <img id="main" src="no_power_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+        
+<script>
+  addClickListener();
+        </script>
+    </body>
+</html>
