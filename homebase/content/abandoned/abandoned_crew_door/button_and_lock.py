@@ -77,6 +77,8 @@ def on_solved(client):
         "event": "Crew door open"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
+    client.publish("cmnd/sleeping_pods/Power", "on")
+
 
 
 def on_reset(client):
