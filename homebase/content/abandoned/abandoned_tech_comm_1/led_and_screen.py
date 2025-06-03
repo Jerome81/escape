@@ -11,12 +11,12 @@ from random import randint
 from time import sleep
 from datetime import datetime, timedelta
 
-deviceId = "communicator"
+deviceId = "abandoned_tech_comm_1"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
-LEDS = 100
+LEDS = 151
 
 _jsonData = {
     "id": deviceId,
