@@ -1,85 +1,80 @@
-
 import paho.mqtt.client as mqtt
-import RPi.GPIO as GPIO
-import json
-import gpiozero
-
-from random import randint
+import serial
+import time
 from time import sleep
-from mfrc522 import SimpleMFRC522
+from adafruit_servokit import ServoKit
+import json
 
+
+deviceId = "abandoned_crew_replicator"
 
 mq_ip = "192.168.178.11"
-deviceId = "abandoned_dock_door"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [564472578780]
-_currentData = ""
-
-
-red = gpiozero.LED(17)
-green = gpiozero.LED(27)
-
-red.on()
-green.on()
-
-# initialize door
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(12, GPIO.OUT)
+_solution = [5, 1, 9, 3]
+_currentData = [ 0,0,0,0 ]
 
 _jsonData = {
     "id": deviceId,
     "description": ("Lösung: %s" % _solution),
 }
 
-
-def lock_door():
-    GPIO.setup(12, GPIO.LOW)
-    print("Door locked")
-
-def unlock_door():
-    GPIO.setup(12, GPIO.HIGH)
-    print("Door unlocked")
-
 def sendUpdate():
+    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+
     jsonData = _jsonData
-    
     jsonData["input"] = _currentData
-    
     jsonData["state"] = _puzzleState
     jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
- 
-def led_state():
-    if _puzzleState == "ACTIVE":
-        red.off()
-        green.on()
-        return
-    if _puzzleState == "INACTIVE":
-        red.on()
-        green.off()
-        return
-        
-    if _puzzleState == "SOLVED":
-        red.off()
-        green.off()
-        return
-
 
 ### Game events ###
 def on_event(event):
-    if  event == "Dock keypad solved":
+    if event == "All devices powered":
         on_activate()
+
+    if event == "Replicator ring production started":
+        pass
+
+    if event == "Replicator pyrometer production started":
+        pass
+
+    if event == "Replicator bubbles production started":
+        pass
+
+
+
+def notifications_from_sensors(event):
+    if event.index("blueprint") > -1:
+        publish_event(event + " inserted")
+    
+    codeword = "cartridge "
+    if event.index(codeword > -1):
+        cartridge = event[event.index(codeword) + len(codeword)::]
+        if cartridge == "0":
+            publish_event("Hexapolym inserted")
+        if cartridge == "1":
+            publish_event("Amorata inserted")
+        if cartridge == "1":
+            publish_event("Partynom inserted")
+
+
+    
+def publish_event(event):
+    jsonData = {
+        "event": event
+    }
+    mqttc.publish("ToDevice/All", json.dumps(jsonData))
+
+
 
 ### Global commands ###
 def on_started():
-    led_state()
+    pass
 
 def on_stopped():
-    green.off()
-    red.off()
+    pass
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
@@ -89,28 +84,27 @@ def on_language_change(language):
 def on_solved(client):
     global _puzzleState
     _puzzleState = "SOLVED"
-    led_state()
     sendUpdate()
     jsonData = {
-        "event": "Dock door unlocked"
+        "event": "Pressure correct"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
-    unlock_door()
 
-def on_reset():
+def on_unsolved(client):
     global _puzzleState
-    global _currentData
-    _puzzleState = "INACTIVE"
-    _currentData = ""
-    lock_door()
-    led_state()
+    _puzzleState = "ACTIVE"
+    sendUpdate()
+    
+def on_reset(client):
+    global _puzzleState
+    _puzzleState = "RESET"  # Always active
     sendUpdate()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    led_state()
     sendUpdate()
+
 
 ### Message Queue Events ###
 
@@ -141,7 +135,7 @@ def on_message(client, userdata, msg):
             if _gameState == "STOPPED":
                 on_stopped()
             if _gameState == "RESET":
-                on_reset()
+                on_reset(client)
         if 'event' in payload:
             on_event(payload["event"])
         if 'language' in payload:
@@ -154,12 +148,10 @@ def on_message(client, userdata, msg):
             if command == "SOLVED":
                 on_solved(client)
             if command == "RESET":
-                on_reset()
+                on_reset(client)
             if command == "ACTIVATE":
                 on_activate()
 
-   
-   
 def connect(client):
     disconnected = True
     while disconnected:
@@ -170,6 +162,22 @@ def connect(client):
             print('An exception occured: {}'.format(e))
             sleep(5)
 
+
+def connect_serial():
+    global _serial_connected
+    global _currentData
+    if _serial_connected:
+        return
+    
+    try:
+        ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        ser.reset_input_buffer()
+        _serial_connected = True
+        return ser
+    except Exception as e:
+        s = ('An exception occurred: {}'.format(e))
+        _currentData = s
+
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
@@ -177,55 +185,35 @@ mqttc.username_pw_set(username="outpost", password="CallingHome")
 
 connect(mqttc)
 
+_serial_connected = False
+
 print("starting message queue.")
 mqttc.loop_start()
 
-reader = SimpleMFRC522()
-lastRead = None
 
-green.off()
-red.off()
-lock_door()
 
 try:
-    while True:
-        print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
-        
-        if _puzzleState == "ACTIVE":
-            id = reader.read_id_no_block()
-            
-            if _puzzleState == "SOLVED":
-                break
-
-            # After each successful read, there is a None read.
-            if id == None:
-                if lastRead != None:
-                    lastRead = None
-                    continue
-            
-            lastRead == id
-
-            if id != _currentData:
-                _currentData = id
-                sendUpdate()
-                print(_currentData)
-                print(_currentData in _solution)
-                if _currentData in _solution:
-                    print("solved")
-                    on_solved(mqttc)
-        else:
-            sleep(1)
-        
-        
-        sleep(0.2)
-except Exception as e:
-    print('An exception occurred: {}'.format(e))
-finally:
-    GPIO.cleanup
-        
-   
     
+    while True:
+        ser = None
+        if _serial_connected == False:
+            ser = connect_serial()
+        
+        if _serial_connected == False:
+            sleep(5)
+        else:
+            if ser.in_waiting > 0:
+                line = ser.readline().decode('utf-8').rstrip()
+                line = line.strip()
+                codeword = "Replicator: "
+                if line.startswith(codeword):
+                    event = line[len(codeword)::]
+                    notifications_from_sensors(event)
+            sleep(0.1)
+
+except Exception as e:
+    s = ('An exception occurred: {}'.format(e))
+    _currentData = s
+    sendUpdate()
+    print(s)
+    print("Cleaning up")

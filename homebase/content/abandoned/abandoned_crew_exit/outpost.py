@@ -6,23 +6,13 @@ import gpiozero
 
 from random import randint
 from time import sleep
-from mfrc522 import SimpleMFRC522
 
 
 mq_ip = "192.168.178.11"
-deviceId = "abandoned_dock_door"
+deviceId = "abandoned_crew_exit"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [564472578780]
-_currentData = ""
-
-
-red = gpiozero.LED(17)
-green = gpiozero.LED(27)
-
-red.on()
-green.on()
 
 # initialize door
 GPIO.setmode(GPIO.BCM)
@@ -30,9 +20,8 @@ GPIO.setup(12, GPIO.OUT)
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Lösung: %s" % _solution),
+    "description": ("Ausgangstüre"),
 }
-
 
 def lock_door():
     GPIO.setup(12, GPIO.LOW)
@@ -44,72 +33,55 @@ def unlock_door():
 
 def sendUpdate():
     jsonData = _jsonData
-    
-    jsonData["input"] = _currentData
-    
     jsonData["state"] = _puzzleState
     jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
- 
-def led_state():
-    if _puzzleState == "ACTIVE":
-        red.off()
-        green.on()
-        return
-    if _puzzleState == "INACTIVE":
-        red.on()
-        green.off()
-        return
-        
-    if _puzzleState == "SOLVED":
-        red.off()
-        green.off()
-        return
-
 
 ### Game events ###
 def on_event(event):
-    if  event == "Dock keypad solved":
-        on_activate()
+    if _gameState == "STARTED":
+        if  event == "Core removed":
+            on_solved()
+
+        if  event == "Self destruct":
+            on_solved()
+
+        if  event == "Mystery solved":
+            on_solved()
+
 
 ### Global commands ###
 def on_started():
-    led_state()
+    on_activate()
 
 def on_stopped():
-    green.off()
-    red.off()
+    global _puzzleState
+    _puzzleState == "INACTIVE"
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
 
 ### Puzzle commands ###
-def on_solved(client):
+def on_solved():
     global _puzzleState
     _puzzleState = "SOLVED"
-    led_state()
     sendUpdate()
     jsonData = {
-        "event": "Dock door unlocked"
+        "event": "Exit door unlocked"
     }
-    client.publish("ToDevice/All", json.dumps(jsonData))
+    mqttc.publish("ToDevice/All", json.dumps(jsonData))
     unlock_door()
 
 def on_reset():
     global _puzzleState
-    global _currentData
     _puzzleState = "INACTIVE"
-    _currentData = ""
     lock_door()
-    led_state()
     sendUpdate()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    led_state()
     sendUpdate()
 
 ### Message Queue Events ###
@@ -180,52 +152,13 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
-reader = SimpleMFRC522()
-lastRead = None
-
-green.off()
-red.off()
 lock_door()
 
 try:
     while True:
-        print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
-        
-        if _puzzleState == "ACTIVE":
-            id = reader.read_id_no_block()
-            
-            if _puzzleState == "SOLVED":
-                break
-
-            # After each successful read, there is a None read.
-            if id == None:
-                if lastRead != None:
-                    lastRead = None
-                    continue
-            
-            lastRead == id
-
-            if id != _currentData:
-                _currentData = id
-                sendUpdate()
-                print(_currentData)
-                print(_currentData in _solution)
-                if _currentData in _solution:
-                    print("solved")
-                    on_solved(mqttc)
-        else:
-            sleep(1)
-        
-        
+        #print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
         sleep(0.2)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
 finally:
     GPIO.cleanup
-        
-   
-    

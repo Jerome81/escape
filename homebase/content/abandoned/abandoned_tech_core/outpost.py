@@ -1,115 +1,92 @@
-
-import paho.mqtt.client as mqtt
-import RPi.GPIO as GPIO
-import json
-import gpiozero
-
-from random import randint
 from time import sleep
-from mfrc522 import SimpleMFRC522
+from random import randint
+import json
+import paho.mqtt.client as mqtt
+import gpiozero
+import neopixel
+import board
+import os
 
 
 mq_ip = "192.168.178.11"
-deviceId = "abandoned_dock_door"
+deviceId = "abandoned_tech_core"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [564472578780]
-_currentData = ""
+_core_removed = False
 
 
-red = gpiozero.LED(17)
-green = gpiozero.LED(27)
+light = neopixel.NeoPixel(board.D18, 12, brightness = 1, auto_write = True)
+light.fill((255, 255, 255))
 
-red.on()
-green.on()
-
-# initialize door
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(12, GPIO.OUT)
+core = gpiozero.Button(23, hold_time = 0.2, bounce_time = 0.2)
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Lösung: %s" % _solution),
+    "description": ("Lösung: Core herausnehmen"),
 }
 
-
-def lock_door():
-    GPIO.setup(12, GPIO.LOW)
-    print("Door locked")
-
-def unlock_door():
-    GPIO.setup(12, GPIO.HIGH)
-    print("Door unlocked")
-
-def sendUpdate():
-    jsonData = _jsonData
-    
-    jsonData["input"] = _currentData
-    
-    jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
- 
-def led_state():
-    if _puzzleState == "ACTIVE":
-        red.off()
-        green.on()
-        return
-    if _puzzleState == "INACTIVE":
-        red.on()
-        green.off()
-        return
-        
-    if _puzzleState == "SOLVED":
-        red.off()
-        green.off()
-        return
-
+core.when_pressed = lambda: on_reset()
+core.when_released = lambda: on_solved()
 
 ### Game events ###
 def on_event(event):
-    if  event == "Dock keypad solved":
-        on_activate()
+    if event == "Overheat solved":
+        on_solved(mqttc)
+
 
 ### Global commands ###
 def on_started():
-    led_state()
+    pass
 
 def on_stopped():
-    green.off()
-    red.off()
+    pass
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
+def sendUpdate():
+    jsonData = _jsonData
+    
+    jsonData["input"] = _core_removed
+    
+    jsonData["state"] = _puzzleState
+    jsonData["game_state"] = _gameState
+    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
+
+def play_sound(file):
+    os.system("mpg321 %s" % file)
+    
 
 ### Puzzle commands ###
-def on_solved(client):
+def on_solved():
     global _puzzleState
+    global _core_removed
+    print("removed")
     _puzzleState = "SOLVED"
-    led_state()
     sendUpdate()
     jsonData = {
-        "event": "Dock door unlocked"
+        "event": "Core removed"
     }
-    client.publish("ToDevice/All", json.dumps(jsonData))
-    unlock_door()
+    _core_removed = True
+    light.fill((255, 0, 0))
+    mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
+    # sleep(2)
+    # play_sound("recycler_working.mp3")
+
 
 def on_reset():
     global _puzzleState
-    global _currentData
+    global _core_removed
+    print("inserted")
     _puzzleState = "INACTIVE"
-    _currentData = ""
-    lock_door()
-    led_state()
+    _core_removed = False
     sendUpdate()
+    light.fill((0, 255, 0))    
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
-    led_state()
     sendUpdate()
 
 ### Message Queue Events ###
@@ -158,13 +135,13 @@ def on_message(client, userdata, msg):
             if command == "ACTIVATE":
                 on_activate()
 
-   
-   
+
 def connect(client):
     disconnected = True
     while disconnected:
         try:   
             client.connect(mq_ip, 1883, 60)
+            light.fill((0, 255, 0))
             disconnected = False
         except Exception as e:
             print('An exception occured: {}'.format(e))
@@ -180,52 +157,22 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
-reader = SimpleMFRC522()
-lastRead = None
-
-green.off()
-red.off()
-lock_door()
-
+leds = []
+color = (0, 255, 0)
 try:
-    while True:
-        print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
-
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
+    while(True):
+        if len(leds) == 0:
+            leds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            if color == (0, 255, 0):
+                color = (0, 255, 255)
+            else:
+                color = (0, 255, 0)
         
-        if _puzzleState == "ACTIVE":
-            id = reader.read_id_no_block()
-            
-            if _puzzleState == "SOLVED":
-                break
+        if _gameState == "STARTED" and not _core_removed:
+            l = leds.pop(randint(0, len(leds) - 1))
+            light[l] = color
+        sleep(0.05)
 
-            # After each successful read, there is a None read.
-            if id == None:
-                if lastRead != None:
-                    lastRead = None
-                    continue
-            
-            lastRead == id
-
-            if id != _currentData:
-                _currentData = id
-                sendUpdate()
-                print(_currentData)
-                print(_currentData in _solution)
-                if _currentData in _solution:
-                    print("solved")
-                    on_solved(mqttc)
-        else:
-            sleep(1)
-        
-        
-        sleep(0.2)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
-finally:
-    GPIO.cleanup
-        
-   
-    
+

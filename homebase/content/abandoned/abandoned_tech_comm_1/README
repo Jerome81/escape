@@ -1,3 +1,7 @@
 Google Chrome that displays the website has to be started with, otherwise the movie won't be played.
 
 chrome.exe --autoplay-policy=no-user-gesture-required
+
+So for example in /etc/xdg/openbox/autostart you need the following line to start chromium in kiosk mode:
+
+chromium-browser --disable-infobars --kiosk --autoplay-policy=no-user-gesture-required "/var/lib/outposts/comm.html"

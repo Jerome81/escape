@@ -195,9 +195,9 @@ mqttc.loop_start()
 
 
 try:
+    ser = None
     
     while True:
-        ser = None
         if _serial_connected == False:
             ser = connect_serial()
         
