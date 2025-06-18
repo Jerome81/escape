@@ -6,7 +6,7 @@ import neopixel
 
 from time import sleep
 
-deviceId = "abandoned_engineroom_power"
+deviceId = "abandoned_tech_power"
 
 mq_ip = "192.168.178.11"
 
