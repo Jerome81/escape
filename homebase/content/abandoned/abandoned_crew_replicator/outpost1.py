@@ -1,10 +1,12 @@
 import paho.mqtt.client as mqtt
 import serial
+import os
 import time
 from time import sleep
-from adafruit_servokit import ServoKit
 import json
 
+import gpiozero
+import RPi.GPIO as GPIO
 
 deviceId = "abandoned_crew_replicator"
 
@@ -12,21 +14,54 @@ mq_ip = "192.168.178.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [5, 1, 9, 3]
-_currentData = [ 0,0,0,0 ]
+_cartridge_number = 0
+_drawer_open = False
+_blueprint = ""
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Lösung: %s" % _solution),
+    "description": ("Blprt: Pyrometer - Crtrdg: 1 - True" ),
 }
 
+button1 = gpiozero.Button(18, hold_time = 0.1, bounce_time = 0.2)
+button2 = gpiozero.Button(23, hold_time = 0.1, bounce_time = 0.2)
+button3 = gpiozero.Button(24, hold_time = 0.1, bounce_time = 0.2)
+
+# initialize door
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(12, GPIO.OUT)
+GPIO.setup(16, GPIO.OUT)
+
+def close_drawer():
+    global _drawer_open 
+    _drawer_open = False
+    GPIO.setup(12, GPIO.LOW)
+    GPIO.setup(16, GPIO.LOW)
+
+    print("Close drawer")
+
+def open_drawer():
+    global _drawer_open 
+    _drawer_open = True
+    GPIO.setup(12, GPIO.HIGH)
+    GPIO.setup(16, GPIO.HIGH)
+    print("Open drawer")
+
+
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = ("Bprt: %s - Crtrdg: %s - %s" % (_blueprint, _cartridge_number, _drawer_open))
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 ### Game events ###
@@ -45,28 +80,26 @@ def on_event(event):
 
 
 
-def notifications_from_sensors(event):
-    if event.index("blueprint") > -1:
-        publish_event(event + " inserted")
-    
-    codeword = "cartridge "
-    if event.index(codeword > -1):
-        cartridge = event[event.index(codeword) + len(codeword)::]
-        if cartridge == "0":
-            publish_event("Hexapolym inserted")
-        if cartridge == "1":
-            publish_event("Amorata inserted")
-        if cartridge == "1":
-            publish_event("Partynom inserted")
+def blueprint_inserted(event):
+    global _blueprint
+    _blueprint = event
+    publish_event(event + " blueprint inserted")
+    sendUpdate()
+
+def cartridge_removed():
+    print("Cartridge removed")
+    sendUpdate()
+
+def new_cartridge():
+    print("Cartridge %s" % _cartridge_number)
+    sendUpdate()
 
 
-    
 def publish_event(event):
     jsonData = {
         "event": event
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData))
-
 
 
 ### Global commands ###
@@ -86,7 +119,7 @@ def on_solved(client):
     _puzzleState = "SOLVED"
     sendUpdate()
     jsonData = {
-        "event": "Pressure correct"
+        "event": ("%s produced" % _blueprint)
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
@@ -170,13 +203,34 @@ def connect_serial():
         return
     
     try:
-        ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         ser.reset_input_buffer()
         _serial_connected = True
         return ser
     except Exception as e:
         s = ('An exception occurred: {}'.format(e))
         _currentData = s
+
+def inserted(n):
+    global _cartridge_number
+    _cartridge_number = _cartridge_number + n
+    print("Cartridge number: %s" % _cartridge_number)
+
+def removed(n):
+    global _cartridge_number
+    _cartridge_number = _cartridge_number - n
+    print("Cartridge number: %s" % _cartridge_number)
+
+
+button1.when_pressed = lambda: inserted(1)
+button1.when_released = lambda: removed(1)
+
+button2.when_pressed = lambda: inserted(2)
+button2.when_released = lambda: removed(2)
+
+button3.when_pressed = lambda: inserted(4)
+button3.when_released = lambda: removed(4)
+
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
@@ -190,12 +244,12 @@ _serial_connected = False
 print("starting message queue.")
 mqttc.loop_start()
 
-
+close_drawer()
 
 try:
-    
+    last_cartridge = _cartridge_number
+    ser = None
     while True:
-        ser = None
         if _serial_connected == False:
             ser = connect_serial()
         
@@ -205,11 +259,16 @@ try:
             if ser.in_waiting > 0:
                 line = ser.readline().decode('utf-8').rstrip()
                 line = line.strip()
-                codeword = "Replicator: "
+                codeword = "Replikator: "
                 if line.startswith(codeword):
                     event = line[len(codeword)::]
-                    notifications_from_sensors(event)
+                    blueprint_inserted(event)
             sleep(0.1)
+            if last_cartridge != _cartridge_number:
+                if _cartridge_number == 0:
+                    cartridge_removed()
+                else:
+                    new_cartridge()
 
 except Exception as e:
     s = ('An exception occurred: {}'.format(e))

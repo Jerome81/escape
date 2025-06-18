@@ -102,84 +102,92 @@ function updateScreen() {
 client.on('message', function (topic, message) {
   // message is Buffer
   msg = JSON.parse(message);
-  console.log(msg);  
-  if (msg["event"].indexOf("production started") > -1) {
-    return;
-  }
-  if (msg["event"].indexOf(" produced") > -1) {
-    img = document.getElementById("main");
-    img.src = current_blueprint + "_done_" + language + ".png"
-    return;
+  console.log(msg); 
+  if (msg["event"] != null) {
+    if (msg["event"].indexOf("production started") > -1) {
+      return;
+    }
+    if (msg["event"].indexOf(" produced") > -1) {
+      img = document.getElementById("main");
+      img.src = current_blueprint + "_done_" + language + ".png"
+      return;
+    }
+
+    if (msg["event"] == "All devices powered") {
+      powered = true;
+    }
+    if (msg["event"] == "Power down") {
+      powered = false;
+    }
+
+    if (msg["event"] == "Pyrometer blueprint inserted") {
+      current_blueprint = "pyrometer";
+    }
+
+    if (msg["event"] == "Ring blueprint inserted") {
+      current_blueprint = "ring";
+    }
+
+    if (msg["event"] == "Bubbles blueprint inserted") {
+      current_blueprint = "bubbles";
+    }
+
+    if (msg["event"] == "Apple blueprint inserted") {
+      current_blueprint = "apple";
+    }
+
+    if (msg["event"] == "Lasergun blueprint inserted") {
+      current_blueprint = "lasergun";
+    }
+
+    if (msg["event"] == "Hexapolym inserted") {
+      pyrometer_cartridge = true;
+      ring_cartridge = false;
+      bubbles_cartridge = false;
+    }
+
+    if (msg["event"] == "Partynom inserted") {
+      pyrometer_cartridge = false;
+      ring_cartridge = false;
+      bubbles_cartridge = true;
+    }
+
+    if (msg["event"] == "Amorata inserted") {
+      pyrometer_cartridge = false;
+      ring_cartridge = true;
+      bubbles_cartridge = false;
+    }
+
+    if (msg["event"] == "No cartrdige inserted") {
+      pyrometer_cartridge = false;
+      ring_cartridge = false;
+      bubbles_cartridge = false;
+    }
+    if (msg["event"] == "Produce cartridge") {
+      return;
+    }
+
+    updateScreen();
+
   }
 
-  if (msg["event"] == "All devices powered") {
-    powered = true;
-  }
-  if (msg["event"] == "Power down") {
-    powered = false;
-  }
-
-  if ( msg["gameState"] == "RESET") {
-    powered = false;
+  if (msg["gameState"] != null) {
+    if ( msg["gameState"] == "RESET") {
+      powered = false;
+    }
   }
 
-  if (msg["event"] == "Pyrometer blueprint inserted") {
-    current_blueprint = "pyrometer";
+  if (msg["language"] != null) {
+    if (msg["language"] == "english") {
+      language = "en";
+      console.debug("English");
+    }
+    if (msg["language"] == "deutsch") {
+      language = "de";
+      console.debug("Deutsch");
+    }
   }
-
-  if (msg["event"] == "Ring blueprint inserted") {
-    current_blueprint = "ring";
-  }
-
-  if (msg["event"] == "Bubbles blueprint inserted") {
-    current_blueprint = "bubbles";
-  }
-
-  if (msg["event"] == "Apple blueprint inserted") {
-    current_blueprint = "apple";
-  }
-
-  if (msg["event"] == "Lasergun blueprint inserted") {
-    current_blueprint = "lasergun";
-  }
-
-  if (msg["event"] == "Hexapolym inserted") {
-    pyrometer_cartridge = true;
-    ring_cartridge = false;
-    bubbles_cartridge = false;
-  }
-
-  if (msg["event"] == "Partynom inserted") {
-    pyrometer_cartridge = false;
-    ring_cartridge = false;
-    bubbles_cartridge = true;
-  }
-
-  if (msg["event"] == "Amorata inserted") {
-    pyrometer_cartridge = false;
-    ring_cartridge = true;
-    bubbles_cartridge = false;
-  }
-
-  if (msg["event"] == "No cartrdige inserted") {
-    pyrometer_cartridge = false;
-    ring_cartridge = false;
-    bubbles_cartridge = false;
-  }
-
-
-  if (msg["language"] == "english") {
-    language = "en";
-    console.debug("English");
-  }
-  if (msg["language"] == "deutsch") {
-    language = "de";
-    console.debug("Deutsch");
-  }
-  if (msg["event"] == "Produce cartridge") {
-    return;
-  }
-  updateScreen();
+  
 })
 </script>
 
