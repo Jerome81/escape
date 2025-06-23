@@ -8,7 +8,7 @@ import board
 import os
 
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_tech_core"
 
 _gameState = "STOPPED"
@@ -31,8 +31,7 @@ core.when_released = lambda: on_solved()
 
 ### Game events ###
 def on_event(event):
-    if event == "Overheat solved":
-        on_solved(mqttc)
+    pass
 
 
 ### Global commands ###
