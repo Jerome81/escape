@@ -3,51 +3,82 @@ import json
 import gpiozero
 import board
 import neopixel
+import RPi.GPIO as GPIO
 
 from time import sleep
 
-deviceId = "abandoned_tech_power"
+deviceId = "abandoned_cockpit_destruct"
 
 mq_ip = "192.168.178.11"
 
 _gameState = "STOPPED"
-_puzzleState = "ACTIVE"
-PRESSED = 0
-UNPRESSED = 1
+_puzzleState = "INACTIVE"
 
-_solution = PRESSED
-_currentData = UNPRESSED
+_destructor = False
+_safety = False
 
-lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
+lightstrip = neopixel.NeoPixel(board.D18, 7, brightness = 1)
 lightstrip.fill((255, 0, 0))
+
+destructor = gpiozero.Button(14, hold_time = 0.1, bounce_time = 0.2)
+destructor.when_pressed = lambda: on_solved()
+
+safety = gpiozero.Button(15, hold_time = 0.1, bounce_time = 0.2)
+safety.when_pressed = lambda: safety_deactivate()
+safety.when_released = lambda: safety_activate()
+
+# initialize door
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(12, GPIO.OUT)
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Lösung: %s" % _solution),
+    "description": "Lösung: true / true",
 }
 
-BUTTON_PIN = 14  #GPIO14
-LED_PIN = 26  #GPIO26
+def safety_deactivate():
+    global _safety
+    _safety = True
+    if _puzzleState == "ACTIVE":
+        unlock_door()
+        lightstrip.fill((0, 255, 0))
+        sendUpdate()
 
-light = gpiozero.LED(LED_PIN)
-light.on()
+def safety_activate():
+    global _safety
+    lightstrip.fill((255, 0, 0))
+    _safety = False
+    sendUpdate()
 
-button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
+def lock_door():
+    GPIO.setup(12, GPIO.LOW)
+    print("Door locked")
 
+def unlock_door():
+    GPIO.setup(12, GPIO.HIGH)
+    print("Door unlocked")
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
-
+    print("Game is: %s - Puzzle is: %s - Data: %s / %s" % (_gameState, _puzzleState, _safety, _destructor))
+    input = ("%s / %s" % (_safety, _destructor))
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = input
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 
 ### Game events ###
 def on_event(event):
-    pass
+    if event == "Self destruction activated":
+        on_activate()
 
 ### Global commands ###
 def on_started():
@@ -60,49 +91,36 @@ def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
 
-def power_on_animation():
-    for i in range(len(lightstrip)):
-        lightstrip[i] = (255, 255, 255)
-        if not button.is_pressed:
-            return
-        sleep(0.02)
-
-def power_off_animation(): 
-    for i in range(len(lightstrip) - 1, -1, -1):
-        lightstrip[i] = (0, 0, 0)
-        if button.is_pressed:
-            return
-        sleep(0.02)
-
-
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
-    power_on_animation()
-    _puzzleState = "SOLVED"
-    sendUpdate()
-    light.off()
-    jsonData = {
-        "event": "Power up"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
-
+    global _destructor
+    if _safety == True and _puzzleState == "ACTIVE":        
+        _destructor = True
+        _puzzleState = "SOLVED"            
+        sendUpdate()
+        jsonData = {
+            "event": "Self destruct"
+        }
+        client.publish("ToDevice/All", json.dumps(jsonData))
 
 def on_reset(client):
     global _puzzleState
-    global _currentData
-    _puzzleState = "ACTIVE"  # Always active
-    light.on()
+    _puzzleState = "INACTIVE"
     sendUpdate()
     jsonData = {
-        "event": "Power down"
+        "event": "Undestruct spaceship"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
-    power_off_animation()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
+    if _safety:
+        unlock_door()
+        lightstrip.fill((0, 255, 0))
+    else:
+        lightstrip.fill((255, 255, 255))
     sendUpdate()
 
 
@@ -171,15 +189,9 @@ connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
-UP = 1
-DOWN = 0
-lastState = UP
 
-on_reset(mqttc)
-
-button.when_pressed = lambda: on_solved(mqttc)
-button.when_released = lambda: on_reset(mqttc)
-
+lock_door() 
+lightstrip.fill((0, 0, 0))
 try:
     while True:
         
