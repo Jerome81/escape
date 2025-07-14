@@ -18,6 +18,8 @@ random_sounds = 3
 random_min_wait = 5 # seconds
 random_max_wait = 30 # seconds
 _currently_playing = False
+_gameState = "STOPPED"
+
 
 _jsonData = {
     "id": deviceId,
@@ -49,7 +51,11 @@ def on_event(event):
         play_sound("stromkreis_1.mp3")
 
     if event == "Self destruct":
+        play_sound("explosion_2.mp3")
         play_sound("self_destruct.mp3")
+
+    if event == "Self destruction activated":
+        play_sound("nooooo.mp3")
 
     if event == "Power down":
         play_sound("shutdown_server.mp3")
@@ -87,24 +93,20 @@ def on_language_change(language):
 def sendUpdate():
     jsonData = _jsonData
     
-    jsonData["state"] = _puzzleState
     jsonData["game_state"] = _gameState
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 
 ### Puzzle commands ###
 def on_solved(client):
-    global _puzzleState
-    _puzzleState = "SOLVED"
+    pass
 
 
 def on_reset():
-    global _puzzleState
-    _puzzleState = "INACTIVE"
+    pass
 
 def on_activate():
-    global _puzzleState
-    _puzzleState = "ACTIVE"
+    pass
 
 
 ### Message Queue Events ###
