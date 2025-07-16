@@ -207,13 +207,13 @@ try:
                     lastRead = None
                     continue
             
-            lastRead == id
+            lastRead = id
 
             if id != _currentData:
                 _currentData = id
                 sendUpdate()
-                print(_currentData)
-                print(_currentData in _solution)
+                #print(_currentData)
+                #print(_currentData in _solution)
                 if _currentData in _solution:
                     print("solved")
                     on_solved(mqttc)
