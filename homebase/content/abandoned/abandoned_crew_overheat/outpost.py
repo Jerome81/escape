@@ -62,14 +62,6 @@ def on_event(event):
     if event == "Heatgun produced":
         on_activate()
 
-    if event == "Replicator ring production started":
-        pass
-
-    if event == "Replicator pyrometer production started":
-        pass
-
-    if event == "Replicator bubbles production started":
-        pass
 
 
 ### Global commands ###
