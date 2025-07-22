@@ -52,7 +52,7 @@ def sendUpdate():
         print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = (_currentData))
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
     jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
@@ -91,6 +91,8 @@ def on_unsolved(client):
     
 def on_reset(client):
     global _puzzleState
+    global _currentData
+    _currentData = ""
     _puzzleState = "RESET"
     stop_heaters()
     sendUpdate()
@@ -204,8 +206,11 @@ mqttc.loop_start()
 
 try:    
     while True:
+        if _puzzleState == "SOLVED":
+            sleep(0.3)
+
         if _currentData == _solution:
-            on_solved()
+            on_solved(mqttc)
         sleep(0.1)
        
 
