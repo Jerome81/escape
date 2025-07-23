@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 
 deviceId = "abandoned_crew_overheat"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
@@ -59,17 +59,9 @@ def sendUpdate():
 
 ### Game events ###
 def on_event(event):
-    if event == "All devices powered":
+    if event == "Heatgun produced":
         on_activate()
 
-    if event == "Replicator ring production started":
-        pass
-
-    if event == "Replicator pyrometer production started":
-        pass
-
-    if event == "Replicator bubbles production started":
-        pass
 
 
 ### Global commands ###
@@ -99,6 +91,8 @@ def on_unsolved(client):
     
 def on_reset(client):
     global _puzzleState
+    global _currentData
+    _currentData = ""
     _puzzleState = "RESET"
     stop_heaters()
     sendUpdate()
@@ -168,6 +162,7 @@ def connect(client):
 def left(inOut):
     global _left
     global _currentData
+    print("Left: %s" % inOut)
     _left = inOut
     _currentData = _left + _middle + _right
     sendUpdate()
@@ -175,6 +170,7 @@ def left(inOut):
 def middle(inOut):
     global _middle
     global _currentData
+    print("Middle: %s" % inOut)
     _middle = inOut
     _currentData = _left + _middle + _right
     sendUpdate()
@@ -182,6 +178,7 @@ def middle(inOut):
 def right(inOut):
     global _right
     global _currentData
+    print("Right: %s" % inOut)
     _right = inOut
     _currentData = _left + _middle + _right
     sendUpdate()
@@ -195,6 +192,7 @@ button2.when_released = lambda: middle("")
 button3.when_pressed = lambda: right("RIGHT")
 button3.when_released = lambda: right("")
 
+stop_heaters()
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
@@ -206,11 +204,13 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
-
 try:    
     while True:
+        if _puzzleState == "SOLVED":
+            sleep(0.3)
+
         if _currentData == _solution:
-            on_solved()
+            on_solved(mqttc)
         sleep(0.1)
        
 
