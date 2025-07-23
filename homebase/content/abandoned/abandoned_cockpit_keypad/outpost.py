@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import json
+import os
 
 from time import sleep
 
@@ -38,13 +39,19 @@ for pin in columnPins:
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
 
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData = _jsonData
-    
-    jsonData["input"] = _currentData
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
+
 
 ### Game events ###
 def on_event(event):
@@ -54,10 +61,10 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
-    pass
+    sendUpdate()
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
@@ -69,7 +76,7 @@ def on_solved(client):
     _puzzleState = "SOLVED"
     sendUpdate()
     jsonData = {
-        "event": "Dock keypad solved"
+        "event": "Computer unlocked"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
@@ -95,7 +102,7 @@ def on_connect(client, userdata, flags, reason_code):
     client.subscribe("ToDevice/%s" % deviceId)
     client.subscribe("ToDevice/All")
     client.publish("ToHost", json.dumps(jsonData))
-    client.publish("FromDevice/%s" % deviceId, json.dumps(_jsonData))
+    sendUpdate()
 
 
 # The callback for when a PUBLISH message is received from the server.
@@ -157,7 +164,8 @@ try:
         
         if _gameState == "STOPPED":
             # Always be ready
-            pass 
+            sleep(0.1)
+            continue
         
         if _puzzleState == "ACTIVE":
             
