@@ -1,0 +1,175 @@
+<html>
+    <head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+//const mqtt = require('mqtt')
+const url = 'ws://192.168.178.11:8083'
+
+var language = "de";
+var locked = true;
+var currentLog = 1;
+var floppyInserted = false;
+var isEasy = true;
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  clientId: 'console_screen',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToDevice/All', function (err) {
+    if (!err) {
+        console.log("Subscription Successful")
+    }
+  });
+  client.subscribe('ToDevice/console_screen', function (err) {
+    if (!err) {
+        console.log("Subscription Successful")
+    }
+  });
+});
+
+
+client.on('disconnect', function () {
+  console.log('disonnected')
+});
+
+
+client.on('error', function () {
+  console.log('error')
+});
+
+function change_language() {
+    img = document.getElementById("main");
+    img.src = img.src.replace("_en", "_" + language);
+    img.src = img.src.replace("_de", "_" + language);
+}
+
+function displayImage(name) {
+  img = document.getElementById("main");
+  img.src = name + "_" + language + ".png";
+}
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  msg = JSON.parse(message);
+  console.log(msg);
+  if (msg["event"] == "Computer unlocked") {
+    locked = false;
+    displayImage("welcome");
+  }
+
+  if (msg["event"] == "Show log") {
+    displayImage("log_" + currentLog);
+  }
+
+  if (msg["event"] == "Next log") {
+    currentLog++;
+    if (currentLog > 5) {
+      currentLog = 5;
+    }
+    displayImage("log_" + currentLog);
+  }
+
+  if (msg["event"] == "Previous log") {
+    currentLog--;
+    if (currentLog < 1) {
+      currentLog = 1;
+    }
+    displayImage("log_" + currentLog);
+  }
+  
+  if (msg["event"] == "Welcome screen") {
+    displayImage("welcome");
+  }
+
+  if (msg["event"] == "Floppy inserted") {
+    floppyInserted = true;
+    img = document.getElementById("main");
+    if (img.src.indexOf("no_data") > -1) {
+      if (isEasy) {
+        displayImage("data1_1");
+      } else {
+        displayImage("data2_2");
+      }
+    }
+  }
+
+  if (msg["event"] == "Floppy removed") {
+    floppyInserted = false;
+    
+    img = document.getElementById("main");
+    if (img.src.indexOf("data") > -1) {
+      displayImage("no_data");
+    }
+  }
+
+  if (msg["event"] == "Scan environment") {
+    displayImage("scan");
+  }
+
+  if (msg["event"] == "Ship status") {
+    displayImage("status");
+  }
+  
+  if (msg["event"] == "Easy ending") {
+    console.log("Easy ending triggered.");
+    isEasy = true;
+  }
+  
+  if (msg["event"] == "Hard ending") {
+    console.log("Hard ending triggered.");
+    isEasy = false;
+  }
+  
+  if (msg["event"] == "Decrypt data") {
+    if (floppyInserted) {
+      if (isEasy) {
+        displayImage("data1_1");
+      } else {
+        displayImage("data2_2");
+      }
+    } else {
+      displayImage("no_data");
+    }
+  }
+
+  if (msg["event"] == "Connect to coordinates") {
+    displayImage("data1_2");
+  }
+
+  if ( msg["gameState"] == "RESET") {
+    locked = true;
+    currentLog = 1;
+  }
+
+  if (msg["language"] == "english") {
+    language = "en";
+    console.debug("English");
+  }
+  if (msg["language"] == "deutsch") {
+    language = "de";
+    console.debug("Deutsch");
+  }
+
+})
+</script>
+
+    </head>
+    <body style="padding:0px;margin:0px;">
+        <img id="main" src="locked_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+        
+    </body>
+</html>
