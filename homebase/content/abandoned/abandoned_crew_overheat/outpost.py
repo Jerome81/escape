@@ -52,7 +52,7 @@ def sendUpdate():
         print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = (_currentData))
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
     jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
