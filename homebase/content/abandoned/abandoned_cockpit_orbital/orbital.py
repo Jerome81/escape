@@ -165,7 +165,7 @@ def attract():
 
 ### Game events ###
 def on_event(event):
-    if event == "Power up":
+    if event == "Activate orbital":
         on_activate()
 
     if event == "Power down":
