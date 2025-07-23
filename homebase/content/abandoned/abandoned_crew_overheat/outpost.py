@@ -59,10 +59,8 @@ def sendUpdate():
 
 ### Game events ###
 def on_event(event):
-    if event == "Heatgun produced":
+    if event == "Pyrometer produced":
         on_activate()
-
-
 
 ### Global commands ###
 def on_started():
