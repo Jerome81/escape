@@ -1,0 +1,885 @@
+[
+    {
+        "id": "a6b52dac9d96aeee",
+        "type": "tab",
+        "label": "Crew",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ca29a5849bd23eaa",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "RESET",
+        "group": "d13ec2191532bd4c",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 600,
+        "wires": [
+            [
+                "d12ee659cc4a7ae7"
+            ]
+        ]
+    },
+    {
+        "id": "9f3c6fdd23a1f718",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "group": "d13ec2191532bd4c",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 540,
+        "wires": [
+            [
+                "de5719ad72b27019"
+            ]
+        ]
+    },
+    {
+        "id": "de5719ad72b27019",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 540,
+        "wires": [
+            [
+                "c6c4a128c2c5fdb9"
+            ]
+        ]
+    },
+    {
+        "id": "d12ee659cc4a7ae7",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 600,
+        "wires": [
+            [
+                "c6c4a128c2c5fdb9"
+            ]
+        ]
+    },
+    {
+        "id": "c6c4a128c2c5fdb9",
+        "type": "json",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 530,
+        "y": 560,
+        "wires": [
+            [
+                "6cf0f998af51aa00"
+            ]
+        ]
+    },
+    {
+        "id": "6905686f535192fe",
+        "type": "inject",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 500,
+        "wires": [
+            [
+                "de5719ad72b27019"
+            ]
+        ]
+    },
+    {
+        "id": "6cf0f998af51aa00",
+        "type": "link out",
+        "z": "a6b52dac9d96aeee",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13",
+            "0e1617ab69f7a520",
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 665,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "281471f0f0461391",
+        "type": "ui_template",
+        "z": "a6b52dac9d96aeee",
+        "group": "d13ec2191532bd4c",
+        "name": "Replicator",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card  style=\"height: 25px\">\n<md-card-title style=\"height: 25px\">\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_crew\".length) || \"Replicator (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</span></p>    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Solution unknown'}}\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 520,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "80bd2d8c95df1e5a",
+        "type": "mqtt in",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "topic": "FromDevice/abandoned_crew_replicator",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 260,
+        "y": 440,
+        "wires": [
+            [
+                "281471f0f0461391"
+            ]
+        ]
+    },
+    {
+        "id": "8e7b38fad3aab376",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "group": "d13ec2191532bd4c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Heatgun produced",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#008000",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Heatgun produced\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 350,
+        "y": 660,
+        "wires": [
+            [
+                "6cf0f998af51aa00"
+            ]
+        ]
+    },
+    {
+        "id": "223c49f476826a71",
+        "type": "mqtt in",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "topic": "FromDevice/abandoned_crew_overheat",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 780,
+        "wires": [
+            [
+                "9b37136a4f2152c8"
+            ]
+        ]
+    },
+    {
+        "id": "534e8676942942c4",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "RESET",
+        "group": "8df45f6f8613069c",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 940,
+        "wires": [
+            [
+                "3c721d6dcb3d5694"
+            ]
+        ]
+    },
+    {
+        "id": "236e28d2060533a5",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "group": "8df45f6f8613069c",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 880,
+        "wires": [
+            [
+                "353b10f1e2c0a9bc"
+            ]
+        ]
+    },
+    {
+        "id": "353b10f1e2c0a9bc",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 880,
+        "wires": [
+            [
+                "fa28a24530e91f80"
+            ]
+        ]
+    },
+    {
+        "id": "3c721d6dcb3d5694",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 940,
+        "wires": [
+            [
+                "fa28a24530e91f80"
+            ]
+        ]
+    },
+    {
+        "id": "fa28a24530e91f80",
+        "type": "json",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 530,
+        "y": 900,
+        "wires": [
+            [
+                "0789fda2bfbbdf5c"
+            ]
+        ]
+    },
+    {
+        "id": "46ecfabf4ccb5413",
+        "type": "inject",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 840,
+        "wires": [
+            [
+                "353b10f1e2c0a9bc"
+            ]
+        ]
+    },
+    {
+        "id": "0789fda2bfbbdf5c",
+        "type": "link out",
+        "z": "a6b52dac9d96aeee",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13",
+            "0e1617ab69f7a520",
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 665,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "9b37136a4f2152c8",
+        "type": "ui_template",
+        "z": "a6b52dac9d96aeee",
+        "group": "8df45f6f8613069c",
+        "name": "Overheat",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card  style=\"height: 25px\">\n<md-card-title style=\"height: 25px\">\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_crew\".length) || \"Overheat (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</span></p>    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Solution unknown'}}\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 520,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5541d3b5dc28688c",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "group": "8df45f6f8613069c",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Overheat solved",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#008000",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Overheat solved\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 340,
+        "y": 1000,
+        "wires": [
+            [
+                "0789fda2bfbbdf5c"
+            ]
+        ]
+    },
+    {
+        "id": "bdeba68259975986",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "RESET",
+        "group": "22419243828d3650",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "1f3387250a6b318c"
+            ]
+        ]
+    },
+    {
+        "id": "7e312eb34de7c395",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "group": "22419243828d3650",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "7147e2441347b7a6"
+            ]
+        ]
+    },
+    {
+        "id": "7147e2441347b7a6",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 140,
+        "wires": [
+            [
+                "273660a6733d732f"
+            ]
+        ]
+    },
+    {
+        "id": "1f3387250a6b318c",
+        "type": "change",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_tech_pressure",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 200,
+        "wires": [
+            [
+                "273660a6733d732f"
+            ]
+        ]
+    },
+    {
+        "id": "273660a6733d732f",
+        "type": "json",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 510,
+        "y": 160,
+        "wires": [
+            [
+                "cff8b07191644e65"
+            ]
+        ]
+    },
+    {
+        "id": "2704524bf56948fb",
+        "type": "inject",
+        "z": "a6b52dac9d96aeee",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "7147e2441347b7a6"
+            ]
+        ]
+    },
+    {
+        "id": "cff8b07191644e65",
+        "type": "link out",
+        "z": "a6b52dac9d96aeee",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13",
+            "0e1617ab69f7a520",
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 645,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "35d5167f71f61a56",
+        "type": "ui_template",
+        "z": "a6b52dac9d96aeee",
+        "group": "22419243828d3650",
+        "name": "Door",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card  style=\"height: 25px\">\n<md-card-title style=\"height: 25px\">\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_crew\".length) || \"Door (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</span></p>    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Solution unknown'}}\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 490,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "23e3fdee57292322",
+        "type": "mqtt in",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "topic": "FromDevice/abandoned_crew_door",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 40,
+        "wires": [
+            [
+                "35d5167f71f61a56"
+            ]
+        ]
+    },
+    {
+        "id": "b7d95609b99a1b3e",
+        "type": "ui_button",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "group": "22419243828d3650",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Crew door open",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#008000",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Crew door open\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 320,
+        "y": 260,
+        "wires": [
+            [
+                "cff8b07191644e65"
+            ]
+        ]
+    },
+    {
+        "id": "d13ec2191532bd4c",
+        "type": "ui_group",
+        "name": "Replicator",
+        "tab": "cf991fad40d41f0b",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "8df45f6f8613069c",
+        "type": "ui_group",
+        "name": "Overheat",
+        "tab": "cf991fad40d41f0b",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "22419243828d3650",
+        "type": "ui_group",
+        "name": "Door",
+        "tab": "cf991fad40d41f0b",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cf991fad40d41f0b",
+        "type": "ui_tab",
+        "name": "3 - Crew",
+        "icon": "dashboard",
+        "order": 8,
+        "disabled": false,
+        "hidden": false
+    }
+]

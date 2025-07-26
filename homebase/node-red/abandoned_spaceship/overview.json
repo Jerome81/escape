@@ -1,0 +1,44 @@
+[
+    {
+        "id": "41e85306af7ea963",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "7a3f7a071b3a4115",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Floppy",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 670,
+        "y": 880,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "7a3f7a071b3a4115",
+        "type": "ui_group",
+        "name": "Cockpit",
+        "tab": "6f346d8eb2c66f70",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6f346d8eb2c66f70",
+        "type": "ui_tab",
+        "name": "Übersicht",
+        "icon": "dashboard",
+        "order": 5,
+        "disabled": false,
+        "hidden": false
+    }
+]

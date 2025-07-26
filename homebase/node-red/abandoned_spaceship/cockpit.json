@@ -1,0 +1,1556 @@
+[
+    {
+        "id": "536e10a02c42f7c5",
+        "type": "tab",
+        "label": "Cockpit",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3fcc5f7fb9525b7f",
+        "type": "group",
+        "z": "536e10a02c42f7c5",
+        "name": "Dashboard controls",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "720e77c80526d239",
+            "1ca9c425efe0dea3",
+            "6320d47a61dc7f93",
+            "385ebc870fcf0ebe",
+            "b4e194e89de1e53f",
+            "63b7d5ccc0747feb",
+            "2f19ef03fcb41ec9",
+            "465ab71c3fd88536",
+            "a664b8b0839a1d0e",
+            "50769b744583d1eb",
+            "a3c9c98833e25982"
+        ],
+        "x": 134,
+        "y": 699,
+        "w": 692,
+        "h": 262
+    },
+    {
+        "id": "a0ff12035454a22a",
+        "type": "group",
+        "z": "536e10a02c42f7c5",
+        "name": "Dashboard controls",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "aacb3a734bce2a14",
+            "a3e506e0a33161ea",
+            "9d9c84dc8ecacf4f",
+            "b33b5b0dced6ef01",
+            "7aee2a6c9e067f60",
+            "49cc7057e550075e",
+            "0c2fc4746b8dea58",
+            "be2313e08c39525e",
+            "8545d7d4998a07de",
+            "a8a6026a873b0d51",
+            "538d28a69c76d6b5",
+            "0dbdc21ab8b0b129"
+        ],
+        "x": 134,
+        "y": 1019,
+        "w": 692,
+        "h": 302
+    },
+    {
+        "id": "13d7edaa43819f09",
+        "type": "group",
+        "z": "536e10a02c42f7c5",
+        "name": "Dashboard controls",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "e1d8f7e843f39ed1",
+            "aeadb287934b0a30",
+            "1699ee43b4900037",
+            "0f85370320edcfa0",
+            "d69285ffd4ce420b",
+            "16ca1405d33d0c42",
+            "21db79e9f2748423",
+            "d3cd7fb96a42a734",
+            "94bb65f5ab75ac8f",
+            "2ad21eac077de40a",
+            "14abc56e340379bd"
+        ],
+        "x": 134,
+        "y": 399,
+        "w": 692,
+        "h": 262
+    },
+    {
+        "id": "720e77c80526d239",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "RESET",
+        "group": "6ef53b5bfea89869",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 920,
+        "wires": [
+            [
+                "385ebc870fcf0ebe"
+            ]
+        ]
+    },
+    {
+        "id": "1ca9c425efe0dea3",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "SOLVE",
+        "group": "6ef53b5bfea89869",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 840,
+        "wires": [
+            [
+                "6320d47a61dc7f93"
+            ]
+        ]
+    },
+    {
+        "id": "6320d47a61dc7f93",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_keypad",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 840,
+        "wires": [
+            [
+                "b4e194e89de1e53f"
+            ]
+        ]
+    },
+    {
+        "id": "385ebc870fcf0ebe",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_keypad",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 920,
+        "wires": [
+            [
+                "b4e194e89de1e53f"
+            ]
+        ]
+    },
+    {
+        "id": "b4e194e89de1e53f",
+        "type": "json",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 610,
+        "y": 860,
+        "wires": [
+            [
+                "a664b8b0839a1d0e"
+            ]
+        ]
+    },
+    {
+        "id": "63b7d5ccc0747feb",
+        "type": "ui_template",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "group": "6ef53b5bfea89869",
+        "name": "Dashboard Panel",
+        "order": 1,
+        "width": "6",
+        "height": "5",
+        "format": "<md-card style=\"height: 25px;background-color: lightyellow;\">\n    <md-card-title style=\"height: 25px;background-color: lightyellow;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_\".length)  || \"Cockpit Keypad (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n        </md-card-title-text>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Unknown'}}\n    </p>\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 710,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2f19ef03fcb41ec9",
+        "type": "inject",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 230,
+        "y": 800,
+        "wires": [
+            [
+                "6320d47a61dc7f93"
+            ]
+        ]
+    },
+    {
+        "id": "465ab71c3fd88536",
+        "type": "mqtt in",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "FromDevice/abandoned_cockpit_keypad",
+        "topic": "FromDevice/abandoned_cockpit_keypad",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 320,
+        "y": 740,
+        "wires": [
+            [
+                "63b7d5ccc0747feb"
+            ]
+        ]
+    },
+    {
+        "id": "a664b8b0839a1d0e",
+        "type": "link out",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "0e1617ab69f7a520"
+        ],
+        "x": 745,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "d02557b3a6fa1218",
+        "type": "mqtt out",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "125f6c81.60151b",
+        "x": 990,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "0e1617ab69f7a520",
+        "type": "link in",
+        "z": "536e10a02c42f7c5",
+        "name": "Send command to device",
+        "links": [
+            "a664b8b0839a1d0e",
+            "c7d2b7e01034905b",
+            "841f5fb5066f986c",
+            "9345e285735a9c3c",
+            "934fe2697f2f1138",
+            "310b180a2c7ce9ee",
+            "eebcbb43e65a6df6",
+            "ba15bfbeef82c849",
+            "6cf0f998af51aa00",
+            "0789fda2bfbbdf5c",
+            "cff8b07191644e65",
+            "c9870d75f630ecec",
+            "8545d7d4998a07de"
+        ],
+        "x": 875,
+        "y": 860,
+        "wires": [
+            [
+                "d02557b3a6fa1218"
+            ]
+        ]
+    },
+    {
+        "id": "a7453344122125bc",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "name": "ACTIVATE",
+        "group": "a3fa9237a1951063",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "ACTIVATE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-play",
+        "payload": "{\"command\":\"ACTIVATE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 230,
+        "y": 260,
+        "wires": [
+            [
+                "2760f046b748a855"
+            ]
+        ]
+    },
+    {
+        "id": "2a7f994d19d6ab5b",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "name": "SOLVE",
+        "group": "a3fa9237a1951063",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 220,
+        "y": 200,
+        "wires": [
+            [
+                "7998fb2a1ec48604"
+            ]
+        ]
+    },
+    {
+        "id": "7998fb2a1ec48604",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_orbital",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 200,
+        "wires": [
+            [
+                "bc689c9be9dd8fbf"
+            ]
+        ]
+    },
+    {
+        "id": "2760f046b748a855",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "ACTIVATE",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_orbital",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 260,
+        "wires": [
+            [
+                "bc689c9be9dd8fbf"
+            ]
+        ]
+    },
+    {
+        "id": "bc689c9be9dd8fbf",
+        "type": "json",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 630,
+        "y": 260,
+        "wires": [
+            [
+                "eebcbb43e65a6df6"
+            ]
+        ]
+    },
+    {
+        "id": "22432662891f1ea3",
+        "type": "inject",
+        "z": "536e10a02c42f7c5",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "7998fb2a1ec48604"
+            ]
+        ]
+    },
+    {
+        "id": "eebcbb43e65a6df6",
+        "type": "link out",
+        "z": "536e10a02c42f7c5",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13",
+            "0e1617ab69f7a520",
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 755,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "c6d9a3d32a95ed63",
+        "type": "ui_template",
+        "z": "536e10a02c42f7c5",
+        "group": "a3fa9237a1951063",
+        "name": "Orbital",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<md-card>\n<md-card-title>\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_\".length) || \"Orbital (missing)\"}}</p>\n        <p style=\"font-size:12px\">{{msg.payload.game_state}} / {{msg.payload.state}} - Aktuelles Level: {{msg.payload.input}}</p>    \n    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'5px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 570,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1aa2e4f9e4601723",
+        "type": "mqtt in",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "topic": "FromDevice/abandoned_cockpit_orbital",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 310,
+        "y": 60,
+        "wires": [
+            [
+                "c6d9a3d32a95ed63"
+            ]
+        ]
+    },
+    {
+        "id": "619905c3270d8c30",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "name": "RESET",
+        "group": "a3fa9237a1951063",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 220,
+        "y": 320,
+        "wires": [
+            [
+                "3945a7ecbc70e3a4"
+            ]
+        ]
+    },
+    {
+        "id": "3945a7ecbc70e3a4",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_orbital",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "bc689c9be9dd8fbf"
+            ]
+        ]
+    },
+    {
+        "id": "50769b744583d1eb",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "ACTIVATE",
+        "group": "6ef53b5bfea89869",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "ACTIVATE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-play",
+        "payload": "{\"command\":\"ACTIVATE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 230,
+        "y": 880,
+        "wires": [
+            [
+                "a3c9c98833e25982"
+            ]
+        ]
+    },
+    {
+        "id": "a3c9c98833e25982",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "3fcc5f7fb9525b7f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "ACTIVATE",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_keypad",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 880,
+        "wires": [
+            [
+                "b4e194e89de1e53f"
+            ]
+        ]
+    },
+    {
+        "id": "aacb3a734bce2a14",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "RESET",
+        "group": "0ac0b18483e0bea6",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 1240,
+        "wires": [
+            [
+                "b33b5b0dced6ef01"
+            ]
+        ]
+    },
+    {
+        "id": "a3e506e0a33161ea",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "SOLVE",
+        "group": "0ac0b18483e0bea6",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve (ENDS GAME)",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 1160,
+        "wires": [
+            [
+                "9d9c84dc8ecacf4f"
+            ]
+        ]
+    },
+    {
+        "id": "9d9c84dc8ecacf4f",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_destruct",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 1160,
+        "wires": [
+            [
+                "7aee2a6c9e067f60"
+            ]
+        ]
+    },
+    {
+        "id": "b33b5b0dced6ef01",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_destruct",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1240,
+        "wires": [
+            [
+                "7aee2a6c9e067f60"
+            ]
+        ]
+    },
+    {
+        "id": "7aee2a6c9e067f60",
+        "type": "json",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 610,
+        "y": 1180,
+        "wires": [
+            [
+                "8545d7d4998a07de"
+            ]
+        ]
+    },
+    {
+        "id": "49cc7057e550075e",
+        "type": "ui_template",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "group": "0ac0b18483e0bea6",
+        "name": "Dashboard Panel",
+        "order": 1,
+        "width": "6",
+        "height": "5",
+        "format": "<md-card style=\"height: 25px;background-color: lightyellow;\">\n    <md-card-title style=\"height: 25px;background-color: lightyellow;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_\".length)  || \"Self Destruct (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n        </md-card-title-text>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Unknown'}}\n    </p>\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 710,
+        "y": 1060,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0c2fc4746b8dea58",
+        "type": "inject",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 230,
+        "y": 1120,
+        "wires": [
+            [
+                "9d9c84dc8ecacf4f"
+            ]
+        ]
+    },
+    {
+        "id": "be2313e08c39525e",
+        "type": "mqtt in",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "FromDevice/abandoned_cockpit_destruct",
+        "topic": "FromDevice/abandoned_cockpit_destruct",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 320,
+        "y": 1060,
+        "wires": [
+            [
+                "49cc7057e550075e"
+            ]
+        ]
+    },
+    {
+        "id": "8545d7d4998a07de",
+        "type": "link out",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "0e1617ab69f7a520",
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 745,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "a8a6026a873b0d51",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "ACTIVATE",
+        "group": "0ac0b18483e0bea6",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "ACTIVATE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-play",
+        "payload": "{\"command\":\"ACTIVATE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 230,
+        "y": 1200,
+        "wires": [
+            [
+                "538d28a69c76d6b5"
+            ]
+        ]
+    },
+    {
+        "id": "538d28a69c76d6b5",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "ACTIVATE",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_destruct",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 1200,
+        "wires": [
+            [
+                "7aee2a6c9e067f60"
+            ]
+        ]
+    },
+    {
+        "id": "0dbdc21ab8b0b129",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "a0ff12035454a22a",
+        "name": "",
+        "group": "0ac0b18483e0bea6",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Self destruct (ENDS GAME)",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#008000",
+        "className": "",
+        "icon": "",
+        "payload": "{\"event\":\"Self destruct\"}",
+        "payloadType": "json",
+        "topic": "ToDevice/All",
+        "topicType": "str",
+        "x": 460,
+        "y": 1280,
+        "wires": [
+            [
+                "8545d7d4998a07de"
+            ]
+        ]
+    },
+    {
+        "id": "e784f4bdfd3d0e0c",
+        "type": "mqtt out",
+        "z": "536e10a02c42f7c5",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "125f6c81.60151b",
+        "x": 990,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "6be8ebda2f0a94b7",
+        "type": "link in",
+        "z": "536e10a02c42f7c5",
+        "name": "Send command to device",
+        "links": [
+            "94bb65f5ab75ac8f",
+            "c7d2b7e01034905b",
+            "841f5fb5066f986c",
+            "9345e285735a9c3c",
+            "934fe2697f2f1138",
+            "310b180a2c7ce9ee",
+            "eebcbb43e65a6df6",
+            "ba15bfbeef82c849",
+            "6cf0f998af51aa00",
+            "0789fda2bfbbdf5c",
+            "cff8b07191644e65",
+            "c9870d75f630ecec",
+            "8545d7d4998a07de"
+        ],
+        "x": 875,
+        "y": 560,
+        "wires": [
+            [
+                "e784f4bdfd3d0e0c"
+            ]
+        ]
+    },
+    {
+        "id": "e1d8f7e843f39ed1",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "RESET",
+        "group": "f378b011739fa619",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-lock",
+        "payload": "{\"command\":\"RESET\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 620,
+        "wires": [
+            [
+                "0f85370320edcfa0"
+            ]
+        ]
+    },
+    {
+        "id": "aeadb287934b0a30",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "SOLVE",
+        "group": "f378b011739fa619",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Solve",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-unlock",
+        "payload": "{\"command\":\"SOLVE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 240,
+        "y": 540,
+        "wires": [
+            [
+                "1699ee43b4900037"
+            ]
+        ]
+    },
+    {
+        "id": "1699ee43b4900037",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "SOLVED",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_floppy",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 540,
+        "wires": [
+            [
+                "d69285ffd4ce420b"
+            ]
+        ]
+    },
+    {
+        "id": "0f85370320edcfa0",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "RESET",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_floppy",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 620,
+        "wires": [
+            [
+                "d69285ffd4ce420b"
+            ]
+        ]
+    },
+    {
+        "id": "d69285ffd4ce420b",
+        "type": "json",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 610,
+        "y": 560,
+        "wires": [
+            [
+                "94bb65f5ab75ac8f"
+            ]
+        ]
+    },
+    {
+        "id": "16ca1405d33d0c42",
+        "type": "ui_template",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "group": "f378b011739fa619",
+        "name": "Dashboard Panel",
+        "order": 1,
+        "width": "6",
+        "height": "5",
+        "format": "<md-card style=\"height: 25px;background-color: lightyellow;\">\n    <md-card-title style=\"height: 25px;background-color: lightyellow;\">\n        <md-card-title-text>\n            <p class=\"md-headline\">{{msg.payload.id.substring(\"abandoned_cockpit_\".length)  || \"Cockpit Floppy (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</style></p>    \n        </md-card-title-text>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        {{msg.payload.description?msg.payload.description:'Unknown'}}\n    </p>\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 2em;\">{{msg.payload.input}}</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 710,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "21db79e9f2748423",
+        "type": "inject",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "SOLVE",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 230,
+        "y": 500,
+        "wires": [
+            [
+                "1699ee43b4900037"
+            ]
+        ]
+    },
+    {
+        "id": "d3cd7fb96a42a734",
+        "type": "mqtt in",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "FromDevice/abandoned_cockpit_floppy",
+        "topic": "FromDevice/abandoned_cockpit_floppy",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 310,
+        "y": 440,
+        "wires": [
+            [
+                "16ca1405d33d0c42"
+            ]
+        ]
+    },
+    {
+        "id": "94bb65f5ab75ac8f",
+        "type": "link out",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "NodeRed Control",
+        "mode": "link",
+        "links": [
+            "6be8ebda2f0a94b7"
+        ],
+        "x": 745,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "2ad21eac077de40a",
+        "type": "ui_button",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "ACTIVATE",
+        "group": "f378b011739fa619",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "ACTIVATE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-play",
+        "payload": "{\"command\":\"ACTIVATE\"}",
+        "payloadType": "json",
+        "topic": "",
+        "topicType": "str",
+        "x": 230,
+        "y": 580,
+        "wires": [
+            [
+                "14abc56e340379bd"
+            ]
+        ]
+    },
+    {
+        "id": "14abc56e340379bd",
+        "type": "change",
+        "z": "536e10a02c42f7c5",
+        "g": "13d7edaa43819f09",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.command",
+                "pt": "msg",
+                "to": "ACTIVATE",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/abandoned_cockpit_floppy",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 580,
+        "wires": [
+            [
+                "d69285ffd4ce420b"
+            ]
+        ]
+    },
+    {
+        "id": "6ef53b5bfea89869",
+        "type": "ui_group",
+        "name": "Keypad",
+        "tab": "ef71dea1ab60a742",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a3fa9237a1951063",
+        "type": "ui_group",
+        "name": "Orbital",
+        "tab": "ef71dea1ab60a742",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0ac0b18483e0bea6",
+        "type": "ui_group",
+        "name": "Destruct",
+        "tab": "ef71dea1ab60a742",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f378b011739fa619",
+        "type": "ui_group",
+        "name": "Floppy",
+        "tab": "ef71dea1ab60a742",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ef71dea1ab60a742",
+        "type": "ui_tab",
+        "name": "4 - Cockpit",
+        "icon": "dashboard",
+        "order": 9,
+        "disabled": false,
+        "hidden": false
+    }
+]
