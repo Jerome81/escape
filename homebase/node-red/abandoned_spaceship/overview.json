@@ -1,5 +1,580 @@
 [
     {
+        "id": "6dbf72b4fcbdbfab",
+        "type": "tab",
+        "label": "Uebersicht",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "37a95ff06dbbfd47",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "7a3f7a071b3a4115",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Orbital",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 670,
+        "y": 820,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "7f89b691ab3fd915",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_cockpit_orbital",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 820,
+        "wires": [
+            [
+                "feeaec615cd41d2e"
+            ]
+        ]
+    },
+    {
+        "id": "feeaec615cd41d2e",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 1",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 820,
+        "wires": [
+            [
+                "37a95ff06dbbfd47"
+            ]
+        ]
+    },
+    {
+        "id": "01837603839e0618",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "c4502d301ce7c96a",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Pipes",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 670,
+        "y": 360,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "0e160622ab09372a",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_tech_pressure",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 360,
+        "wires": [
+            [
+                "74ce7f97145a7455"
+            ]
+        ]
+    },
+    {
+        "id": "74ce7f97145a7455",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 2",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 360,
+        "wires": [
+            [
+                "01837603839e0618"
+            ]
+        ]
+    },
+    {
+        "id": "abe7e10819907f10",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "b9753e641f84932c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Replicator",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 680,
+        "y": 540,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "19163d647a0a1c1b",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_crew_replicator",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 540,
+        "wires": [
+            [
+                "51ac99aac978c5b7"
+            ]
+        ]
+    },
+    {
+        "id": "51ac99aac978c5b7",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 3",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 540,
+        "wires": [
+            [
+                "abe7e10819907f10"
+            ]
+        ]
+    },
+    {
+        "id": "11359fab55e07a8b",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "c4502d301ce7c96a",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Core",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 670,
+        "y": 440,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "c94149eb2b4ab82e",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_tech_core",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 440,
+        "wires": [
+            [
+                "9ee3d80f6952a23c"
+            ]
+        ]
+    },
+    {
+        "id": "9ee3d80f6952a23c",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 4",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 440,
+        "wires": [
+            [
+                "11359fab55e07a8b"
+            ]
+        ]
+    },
+    {
+        "id": "919df729bacdf532",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "7a3f7a071b3a4115",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Joystick",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 680,
+        "y": 720,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "dbd4604f7c590d29",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_cockpit_joystick",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 720,
+        "wires": [
+            [
+                "349a5696e34a63bd"
+            ]
+        ]
+    },
+    {
+        "id": "349a5696e34a63bd",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 5",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 720,
+        "wires": [
+            [
+                "919df729bacdf532"
+            ]
+        ]
+    },
+    {
+        "id": "09e90eb102e01497",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "7a3f7a071b3a4115",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Keypad",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 680,
+        "y": 780,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "a3858bfb3c59c9fb",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_cockpit_keypad",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 780,
+        "wires": [
+            [
+                "a2a120eb7206e81e"
+            ]
+        ]
+    },
+    {
+        "id": "a2a120eb7206e81e",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 6",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 780,
+        "wires": [
+            [
+                "09e90eb102e01497"
+            ]
+        ]
+    },
+    {
+        "id": "42ecfd130701ac68",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "783c1964cb40231b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Dock Keypad",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 690,
+        "y": 160,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "436af9748ba6ac4a",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_dock_keypad",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "b3ea672b036e327f"
+            ]
+        ]
+    },
+    {
+        "id": "b3ea672b036e327f",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 7",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "42ecfd130701ac68"
+            ]
+        ]
+    },
+    {
+        "id": "c6e38cc52cb597ed",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "783c1964cb40231b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Door RFID",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 690,
+        "y": 240,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "534457a1439d8c8d",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_dock_door",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "f2cdaa1ff4eba4e3"
+            ]
+        ]
+    },
+    {
+        "id": "f2cdaa1ff4eba4e3",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 8",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "c6e38cc52cb597ed"
+            ]
+        ]
+    },
+    {
+        "id": "44dd5632785dd7e2",
+        "type": "ui_text",
+        "z": "6dbf72b4fcbdbfab",
+        "group": "c4502d301ce7c96a",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Recycler",
+        "format": "{{msg.payload.display}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 680,
+        "y": 400,
+        "wires": [],
+        "info": "<a href=\"\">{{payload}}</a>"
+    },
+    {
+        "id": "2e040333de902665",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_tech_recycler",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 400,
+        "wires": [
+            [
+                "9941894df5aca745"
+            ]
+        ]
+    },
+    {
+        "id": "9941894df5aca745",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 9",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 400,
+        "wires": [
+            [
+                "44dd5632785dd7e2"
+            ]
+        ]
+    },
+    {
         "id": "41e85306af7ea963",
         "type": "ui_text",
         "z": "6dbf72b4fcbdbfab",
@@ -22,11 +597,114 @@
         "info": "<a href=\"\">{{payload}}</a>"
     },
     {
+        "id": "a223d9f1ff8c9141",
+        "type": "mqtt in",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "",
+        "topic": "FromDevice/abandoned_cockpit_floppy",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 880,
+        "wires": [
+            [
+                "4d8080751f5f1e96"
+            ]
+        ]
+    },
+    {
+        "id": "4d8080751f5f1e96",
+        "type": "function",
+        "z": "6dbf72b4fcbdbfab",
+        "name": "function 10",
+        "func": "var text = msg.payload[\"game_state\"] + \" / \" + msg.payload[\"state\"] + \" / \" + msg.payload[\"input\"];\nflow.set(\"state\", text);\nmsg.payload[\"display\"] = text;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 880,
+        "wires": [
+            [
+                "41e85306af7ea963"
+            ]
+        ]
+    },
+    {
         "id": "7a3f7a071b3a4115",
         "type": "ui_group",
         "name": "Cockpit",
         "tab": "6f346d8eb2c66f70",
         "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "125f6c81.60151b",
+        "type": "mqtt-broker",
+        "name": "MQTT Server",
+        "broker": "192.168.178.11",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "c4502d301ce7c96a",
+        "type": "ui_group",
+        "name": "Tech",
+        "tab": "6f346d8eb2c66f70",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b9753e641f84932c",
+        "type": "ui_group",
+        "name": "Crew",
+        "tab": "6f346d8eb2c66f70",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "783c1964cb40231b",
+        "type": "ui_group",
+        "name": "Dock",
+        "tab": "6f346d8eb2c66f70",
+        "order": 1,
         "disp": true,
         "width": "6",
         "collapse": false,
