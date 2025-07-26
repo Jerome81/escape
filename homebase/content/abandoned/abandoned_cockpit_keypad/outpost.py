@@ -1,110 +1,95 @@
 import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
 import json
-import gpiozero
-import board
-import neopixel
+import os
 
 from time import sleep
 
-deviceId = "abandoned_tech_power"
-
 mq_ip = "192.168.178.11"
+deviceId = "abandoned_cockpit_keypad"
 
 _gameState = "STOPPED"
-_puzzleState = "ACTIVE"
-PRESSED = 0
-UNPRESSED = 1
-
-_solution = PRESSED
-_currentData = UNPRESSED
-
-lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
-lightstrip.fill((255, 0, 0))
+_puzzleState = "INACTIVE"
+_solution = "1234"
+_currentData = ""
 
 _jsonData = {
     "id": deviceId,
     "description": ("Lösung: %s" % _solution),
 }
 
-BUTTON_PIN = 14  #GPIO14
-LED_PIN = 26  #GPIO26
+rowPins = [29, 31, 33, 35]
+columnPins = [36, 38, 40]
 
-light = gpiozero.LED(LED_PIN)
-light.on()
+keypad = [
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+    ["7", "8", "9"],
+    ["*", "0", "#"]    
+]
 
-button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
+GPIO.setmode(GPIO.BOARD)
 
+for pin in rowPins:
+    GPIO.setup(pin, GPIO.OUT)
+
+for pin in columnPins:
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
+
 
 ### Game events ###
 def on_event(event):
-    pass
+    if event == "Data inserted to send":
+        on_activate()
+
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
-    pass
+    sendUpdate()
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
 
-def power_on_animation():
-    for i in range(len(lightstrip)):
-        lightstrip[i] = (255, 255, 255)
-        if not button.is_pressed:
-            return
-        sleep(0.02)
-
-def power_off_animation(): 
-    for i in range(len(lightstrip) - 1, -1, -1):
-        lightstrip[i] = (0, 0, 0)
-        if button.is_pressed:
-            return
-        sleep(0.02)
-
-
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
-    power_on_animation()
     _puzzleState = "SOLVED"
     sendUpdate()
-    light.off()
     jsonData = {
-        "event": "Power up"
+        "event": "Computer unlocked"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
-
-def on_reset(client):
+def on_reset():
     global _puzzleState
-    global _currentData
-    _puzzleState = "ACTIVE"  # Always active
-    light.on()
+    _currentData = ""
+    _puzzleState = "INACTIVE"
     sendUpdate()
-    jsonData = {
-        "event": "Power down"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
-    power_off_animation()
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
     sendUpdate()
-
 
 ### Message Queue Events ###
 
@@ -117,7 +102,7 @@ def on_connect(client, userdata, flags, reason_code):
     client.subscribe("ToDevice/%s" % deviceId)
     client.subscribe("ToDevice/All")
     client.publish("ToHost", json.dumps(jsonData))
-    client.publish("FromDevice/%s" % deviceId, json.dumps(_jsonData))
+    sendUpdate()
 
 
 # The callback for when a PUBLISH message is received from the server.
@@ -171,23 +156,50 @@ connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
-UP = 1
-DOWN = 0
-lastState = UP
 
-on_reset(mqttc)
-
-button.when_pressed = lambda: on_solved(mqttc)
-button.when_released = lambda: on_reset(mqttc)
+lastInput = ""
 
 try:
     while True:
         
         if _gameState == "STOPPED":
             # Always be ready
-            pass 
-       
-        sleep(0.2)
+            sleep(0.1)
+            continue
+        
+        if _puzzleState == "ACTIVE":
+            
+            if _puzzleState == "SOLVED":
+                break
+            
+            row = 0
+            for pinRow in rowPins:
+                col = 0
+                GPIO.output(pinRow, GPIO.HIGH)
+                if (GPIO.input(pinRow) == 1):
+                    for pinCol in columnPins:
+                        if GPIO.input(pinCol) == 1:
+                            key = keypad[row][col]
+                            print("Row: %s - Col: %s ---> %s" % (row, col, key))
+                            if key != lastInput:  # Prevent auto repeat
+                                lastInput = key
+                                _currentData = _currentData + key
+                                _currentData = _currentData[-4:]  # last 4 characters only
+                                print(_currentData)
+                                sendUpdate()
+                            if _currentData == _solution:
+                                on_solved(mqttc)
+                        col = col + 1
+                GPIO.output(pinRow, GPIO.LOW)
+                row = row + 1
+
+                    
+        else:
+            sleep(1)
+        
+        
+        sleep(0.05)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
-    print("Cleaning up")
+finally:
+    GPIO.cleanup()

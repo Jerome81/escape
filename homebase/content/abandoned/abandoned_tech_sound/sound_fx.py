@@ -1,57 +1,88 @@
-import paho.mqtt.client as mqtt
-import json
-import gpiozero
-import board
-import neopixel
-
 from time import sleep
+from threading import Thread
+from random import randint
 
-deviceId = "abandoned_tech_power"
+import paho.mqtt.client as mqtt
+import pyaudio
+import wave
+import sys
+import json
+import os
+
+CHUNK = 1024
 
 mq_ip = "192.168.178.11"
+deviceId = "abandoned_tech_soundfx"
 
+random_sounds = 3
+random_min_wait = 5 # seconds
+random_max_wait = 30 # seconds
+_currently_playing = False
 _gameState = "STOPPED"
-_puzzleState = "ACTIVE"
-PRESSED = 0
-UNPRESSED = 1
 
-_solution = PRESSED
-_currentData = UNPRESSED
-
-lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
-lightstrip.fill((255, 0, 0))
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Lösung: %s" % _solution),
 }
 
-BUTTON_PIN = 14  #GPIO14
-LED_PIN = 26  #GPIO26
+def play_sound(file):
+    global _currently_playing
+    _currently_playing = True
+    os.system("mpg321 %s" % file)
+    _currently_playing = False
 
-light = gpiozero.LED(LED_PIN)
-light.on()
-
-button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
-
-
-def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
-
-    jsonData = _jsonData
-    jsonData["input"] = _currentData
-    jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
-    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
-    
+def play_random_sound():
+    sleep_time = randint(random_min_wait, random_max_wait)
+    print("Next random sound in %s seconds" % sleep_time)
+    sleep(sleep_time)
+    while _currently_playing:
+        sleep(0.3)
+    play_sound("random_%s.mp3" % randint(1, random_sounds))
+    t2 = Thread(target = play_random_sound)
+    t2.start()
 
 ### Game events ###
 def on_event(event):
-    pass
+
+    if event == "All devices powered":
+        play_sound("stromkreis_2.mp3")
+
+    if event == "Power up":
+        play_sound("stromkreis_1.mp3")
+
+    if event == "Self destruct":
+        play_sound("explosion_2.mp3")
+        play_sound("self_destruct.mp3")
+
+    if event == "Self destruction activated":
+        play_sound("nooooo.mp3")
+
+    if event == "Power down":
+        play_sound("shutdown_server.mp3")
+
+    if event == "Crew door open":
+        play_sound("doors.mp3")
+
+    if event == "Replicator ring production started" or event == "Replicator pyrometer production started" or event == "Replicator bubbles production started":
+        play_sound("replicator.mp3")
+
+    if event == "Joystick done":
+        play_sound("doors.mp3")
+
+    if event == "Cockpit door open":
+        play_sound("doors.mp3")
+
+    if event == "Cockpit door open":
+        play_sound("keypad_approved.mp3")
+    
+    if event == "Access granted":
+        play_sound("keypad_approved.mp3")
+
+
 
 ### Global commands ###
 def on_started():
-    pass
+    t2.start()
 
 def on_stopped():
     pass
@@ -59,51 +90,23 @@ def on_stopped():
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
     
-
-def power_on_animation():
-    for i in range(len(lightstrip)):
-        lightstrip[i] = (255, 255, 255)
-        if not button.is_pressed:
-            return
-        sleep(0.02)
-
-def power_off_animation(): 
-    for i in range(len(lightstrip) - 1, -1, -1):
-        lightstrip[i] = (0, 0, 0)
-        if button.is_pressed:
-            return
-        sleep(0.02)
+def sendUpdate():
+    jsonData = _jsonData
+    
+    jsonData["game_state"] = _gameState
+    mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 
 ### Puzzle commands ###
 def on_solved(client):
-    global _puzzleState
-    power_on_animation()
-    _puzzleState = "SOLVED"
-    sendUpdate()
-    light.off()
-    jsonData = {
-        "event": "Power up"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
+    pass
 
 
-def on_reset(client):
-    global _puzzleState
-    global _currentData
-    _puzzleState = "ACTIVE"  # Always active
-    light.on()
-    sendUpdate()
-    jsonData = {
-        "event": "Power down"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
-    power_off_animation()
+def on_reset():
+    pass
 
 def on_activate():
-    global _puzzleState
-    _puzzleState = "ACTIVE"
-    sendUpdate()
+    pass
 
 
 ### Message Queue Events ###
@@ -151,6 +154,7 @@ def on_message(client, userdata, msg):
                 on_reset()
             if command == "ACTIVATE":
                 on_activate()
+   
 
 def connect(client):
     disconnected = True
@@ -158,6 +162,7 @@ def connect(client):
         try:   
             client.connect(mq_ip, 1883, 60)
             disconnected = False
+            sendUpdate()
         except Exception as e:
             print('An exception occured: {}'.format(e))
             sleep(5)
@@ -171,23 +176,8 @@ connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
-UP = 1
-DOWN = 0
-lastState = UP
 
-on_reset(mqttc)
+t2 = Thread(target = play_random_sound)
 
-button.when_pressed = lambda: on_solved(mqttc)
-button.when_released = lambda: on_reset(mqttc)
-
-try:
-    while True:
-        
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
-       
-        sleep(0.2)
-except Exception as e:
-    print('An exception occurred: {}'.format(e))
-    print("Cleaning up")
+while True:
+    sleep(0.5)

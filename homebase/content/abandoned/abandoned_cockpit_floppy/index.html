@@ -1,0 +1,236 @@
+<html>
+    <head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+//const mqtt = require('mqtt')
+const url = 'ws://192.168.178.11:8083'
+
+var language = "de";
+var locked = true;
+var isEasy = true;
+var floppyInserted = false;
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  clientId: 'floppy_screen',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToDevice/All', function (err) {
+    if (!err) {
+        console.log("Subscription Successful")
+    }
+  })
+});
+
+
+client.on('disconnect', function () {
+  console.log('disonnected')
+});
+
+
+client.on('error', function () {
+  console.log('error')
+});
+
+function sendMessageToMainScreen(message) {
+  client.publish('ToDevice/console_screen', JSON.stringify({ "event": message }))
+}
+
+function sendMessageToAll(message) {
+  client.publish('ToDevice/All', JSON.stringify({ "event": message }))
+}
+
+function addClickListener() {
+  document.getElementById('main').addEventListener('click', function(event) {
+    const x = event.clientX;
+    const y = event.clientY;
+    console.log(`Mouse clicked at X: ${x}, Y: ${y}`);
+    
+    img = document.getElementById("main");
+
+    // MAIN SCREEN
+    if (img.src.indexOf("welcome_") > -1) {
+      if (x > 74 && x < 370 && y > 139 && y < 210) {
+        displayImage("menu");
+        sendMessageToMainScreen("Scan environment");
+        return;
+      }
+
+      if (x > 424 && x < 720 && y > 139 && y < 210) {
+        displayImage("log");
+        sendMessageToMainScreen("Show log");
+        return;
+      }
+
+      if (x > 74 && x < 370 && y > 257 && y < 328) {
+        displayImage("menu");
+        sendMessageToMainScreen("Ship status");
+        return;
+      }
+
+      if (x > 422 && x < 720 && y > 257 && y < 328) {
+        if (!floppyInserted) {
+          displayImage("menu");
+        } else {
+          if (isEasy) {
+            displayImage("data1_1");
+          } else {
+            displayImage("data2_1")
+          }
+        }
+        sendMessageToMainScreen("Decrypt data");
+        return;
+      }
+    }
+
+    // BACK TO MAIN MENU        
+    if (img.src.indexOf("menu_") > -1) {
+      if (x > 234 && x < 531 && y > 197 && y < 268) {
+        // Back
+        displayImage("welcome");
+        sendMessageToMainScreen("Welcome screen");
+        return;
+      }
+    }
+    
+    // LOGBOOK
+    if (img.src.indexOf("log_") > -1) {
+      if (x > 73 && x < 370 && y > 143 && y < 215) {
+        sendMessageToMainScreen("Previous log");
+        return;
+      }
+      if (x > 420 && x < 718 && y > 143 && y < 215) {
+        sendMessageToMainScreen("Next log");
+        return;
+      }
+      if (x > 235 && x < 535 && y > 252 && y < 324) {
+        displayImage("welcome");
+        sendMessageToMainScreen("Welcome screen");
+        return;
+      }      
+    }
+    
+    // Easy level
+    if (img.src.indexOf("data1_1") > -1) {
+      if (x > 236 && x < 532 && y > 197 && y < 269) {
+        // Open comms
+        sendMessageToMainScreen("Connect to coordinates");
+        sendMessageToAll("Activate orbital");
+        return;
+      }   
+    }
+    
+    // Hard level
+    if (img.src.indexOf("data2_1") > -1) {
+      if (x > 73 && x < 370 && y > 197 && y < 269) {
+        // Transmit virus
+        sendMessageToAll("Virus uploaded");
+        return;
+      }
+      if (x > 410 && x < 707 && y > 197 && y < 269) {
+        displayImage("welcome");
+        sendMessageToMainScreen("Welcome screen");
+        return;
+      }
+    }
+    
+
+    // if (img.src.indexOf("recycler_ready_") > -1) {
+    //   img.src = "production_in_progress_" + language + ".png";
+      
+    //   client.publish('ToDevice/All', JSON.stringify({ "event": 'Produce cartridge' }))
+    // }
+  });
+}
+
+function change_language() {
+    img = document.getElementById("main");
+    img.src = img.src.replace("_en", "_" + language);
+    img.src = img.src.replace("_de", "_" + language);
+}
+
+function displayImage(name) {
+  img = document.getElementById("main");
+  img.src = name + "_" + language + ".png";
+}
+
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  msg = JSON.parse(message);
+  console.log(msg);
+
+  if (msg["event"] == "Computer unlocked") {
+    locked = false;
+    displayImage("welcome");
+  }
+
+  if ( msg["gameState"] == "RESET") {
+    locked = true;
+    displayImage("empty")
+  }
+
+  if (msg["event"] == "Floppy inserted") {
+    floppyInserted = true;
+    img = document.getElementById("main");
+    if (img.src.indexOf("menu_") > -1) {
+      if (isEasy) {
+        displayImage("data1_1");
+      } else {
+        displayImage("data2_1");
+      }
+    }
+  }
+
+  if (msg["event"] == "Floppy removed") {
+    floppyInserted = false;
+    
+    img = document.getElementById("main");
+    if (img.src.indexOf("data") > -1) {
+      displayImage("menu");
+    }
+  }
+  if (msg["event"] == "Easy ending") {
+    console.log("Easy ending triggered.");
+    isEasy = true;
+  }
+  
+  if (msg["event"] == "Hard ending") {
+    console.log("Hard ending triggered.");
+    isEasy = false;
+  }
+
+  if (msg["language"] == "english") {
+    language = "en";
+    console.debug("English");
+  }
+  if (msg["language"] == "deutsch") {
+    language = "de";
+    console.debug("Deutsch");
+  }
+
+})
+</script>
+
+    </head>
+    <body style="padding:0px;margin:0px;">
+        <img id="main" src="empty_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+        
+<script>
+  addClickListener();
+        </script>
+    </body>
+</html>

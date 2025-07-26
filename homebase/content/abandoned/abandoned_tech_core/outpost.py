@@ -6,9 +6,9 @@ import gpiozero
 import neopixel
 import board
 import os
+import RPi.GPIO as GPIO
 
-
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_tech_core"
 
 _gameState = "STOPPED"
@@ -21,6 +21,10 @@ light.fill((255, 255, 255))
 
 core = gpiozero.Button(23, hold_time = 0.2, bounce_time = 0.2)
 
+# initialize door
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(12, GPIO.OUT)
+
 _jsonData = {
     "id": deviceId,
     "description": ("Lösung: Core herausnehmen"),
@@ -29,18 +33,29 @@ _jsonData = {
 core.when_pressed = lambda: on_reset()
 core.when_released = lambda: on_solved()
 
+def lock_door():
+    GPIO.setup(12, GPIO.LOW)
+    print("Door locked")
+
+def unlock_door():
+    GPIO.setup(12, GPIO.HIGH)
+    print("Door unlocked")
+
 ### Game events ###
 def on_event(event):
-    if event == "Overheat solved":
-        on_solved(mqttc)
-
+    if event == "Core access granted":
+        on_activate()
 
 ### Global commands ###
 def on_started():
-    pass
+    global _gameState
+    _gameState = "STARTED"
+    sendUpdate()    
 
 def on_stopped():
-    pass
+    global _gameState
+    _gameState = "STOPPED"
+    sendUpdate()
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
@@ -48,10 +63,17 @@ def on_language_change(language):
 def sendUpdate():
     jsonData = _jsonData
     
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData["input"] = _core_removed
     
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 def play_sound(file):
@@ -82,11 +104,13 @@ def on_reset():
     _puzzleState = "INACTIVE"
     _core_removed = False
     sendUpdate()
+    lock_door()
     light.fill((0, 255, 0))    
 
 def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
+    unlock_door()
     sendUpdate()
 
 ### Message Queue Events ###
@@ -156,6 +180,8 @@ connect(mqttc)
 
 print("starting message queue.")
 mqttc.loop_start()
+
+lock_door()
 
 leds = []
 color = (0, 255, 0)

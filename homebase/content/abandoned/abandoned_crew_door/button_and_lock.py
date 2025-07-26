@@ -4,6 +4,7 @@ import gpiozero
 import board
 import neopixel
 import RPi.GPIO as GPIO
+import os
 
 from time import sleep
 
@@ -36,12 +37,20 @@ GPIO.setup(12, GPIO.OUT)
 
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
     jsonData["input"] = _currentData
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
+
     
 def lock_door():
     GPIO.setup(12, GPIO.LOW)
@@ -77,18 +86,16 @@ def on_solved(client):
         "event": "Crew door open"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
+    client.publish("cmnd/sleeping_pods/Power", "on")
 
 
-def on_reset(client):
+
+def on_reset():
     global _puzzleState
     global _currentData
     _puzzleState = "ACTIVE"  # Always active
     lock_door()
     sendUpdate()
-    jsonData = {
-        "event": "Power down"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
 
 def on_activate():
     global _puzzleState

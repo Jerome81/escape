@@ -8,12 +8,18 @@ import json
 
 deviceId = "abandoned_tech_pressure"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
 _solution = [5, 1, 9, 3]
 _currentData = [ 0,0,0,0 ]
+
+sensor_vals = [
+    [ 1000, 390, 360, 300, 270, 200, 140, 80, 40, 10, -10 ],
+    [ 1000, 290, 220, 180, 150, 130, 100, 60, 30, 15, -10 ],
+    [ 1000, 620, 580, 500, 420, 250, 180, 100, 50, 15, -10 ],
+    [ 1000, 590, 550, 480, 380, 270, 180, 80, 40, 10, -10 ] ]
 
 _jsonData = {
     "id": deviceId,
@@ -26,6 +32,12 @@ kit.servo[1].actuation_range = 11
 kit.servo[2].actuation_range = 11
 kit.servo[3].actuation_range = 11
 
+def find_pressure(v, sensor):
+    for i in range(0, 10):
+        if v < sensor[i] and v > sensor[i + 1]:
+        return i
+    return 11
+
 def update_servos(line):
     global _currentData
     vals = line.split(",")
@@ -36,7 +48,7 @@ def update_servos(line):
     
     has_changes = False
     for i in range(0, 4):
-        v = round(int(vals[i]) / 100)
+        v = find_pressure(int(vals[i]), sensor_vals[i])
         if _currentData[i] != v:
             has_changes = True
             _currentData[i] = v

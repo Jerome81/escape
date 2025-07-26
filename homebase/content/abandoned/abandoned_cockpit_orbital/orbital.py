@@ -14,7 +14,7 @@ l.show()
 button_pressed = False
 total_tries = 0
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_cockpit_orbital"
 
 _gameState = "STOPPED"
@@ -165,7 +165,7 @@ def attract():
 
 ### Game events ###
 def on_event(event):
-    if event == "Power up":
+    if event == "Activate orbital":
         on_activate()
 
     if event == "Power down":
