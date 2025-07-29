@@ -3,9 +3,9 @@
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
 //const mqtt = require('mqtt')
-const url = 'ws://192.168.178.11:8083'
+const url = 'ws://192.168.5.11:8083'
 
-var language = "en";
+var language = "de";
 var current_blueprint = "";
 var product_complete;
 var powered = false;
@@ -181,10 +181,12 @@ client.on('message', function (topic, message) {
     if (msg["language"] == "english") {
       language = "en";
       console.debug("English");
+      change_language()
     }
     if (msg["language"] == "deutsch") {
       language = "de";
       console.debug("Deutsch");
+      change_language()
     }
   }
   
