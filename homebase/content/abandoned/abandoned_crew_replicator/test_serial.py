@@ -6,7 +6,7 @@ from time import sleep
 def connect_serial():
 
     try:
-        ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
         ser.reset_input_buffer()
         return ser
     except Exception as e:
@@ -17,7 +17,7 @@ def connect_serial():
 _serial_connected = False
 
 try:
-    ser = None
+    ser = connect_serial()
     while True:
 
         if ser.in_waiting > 0:
