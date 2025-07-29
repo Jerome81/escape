@@ -1,3 +1,4 @@
+import os
 import paho.mqtt.client as mqtt
 import serial
 import time
@@ -22,7 +23,7 @@ _pressureCorrect = False
 
 sensor_vals = [ 
     [ 1000, 330, 310, 285, 230, 185, 140, 80, 40, 10, -10 ], 
-    [ 1000, 260, 210, 180, 150, 130, 100, 60, 30, 15, -10 ], 
+    [ 1000, 260, 210, 180, 150, 130, 100, 70, 40, 15, -10 ], 
     [ 1000, 560, 500, 430, 290, 230, 180, 100, 50, 15, -10 ], 
     [ 1000, 560, 520, 480, 380, 270, 180, 80, 40, 15, -10 ]
 ]
@@ -81,13 +82,21 @@ def update_servos(line):
         sendUpdate()
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
+
 
 ### Game events ###
 def on_event(event):
@@ -96,11 +105,14 @@ def on_event(event):
         on_activate()
     if event == "Cartridge produced":
         _solved = True
+        for i in range(0, 4):
+            kit.servo[i].angle = 0
+
 
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -238,30 +250,42 @@ print("starting message queue.")
 mqttc.loop_start()
 
 light_off()
+sendUpdate()
 
-#try:
-ser = None
-while True:
+errors_in_a_row = 0
+
+try:
+    ser = None
+    while True:
     
-    if _serial_connected == False:
-        ser = connect_serial()
+        if _serial_connected == False:
+            ser = connect_serial()
         
-    if _serial_connected == False:
-        sleep(5)
-    else:
-        if ser.in_waiting > 0:
-            line = ser.readline().decode('utf-8').rstrip()
-            print(line)
-            if _gameState == "STARTED":
-                if _puzzleState == "ACTIVE" or _puzzleState == "SOLVED":
-                    if not _solved:
-                        # Only update if the cartridge hasn't been produced.
-                        update_servos(line)
-        sleep(0.1)
+        if _serial_connected == False:
+            sleep(5)
+        else:
+            if ser.in_waiting > 0:
+                try:
+                    line = ser.readline().decode('utf-8').rstrip()
+                    print(line)
+                    errors_in_a_row = 0
+                except Exception as x:
+                    print('An exception occurred: {}'.format(x))
+                    errors_in_a_row = errors_in_a_row + 1
+                    if errors_in_a_row == 5:
+                        _currentData = ('5 exceptions in a row, contact Jerome: {}'.format(x))
+                        sendUpdate()
 
-#except Exception as e:
-#    s = ('An exception occurred: {}'.format(e))
-#    _currentData = s
-#    sendUpdate()
-#    print(s)
-#    print("Cleaning up")
+                if _gameState == "STARTED":
+                    if _puzzleState == "ACTIVE" or _puzzleState == "SOLVED":
+                        if not _solved:
+                            # Only update if the cartridge hasn't been produced.
+                            update_servos(line)
+            sleep(0.1)
+
+except Exception as e:
+    s = ('An exception occurred: {}'.format(e))
+    _currentData = s
+    sendUpdate()
+    print(s)
+    print("Cleaning up")
