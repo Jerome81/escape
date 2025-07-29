@@ -11,15 +11,16 @@ import os
 
 CHUNK = 1024
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_tech_soundfx"
 
 random_sounds = 3
-random_min_wait = 5 # seconds
-random_max_wait = 30 # seconds
+random_min_wait = 30 # seconds
+random_max_wait = 120 # seconds
 _currently_playing = False
 _gameState = "STOPPED"
-
+_dock_door_unlocked = False
+_language = "de"
 
 _jsonData = {
     "id": deviceId,
@@ -41,8 +42,46 @@ def play_random_sound():
     t2 = Thread(target = play_random_sound)
     t2.start()
 
+def intruder_alert():
+
+    while _currently_playing:
+        sleep(0.3)
+    play_sound("alarm_%s.mp3" % _language)    
+    sleep_time = 15
+    sleep(sleep_time)
+    if not _dock_door_unlocked:
+        intruder_alert_thread = Thread(target = intruder_alert)
+        intruder_alert_thread.start()
+
+
 ### Game events ###
 def on_event(event):
+    global _dock_door_unlocked
+
+    if event == "Intruder alert":
+        play_sound("intruder_detected_%s.mp3" % _language)
+        sleep(1)
+        intruder_alert_thread.start()
+
+    if event == "Ripplis hint":
+        play_sound("rippli_hint_%s.mp3" % _language)    
+
+    if event == "AI warning":
+        play_sound("ai_warning_%s.mp3" % _language)
+
+    if event == "ISS Riddle intervention":
+        intruder_alert_thread.do_run = False
+        play_sound("iss_riddle_help_%s.mp3" % _language)
+        jsonData = {
+            "command": "SOLVED"
+        }
+        mqttc.publish("ToDevice/abandoned_dock_door", json.dumps(jsonData))        	
+        
+
+    if event == "Dock door unlocked":
+        intruder_alert_thread.do_run = False
+        _dock_door_unlocked = True
+        t2.start()
 
     if event == "All devices powered":
         play_sound("stromkreis_2.mp3")
@@ -82,13 +121,18 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    t2.start()
+    pass
 
 def on_stopped():
     pass
 
 def on_language_change(language):
-    print("Nothing required for language change to %s." % language)
+    global _language
+    if language == "english":
+         _language = "en"
+    if language == "deutsch":
+         _language = "de"
+    print("changed language to %s." % language)
     
 def sendUpdate():
     jsonData = _jsonData
@@ -178,6 +222,7 @@ print("starting message queue.")
 mqttc.loop_start()
 
 t2 = Thread(target = play_random_sound)
+intruder_alert_thread = Thread(target = intruder_alert)
 
 while True:
     sleep(0.5)
