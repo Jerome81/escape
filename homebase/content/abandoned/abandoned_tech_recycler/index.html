@@ -182,12 +182,16 @@ client.on('message', function (topic, message) {
   if (msg["language"] == "english") {
     language = "en";
     console.debug("English");
+    change_language()
   }
   if (msg["language"] == "deutsch") {
     language = "de";
     console.debug("Deutsch");
+    change_language()
   }
   if (msg["event"] == "Produce cartridge") {
+    img = document.getElementById("main");
+    img.src = "production_in_progress_" + language + ".png"
     return;
   }
   updateScreen();
