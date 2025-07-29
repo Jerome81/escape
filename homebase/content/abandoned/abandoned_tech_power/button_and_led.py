@@ -1,3 +1,4 @@
+import os
 import paho.mqtt.client as mqtt
 import json
 import gpiozero
@@ -8,7 +9,7 @@ from time import sleep
 
 deviceId = "abandoned_tech_power"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
@@ -18,7 +19,7 @@ UNPRESSED = 1
 _solution = PRESSED
 _currentData = UNPRESSED
 
-lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 1)
+lightstrip = neopixel.NeoPixel(board.D18, 100, brightness = 0.6)
 lightstrip.fill((255, 0, 0))
 
 _jsonData = {
@@ -36,12 +37,19 @@ button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
 
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 
@@ -51,7 +59,7 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -88,16 +96,21 @@ def on_solved(client):
     client.publish("ToDevice/All", json.dumps(jsonData))
 
 
-def on_reset(client):
-    global _puzzleState
-    global _currentData
-    _puzzleState = "ACTIVE"  # Always active
+def on_unsolved(client):
     light.on()
     sendUpdate()
     jsonData = {
         "event": "Power down"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
+    power_off_animation()
+
+def on_reset(client):
+    global _puzzleState
+    global _currentData
+    _puzzleState = "ACTIVE"  # Always active
+    light.on()
+    sendUpdate()
     power_off_animation()
 
 def on_activate():
@@ -175,10 +188,11 @@ UP = 1
 DOWN = 0
 lastState = UP
 
-on_reset(mqttc)
+power_off_animation()
+sendUpdate()
 
 button.when_pressed = lambda: on_solved(mqttc)
-button.when_released = lambda: on_reset(mqttc)
+button.when_released = lambda: on_unsolved(mqttc)
 
 try:
     while True:
