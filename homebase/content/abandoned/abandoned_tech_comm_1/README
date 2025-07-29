@@ -5,3 +5,20 @@ chrome.exe --autoplay-policy=no-user-gesture-required
 So for example in /etc/xdg/openbox/autostart you need the following line to start chromium in kiosk mode:
 
 chromium-browser --disable-infobars --kiosk --autoplay-policy=no-user-gesture-required "/var/lib/outposts/comm.html"
+
+
+
+
+Wird verwendet in folgenden Raspis:
+
+abandoned_dock_comm_1:
+LEDS = 184
+
+abandoned_crew_comm:
+LEDS = 171
+
+abandoned_tech_comm_1:
+LEDS = 151
+
+abandoned_tech_comm_2:
+LEDS = 121

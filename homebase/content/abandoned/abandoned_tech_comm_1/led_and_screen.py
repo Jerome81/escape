@@ -27,7 +27,7 @@ effects = Effects(led_count=LEDS, pin=board.D18)
 powered_up = False
 
 PAUSE_COLOR = ((0, 0, 130))
-GAME_COLOR = ((50, 255, 50))
+GAME_COLOR = ((255, 255, 255))
 NOT_STARTED_COLOR = ((0, 255, 0))
 
 ### Game events ###
@@ -78,7 +78,7 @@ def on_connect(client, userdata, flags, reason_code):
 
     client.subscribe("ToDevice/%s" % deviceId)
     client.subscribe("ToDevice/All")
-    effects.morph((255, 255, 0), NOT_STARTED_COLOR, target_brightness = 0.7)
+    effects.start_red_alert()
 
 
 # The callback for when a PUBLISH message is received from the server.

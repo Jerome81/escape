@@ -1,3 +1,4 @@
+import os
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import json
@@ -10,8 +11,8 @@ import neopixel
 
 from time import sleep
 
-mq_ip = "192.168.178.11"
-deviceId = "abandoned_engineroom_circuit"
+mq_ip = "192.168.5.11"
+deviceId = "abandoned_tech_circuit"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
@@ -63,10 +64,17 @@ def setButtonState(button, isSelected):
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
 
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 def power_on_animation():
@@ -114,7 +122,7 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -278,7 +286,8 @@ on_reset()
 try:
     while True:
                 
-        sleep(0.5)
+        sleep(0.3)
+
 except Exception as e:
     print('An exception occurred: {}'.format(e))
     print("Cleaning up")

@@ -6,8 +6,8 @@ import RPi.GPIO as GPIO
 import os
 
 
-mq_ip = "192.168.178.11"
-deviceId = "abandoned_dock_door"
+mq_ip = "192.168.5.11"
+deviceId = "abandoned_tech_recycler"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
@@ -39,11 +39,13 @@ def on_unstoned(stone):
     global _currentData
     print("Unstoned %s" % stone)
     _currentData[stone] = 0
+    sendUpdate()
 
 def on_stoned(stone):
     global _currentData
     print("Stoned %s" % stone)
     _currentData[stone] = 1
+    sendUpdate()
 
 def lock_trapdoor():
     GPIO.setup(12, GPIO.LOW)
@@ -97,14 +99,21 @@ def on_stopped():
 
 def on_language_change(language):
     print("Nothing required for language change to %s." % language)
-    
+
 def sendUpdate():
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData = _jsonData
-    
-    jsonData["input"] = _currentData
-    
+    jsonData["input"] = (_currentData)
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 
