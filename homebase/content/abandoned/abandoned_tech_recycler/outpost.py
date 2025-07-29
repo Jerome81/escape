@@ -66,9 +66,8 @@ def unlock_cartridgedoor():
 button1.when_pressed = lambda: on_unstoned(0)
 button1.when_released = lambda: on_stoned(0)
 
-# button2 is different
-button2.when_pressed = lambda: on_stoned(1)
-button2.when_released = lambda: on_unstoned(1)
+button2.when_pressed = lambda: on_unstoned(1)
+button2.when_released = lambda: on_stoned(1)
 
 button3.when_pressed = lambda: on_unstoned(2)
 button3.when_released = lambda: on_stoned(2)
@@ -92,7 +91,7 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -243,6 +242,8 @@ mqttc.loop_start()
 
 lock_trapdoor()
 lock_cartridgedoor()
+
+sendUpdate()
 
 try:
     while(True):
