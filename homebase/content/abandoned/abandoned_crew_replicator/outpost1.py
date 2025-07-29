@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 
 deviceId = "abandoned_crew_replicator"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
@@ -20,7 +20,7 @@ _blueprint = ""
 
 _jsonData = {
     "id": deviceId,
-    "description": ("Blprt: Pyrometer - Crtrdg: 1 - True" ),
+    "description": ("Blprt: Pyrometer - Crtrdg: 2 - True" ),
 }
 
 button1 = gpiozero.Button(18, hold_time = 0.1, bounce_time = 0.2)
@@ -104,7 +104,7 @@ def publish_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -203,7 +203,7 @@ def connect_serial():
         return
     
     try:
-        ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
         ser.reset_input_buffer()
         _serial_connected = True
         return ser
@@ -245,6 +245,7 @@ print("starting message queue.")
 mqttc.loop_start()
 
 close_drawer()
+sendUpdate()
 
 try:
     last_cartridge = _cartridge_number
