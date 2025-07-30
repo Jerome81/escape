@@ -14,7 +14,7 @@ CHUNK = 1024
 mq_ip = "192.168.5.11"
 deviceId = "abandoned_tech_soundfx"
 
-random_sounds = 3
+random_sounds = 5
 random_min_wait = 30 # seconds
 random_max_wait = 120 # seconds
 _currently_playing = False
@@ -111,9 +111,6 @@ def on_event(event):
     if event == "Cockpit door open":
         play_sound("doors.mp3")
 
-    if event == "Cockpit door open":
-        play_sound("keypad_approved.mp3")
-    
     if event == "Access granted":
         play_sound("keypad_approved.mp3")
 
