@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import serial
 import os
-import time
+from time import time
 from time import sleep
 import json
 
@@ -17,10 +17,17 @@ _puzzleState = "INACTIVE"
 _cartridge_number = 0
 _drawer_open = False
 _blueprint = ""
+_production_completed_at = 0
 
 _jsonData = {
     "id": deviceId,
     "description": ("Blprt: Pyrometer - Crtrdg: 2 - True" ),
+}
+
+_cartridges = {
+    2: "Hexapolym",
+    3: "Amorata",
+    4: "Partynom"    
 }
 
 button1 = gpiozero.Button(18, hold_time = 0.1, bounce_time = 0.2)
@@ -70,14 +77,13 @@ def on_event(event):
         on_activate()
 
     if event == "Replicator ring production started":
-        pass
+        on_solved(mqttc)
 
     if event == "Replicator pyrometer production started":
-        pass
+        on_solved(mqttc)
 
     if event == "Replicator bubbles production started":
-        pass
-
+        on_solved(mqttc)
 
 
 def blueprint_inserted(event):
@@ -86,13 +92,24 @@ def blueprint_inserted(event):
     publish_event(event + " blueprint inserted")
     sendUpdate()
 
+def blueprint_removed():
+    global _blueprint
+    _blueprint = ""
+    publish_event("Blueprint removed")
+    sendUpdate()
+
 def cartridge_removed():
     print("Cartridge removed")
     sendUpdate()
+    publish_event("No cartridge inserted")
 
 def new_cartridge():
     print("Cartridge %s" % _cartridge_number)
     sendUpdate()
+    try:
+        publish_event("%s inserted" % _cartridges[_cartridge_number])
+    except Exception as e:
+        print("No cartridge with number: %s" % _cartridge_number)
 
 
 def publish_event(event):
@@ -116,12 +133,15 @@ def on_language_change(language):
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
+    global _production_completed_at
+    sleep(11)    
+    publish_event(_blueprint + " produced")
+    _production_completed_at = time()
+    open_drawer()
     _puzzleState = "SOLVED"
     sendUpdate()
-    jsonData = {
-        "event": ("%s produced" % _blueprint)
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
+
+
 
 def on_unsolved(client):
     global _puzzleState
@@ -249,6 +269,7 @@ sendUpdate()
 
 try:
     last_cartridge = _cartridge_number
+    last_blueprint_insertion = 0
     ser = None
     while True:
         if _serial_connected == False:
@@ -257,19 +278,31 @@ try:
         if _serial_connected == False:
             sleep(5)
         else:
-            if ser.in_waiting > 0:
-                line = ser.readline().decode('utf-8').rstrip()
-                line = line.strip()
-                codeword = "Replikator: "
-                if line.startswith(codeword):
-                    event = line[len(codeword)::]
-                    blueprint_inserted(event)
-            sleep(0.1)
-            if last_cartridge != _cartridge_number:
-                if _cartridge_number == 0:
-                    cartridge_removed()
-                else:
-                    new_cartridge()
+            if _gameState == "STARTED" and _puzzleState == "ACTIVE":
+                if ser.in_waiting > 0:
+                    line = ser.readline().decode('utf-8').rstrip()
+                    line = line.strip()
+                    codeword = "Replikator: "
+                    if line.startswith(codeword):
+                        last_blueprint_insertion = time()
+                        event = line[len(codeword)::]
+                        if event != _blueprint:
+                            blueprint_inserted(event)
+                    if time() - last_blueprint_insertion > 2 and _blueprint != "":
+                        blueprint_removed()
+                sleep(0.1)
+                if last_cartridge != _cartridge_number:
+                    last_cartridge = _cartridge_number
+                    if _cartridge_number == 0:
+                        cartridge_removed()
+                    else:
+                        new_cartridge()
+            else:
+                if _production_completed_at > 0 and time() - _production_completed_at > 120:
+                    _production_completed_at = 0
+                    close_drawer()
+                    sendUpdate()
+                sleep(0.3)
 
 except Exception as e:
     s = ('An exception occurred: {}'.format(e))

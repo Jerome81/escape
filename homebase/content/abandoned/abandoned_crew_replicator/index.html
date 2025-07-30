@@ -12,6 +12,7 @@ var powered = false;
 var pyrometer_cartridge = false;
 var ring_cartridge = false;
 var bubbles_cartridge = false;
+var production_started = false;
 
 // Create an MQTT client instance
 const options = {
@@ -55,10 +56,11 @@ function addClickListener() {
     
     img = document.getElementById("main");
     
-    if (img.src.indexOf("_ready_") > -1 && (x > 297 && x < 495 && y > 334 && y < 375)) {
+    if (img.src.indexOf("_ready_") > -1 && (x > 374 && x < 645 && y > 425 && y < 488)) {
       img.src = current_blueprint + "_production_" + language + ".png";
       client.publish('ToDevice/All', JSON.stringify({ "event": 'Replicator ' + current_blueprint + ' production started' }))
     }
+
   });
 }
 
@@ -71,10 +73,18 @@ function change_language() {
 function updateScreen() {
   img = document.getElementById("main");
   if (powered) {
-    
+    if (product_complete) {
+      img.src = current_blueprint + "_done_" + language + ".png";
+      return;
+    }
+
     if (current_blueprint == "") {
       img.src = "insert_blueprint_" + language + ".png";
     } else {
+      if (production_started) {
+        img.src = current_blueprint + "_production_" + language + ".png";
+        return;
+      }
       if (current_blueprint == "pyrometer" && pyrometer_cartridge) {
         img.src = current_blueprint + "_ready_" + language + ".png";
         return;
@@ -94,7 +104,7 @@ function updateScreen() {
     }
   } else {
     img = document.getElementById("main");
-    img.src = "no_energy_" + language + ".png"
+    img.src = "no_power_" + language + ".png"
   }
 }
 
@@ -108,14 +118,13 @@ client.on('message', function (topic, message) {
       return;
     }
     if (msg["event"].indexOf(" produced") > -1) {
-      img = document.getElementById("main");
-      img.src = current_blueprint + "_done_" + language + ".png"
-      return;
+      product_complete=true;
     }
 
     if (msg["event"] == "All devices powered") {
       powered = true;
     }
+
     if (msg["event"] == "Power down") {
       powered = false;
     }
@@ -128,7 +137,7 @@ client.on('message', function (topic, message) {
       current_blueprint = "ring";
     }
 
-    if (msg["event"] == "Bubbles blueprint inserted") {
+    if (msg["event"] == "Champagne blueprint inserted") {
       current_blueprint = "bubbles";
     }
 
@@ -136,8 +145,12 @@ client.on('message', function (topic, message) {
       current_blueprint = "apple";
     }
 
-    if (msg["event"] == "Lasergun blueprint inserted") {
+    if (msg["event"] == "Laser blueprint inserted") {
       current_blueprint = "lasergun";
+    }
+
+    if (msg["event"] == "Blueprint removed") {
+      current_blueprint = "";
     }
 
     if (msg["event"] == "Hexapolym inserted") {
@@ -158,13 +171,19 @@ client.on('message', function (topic, message) {
       bubbles_cartridge = false;
     }
 
-    if (msg["event"] == "No cartrdige inserted") {
+    if (msg["event"] == "No cartridge inserted") {
       pyrometer_cartridge = false;
       ring_cartridge = false;
       bubbles_cartridge = false;
     }
-    if (msg["event"] == "Produce cartridge") {
-      return;
+
+    if (msg["event"].indexOf("production started") > -1) {
+      production_started = true;
+    }
+
+    if (msg["event"].indexOf(" produced") > -1) {
+      production_started = false;
+      product_complete = true;
     }
 
     updateScreen();
@@ -195,7 +214,7 @@ client.on('message', function (topic, message) {
 
     </head>
     <body style="padding:0px;margin:0px;">
-        <img id="main" src="no_energy_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+        <img id="main" src="no_power_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
         
 <script>
   addClickListener();
