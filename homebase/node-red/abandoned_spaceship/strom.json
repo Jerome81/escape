@@ -1,0 +1,919 @@
+[
+    {
+        "id": "c39beee04cae8608",
+        "type": "tab",
+        "label": "Strom",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "8b2e9b6e4e8e88e7",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Links",
+        "request": "on",
+        "device": "dcd0c953da0d4a53",
+        "x": 750,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6c255c37f592277d",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Rechts",
+        "request": "on",
+        "device": "0945142ecfdd2aa9",
+        "x": 740,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5797033030b5913c",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Crew Room Comm",
+        "request": "on",
+        "device": "abbb0e013264698a",
+        "x": 750,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a0c07c941d3a51ea",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech Recycler",
+        "request": "on",
+        "device": "302122acaf9c978d",
+        "x": 740,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cf75cdc655db89ef",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech Comm",
+        "request": "on",
+        "device": "3131d27fc85aed35",
+        "x": 730,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "086a5d79ad65c213",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 1,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech AI ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 390,
+        "y": 300,
+        "wires": [
+            [
+                "911fc5bad1febb40"
+            ]
+        ]
+    },
+    {
+        "id": "911fc5bad1febb40",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech AI",
+        "request": "on",
+        "device": "e24af3f7b48b145b",
+        "x": 720,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fcbd0162e12084c7",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech AI OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "59d09df8440d2db3"
+            ]
+        ]
+    },
+    {
+        "id": "59d09df8440d2db3",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech AI",
+        "request": "off",
+        "device": "e24af3f7b48b145b",
+        "x": 720,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b379097f42c5e610",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech Comm ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 400,
+        "y": 400,
+        "wires": [
+            [
+                "cf75cdc655db89ef"
+            ]
+        ]
+    },
+    {
+        "id": "2ba5e0840ed12a1a",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech Comm OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 440,
+        "wires": [
+            [
+                "456a44dfbd5482e9"
+            ]
+        ]
+    },
+    {
+        "id": "456a44dfbd5482e9",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech Comm",
+        "request": "off",
+        "device": "3131d27fc85aed35",
+        "x": 730,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8dba30660c15096b",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 5,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech Recycler ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 500,
+        "wires": [
+            [
+                "a0c07c941d3a51ea"
+            ]
+        ]
+    },
+    {
+        "id": "c7013422fce98a0f",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Tech Recycler OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 540,
+        "wires": [
+            [
+                "8ff1266a590ff8e5"
+            ]
+        ]
+    },
+    {
+        "id": "8ff1266a590ff8e5",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Tech Recycler",
+        "request": "off",
+        "device": "302122acaf9c978d",
+        "x": 740,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8426f133c6356386",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 7,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Crew Comm ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 400,
+        "y": 600,
+        "wires": [
+            [
+                "5797033030b5913c"
+            ]
+        ]
+    },
+    {
+        "id": "22e0f518ff1236d9",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Crew Comm OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 640,
+        "wires": [
+            [
+                "d6df84d3cd6abda4"
+            ]
+        ]
+    },
+    {
+        "id": "d6df84d3cd6abda4",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Crew Room Comm",
+        "request": "off",
+        "device": "abbb0e013264698a",
+        "x": 750,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b3e3e1839531662c",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Rechts",
+        "request": "off",
+        "device": "0945142ecfdd2aa9",
+        "x": 740,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "783de5d3a9516549",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 9,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Rechts ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 700,
+        "wires": [
+            [
+                "6c255c37f592277d"
+            ]
+        ]
+    },
+    {
+        "id": "91fc413d89d28493",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 10,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Rechts OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 420,
+        "y": 740,
+        "wires": [
+            [
+                "b3e3e1839531662c"
+            ]
+        ]
+    },
+    {
+        "id": "92f717be2726c63f",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Door",
+        "request": "on",
+        "device": "297bf227b0358f3b",
+        "x": 750,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c86e9f96578a5798",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Door",
+        "request": "off",
+        "device": "297bf227b0358f3b",
+        "x": 750,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d444ce1f5f97923d",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 13,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Door ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 800,
+        "wires": [
+            [
+                "92f717be2726c63f"
+            ]
+        ]
+    },
+    {
+        "id": "ad07ec60391f192d",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 14,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Door OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 410,
+        "y": 840,
+        "wires": [
+            [
+                "c86e9f96578a5798"
+            ]
+        ]
+    },
+    {
+        "id": "b4fb4ec9266ebfd2",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Cockpit Links",
+        "request": "off",
+        "device": "dcd0c953da0d4a53",
+        "x": 750,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cdd89f2610d3b110",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 11,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Links ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 390,
+        "y": 180,
+        "wires": [
+            [
+                "8b2e9b6e4e8e88e7"
+            ]
+        ]
+    },
+    {
+        "id": "57f740bc977619c4",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 12,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Cockpit Links OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 390,
+        "y": 220,
+        "wires": [
+            [
+                "b4fb4ec9266ebfd2"
+            ]
+        ]
+    },
+    {
+        "id": "6943b0f3ee84b149",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Exit Door",
+        "request": "on",
+        "device": "4cdb84b69603c720",
+        "x": 740,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2830bd38878c6c55",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Exit Door",
+        "request": "off",
+        "device": "4cdb84b69603c720",
+        "x": 740,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e145fd3ec6e1b57e",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 15,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Exit ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 380,
+        "y": 900,
+        "wires": [
+            [
+                "6943b0f3ee84b149"
+            ]
+        ]
+    },
+    {
+        "id": "8e9b8e25afbf242b",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Dock",
+        "request": "on",
+        "device": "8ee0dc6e13501dc8",
+        "x": 730,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "afa8beea8cc080f1",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 15,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Dock ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 380,
+        "y": 1000,
+        "wires": [
+            [
+                "8e9b8e25afbf242b"
+            ]
+        ]
+    },
+    {
+        "id": "c575793a69c0b548",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Dock",
+        "request": "off",
+        "device": "8ee0dc6e13501dc8",
+        "x": 730,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1892789f86ab63c6",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 15,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Dock OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 390,
+        "y": 1040,
+        "wires": [
+            [
+                "c575793a69c0b548"
+            ]
+        ]
+    },
+    {
+        "id": "92a9d3449087fe38",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 16,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Exit OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 380,
+        "y": 940,
+        "wires": [
+            [
+                "2830bd38878c6c55"
+            ]
+        ]
+    },
+    {
+        "id": "a3d78e6923151d55",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Replicator",
+        "request": "on",
+        "device": "c675ad2ad5d94c3a",
+        "x": 740,
+        "y": 1100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "56580fbbe6c82fb5",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 15,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Replicator ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 400,
+        "y": 1100,
+        "wires": [
+            [
+                "a3d78e6923151d55"
+            ]
+        ]
+    },
+    {
+        "id": "cd306941b72b0999",
+        "type": "myStrom Switch",
+        "z": "c39beee04cae8608",
+        "name": "Replicator",
+        "request": "off",
+        "device": "c675ad2ad5d94c3a",
+        "x": 740,
+        "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "41e5bd2858a51b22",
+        "type": "ui_button",
+        "z": "c39beee04cae8608",
+        "name": "",
+        "group": "b0b28a530d934365",
+        "order": 15,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Replicator OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 400,
+        "y": 1140,
+        "wires": [
+            [
+                "cd306941b72b0999"
+            ]
+        ]
+    },
+    {
+        "id": "dcd0c953da0d4a53",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.38",
+        "mac": "a848fafa706e",
+        "name": "CockpitLinks"
+    },
+    {
+        "id": "0945142ecfdd2aa9",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.37",
+        "mac": "441793310249",
+        "name": "41 - Cockpit Rechts"
+    },
+    {
+        "id": "abbb0e013264698a",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.36",
+        "mac": "441793300227",
+        "name": "40 Crew Room Comm"
+    },
+    {
+        "id": "302122acaf9c978d",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.35",
+        "mac": "441793308cca",
+        "name": "Tech Recycler"
+    },
+    {
+        "id": "3131d27fc85aed35",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.34",
+        "mac": "4417932fae8b",
+        "name": "38 Tech Room Comm"
+    },
+    {
+        "id": "b0b28a530d934365",
+        "type": "ui_group",
+        "name": "Strom Escape 1",
+        "tab": "9237a685d2907345",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e24af3f7b48b145b",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.39",
+        "mac": "4c7525312AC0",
+        "name": ""
+    },
+    {
+        "id": "297bf227b0358f3b",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.40",
+        "mac": "4417932EF593",
+        "name": "44 - Cockpit Door"
+    },
+    {
+        "id": "4cdb84b69603c720",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.41",
+        "mac": "4417932F1F06",
+        "name": "45 - Exit door"
+    },
+    {
+        "id": "8ee0dc6e13501dc8",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.42",
+        "mac": "441793389B23",
+        "name": "46 - Dock"
+    },
+    {
+        "id": "c675ad2ad5d94c3a",
+        "type": "myStrom Config Switch",
+        "host": "192.168.5.43",
+        "mac": "44179330BBBC",
+        "name": "47 - Replicator"
+    },
+    {
+        "id": "9237a685d2907345",
+        "type": "ui_tab",
+        "name": "Strom ein/aus",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
