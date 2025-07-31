@@ -21,10 +21,17 @@ _currently_playing = False
 _gameState = "STOPPED"
 _dock_door_unlocked = False
 _language = "de"
+_overheat_message_counter = 0
 
 _jsonData = {
     "id": deviceId,
 }
+
+def play_message(file):
+    global _currently_playing
+    # Messages take precedence over sound files.
+    _currently_playing = False
+    play_sound("%s_%s.mp3" % (file, _language))
 
 def play_sound(file):
     global _currently_playing
@@ -59,19 +66,19 @@ def on_event(event):
     global _dock_door_unlocked
 
     if event == "Intruder alert":
-        play_sound("intruder_detected_%s.mp3" % _language)
+        play_message("intruder_detected")
         sleep(1)
         intruder_alert_thread.start()
 
     if event == "Ripplis hint":
-        play_sound("rippli_hint_%s.mp3" % _language)    
+        play_message("ripplis_hint")
 
     if event == "AI warning":
-        play_sound("ai_warning_%s.mp3" % _language)
+        play_message("ai_warning")
 
     if event == "ISS Riddle intervention":
         intruder_alert_thread.do_run = False
-        play_sound("iss_riddle_help_%s.mp3" % _language)
+        play_message("iss_riddle_help")
         jsonData = {
             "command": "SOLVED"
         }
@@ -80,6 +87,8 @@ def on_event(event):
 
     if event == "Dock door unlocked":
         intruder_alert_thread.do_run = False
+        play_message("dock_door_unlocked")
+        
         _dock_door_unlocked = True
         t2.start()
 
@@ -160,6 +169,7 @@ def on_connect(client, userdata, flags, reason_code):
 
     client.subscribe("ToDevice/%s" % deviceId)
     client.subscribe("ToDevice/All")
+    client.subscribe("ToDevice/Comms")
     client.publish("ToHost", json.dumps(jsonData))
     client.publish("FromDevice/%s" % deviceId, json.dumps(_jsonData))
 
@@ -167,6 +177,7 @@ def on_connect(client, userdata, flags, reason_code):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     global _gameState
+    global _overheat_message_counter
     print(msg.topic)
     print(msg.payload)
     payload = json.loads(msg.payload.decode('utf-8'))
@@ -182,6 +193,23 @@ def on_message(client, userdata, msg):
                 on_reset()
         if 'event' in payload:
             on_event(payload["event"])
+    
+    if msg.topic == "ToDevice/Comms":
+        if 'display' in payload:
+            display = payload["display"]
+            if display == "Cockpit overheated":
+                _overheat_message_counter = _overheat_message_counter + 1
+                if _overheat_message_counter > 4:
+                    play_message("cockpit_overheated_annoyed")
+                else:
+                    play_message("cockpit_overheated")
+            else:
+                play_sound("notification.mp3")
+
+        if 'movie' in payload:
+            movie = payload["movie"]
+            play_message(movie)
+
         if 'language' in payload:
             on_language_change(payload["language"])
             
