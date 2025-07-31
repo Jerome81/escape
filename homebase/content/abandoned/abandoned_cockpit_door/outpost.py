@@ -78,6 +78,11 @@ def on_solved(client):
             "event": "Cockpit door open"
         }
         client.publish("ToDevice/All", json.dumps(jsonData))
+    else:
+        jsonData = {
+            "display": "Cockpit overheated"
+        }
+        client.publish("ToDevice/Comms", json.dumps(jsonData))
 
 def on_reset(client):
     global _puzzleState
