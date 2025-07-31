@@ -14,30 +14,56 @@
             overflow: hidden; /* Prevent scrollbars */
             background-color: #000; /* Ensure black background */
         }
-
-        #background-image {
-            position: fixed; /* Fix the image to the viewport */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Scale the image to cover the entire viewport */
-            z-index: 1; /* Place the image behind other content */
-        }
+        @font-face {
+            font-family: 'Welbut';
+            src: url('Welbut__.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+        }  
 
         #text-overlay {
-            position: fixed; /* Fix the text to the viewport */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Center the text */
-            z-index: 2; /* Place the text above the image */
             color: white;
-            font-size: 9vw; /* Use viewport width for responsive font size */
-            font-weight: bold;
+            display: none;
+            z-index: 10; /* Ensure the text is above the video */
+        }
+
+        #text-title {
+            position:absolute;
+            top: 15%;
+            left: 10%;
+            width: 80%;
+            font-size: 2em; 
+            font-family: Welbut;
+            color: lightblue;
+            padding: 7px;
+            background:darkblue;
+            opacity: 0.7;
+            border: 2px solid lightblue;
+            border-radius: 7px;
             text-align: center;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Add a shadow for better readability */
+            z-index: 10;
+        }
+
+        #text-message {
+            align-items: center;
+            justify-content: center;
+            font-size: 2em; 
+            font-family: Welbut;
+            position: absolute;
+            top: 25%;
+            left: 10%;
+            width: 80%;
+            height: 60%;
+            font-family: Welbut;
+            color: lightblue;
+            padding: 7px;
+            background:darkblue;
+            opacity: 0.7;
+            border: 2px solid lightblue;
+            border-radius: 7px;
+            text-align: center;
+            z-index: 10;
             white-space: pre-wrap; /* Preserve line breaks */
         }
+
 
         #movie-container {
             position: fixed; /* Fix the video to the viewport */
@@ -56,32 +82,82 @@
         }
     </style>
 </head>
-<body>
-    <img id="background-image" src="background.webp" alt="Background Image">
-    <div id="text-overlay"></div>
+<body>  
     <div id="movie-container">
-        <video id="movie" src="" controls></video>
+        <video id="movie" src="" muted="muted" controls loop></video>
+    </div>
+    <div id="text-overlay">
+        <div id="text-title">NACHRICHT DER ISS RIDDLE</div>
+        <div id="text-message"></div>
     </div>
 
+
     <script>
+        var _just_shown = false;
         window.onload = function() {
+            console.log(_just_shown);
             const movieContainer = document.getElementById('movie-container');
+            const textContainer = document.getElementById('text-container');
             const movie = document.getElementById('movie');
-            const device_id = 'abandoned_tech_comm_1';
-            const url = 'ws://10.134.178.101:8083'
+            const device_id = 'tech_comm_1';
+            const url = 'ws://192.168.5.11:8083'
+            var last_display_tag_value = "none";
             var language = "de"
+            var overheat_message_counter = 0;
             
             // Create an MQTT client instance
             const options = {
-            // Clean session
-            clean: true,
-            connectTimeout: 4000,
-            // Authentication
-            clientId: device_id, 
-            username: 'outpost',
-            password: 'CallingHome',
+                // Clean session
+                clean: true,
+                connectTimeout: 4000,
+                // Authentication
+                clientId: device_id, 
+                username: 'outpost',
+                password: 'CallingHome',
             }
             
+            function showMovieAndText(movie, text) {
+                showText(text);
+                playMovie(movie);
+                movie.loop = true;
+            }   
+
+            function playMovie(name) {
+                const movieContainer = document.getElementById('movie-container');
+                const movie = document.getElementById('movie');
+                movie.src = name;
+                movieContainer.style.display = 'block'; // Show the video container
+                movie.play(); // Start playing the video
+                movie.controls = false; //remove controls  
+            }
+
+            function showMovie(name) {
+                const textContainer = document.getElementById('text-overlay');
+                last_display_tag_value = textContainer.style.display;
+                textContainer.style.display = "none";
+                playMovie(name);
+                movie.loop = false;
+            }
+            
+            function showText(text) {  
+                const textContainer = document.getElementById('text-overlay');
+                const textMessage = document.getElementById('text-message');
+                const textTitle = document.getElementById("text-title");
+                textContainer.style.display = "block";
+                textMessage.style.display = "flex";
+                textTitle.style.display = "block";
+                textMessage.innerText = text;
+                
+                setTimeout(() => {
+                    const textContainer = document.getElementById('text-overlay');
+                    const textMessage = document.getElementById('text-message');
+                    const textTitle = document.getElementById("text-title");
+                    textContainer.style.display = "none";
+                    textMessage.style.display = "none";
+                    textTitle.style.display = "none";
+                }, 40000);
+            }
+
             const client  = mqtt.connect(url, options)
             client.on('connect', function () {
                 console.log('Connected')
@@ -91,37 +167,55 @@
                         console.log("Subscription Successful")
                     }
                 });
+                client.subscribe('ToDevice/Comms', function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                    }
+                });
                 client.subscribe('ToDevice/' + device_id, function (err) {
                     if (!err) {
                         console.log("Subscription Successful")
                     }
                 });
+                showMovie("background.mp4");
             });
-                    
-            function showMovie(name) {
-                const movieContainer = document.getElementById('movie-container');
-                const movie = document.getElementById('movie');
-                movie.src = name;
-                movieContainer.style.display = 'block'; // Show the video container
-                movie.play(); // Start playing the video
-                movie.controls = false; //remove controls  
-            }
 
-            function showText(text) {
-                const textContainer = document.getElementById('text-overlay');
-                textContainer.innerText = text;
-            }
+            
             // Receive messages
             client.on('message', function (topic, message) {
                 // message is Buffer
-                console.log(message);
                 msg = JSON.parse(message);
                 console.log(msg);
-                if (msg["event"] == "Power up") {
-                    showText("Power up");
+                if (msg["event"] == "Overheat solved") {
+                    showMovie("overheat_solved_" + language + ".mp4");
+                }
+                if (msg["event"] == "Ripplis hint") {
+                    showMovie("ripplis_hint_" + language + ".mp4");
+                }
+
+                if (msg["event"] == "Intruder alert") {
+                    showMovie("intruder_detected_" + language + ".mp4");
+                }
+
+                if (msg["display"] == "Cockpit overheated") {
+                    overheat_message_counter++;
+                    if (overheat_message_counter > 4) {
+                        showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
+                    } else {
+                        showMovie("cockpit_overheated_" + language + ".mp4");
+                    }
+                    return;
+                }
+
+                if (msg["event"] == "ISS Riddle intervention") {
+                    showMovie("iss_riddle_help_" + language + ".mp4");
+                }
+
+                if (msg["event"] == "AI Warning") {
+                    showMovie("ai_warning_" + language + ".mp4");
                 }
                 if (msg["event"] == "Dock door unlocked") {
-                    showMovie("intruder_alert_" + language + ".mp4")
+                    showMovie("dock_door_unlocked_" + language + ".mp4");
                 }
 
                 if (msg["movie"] != null) {
@@ -129,23 +223,33 @@
                 }
 
                 if (msg["display"] != null) {
-                    showText(msg["display"]);
+                    // Cockpit overheated is handled earlier.
+                    // This is for gamemaster hints.
+                    showMovieAndText("background.mp4", msg["display"]);
                 }
 
                 if (msg["language"] == "english") {
                     language = "en";
+                    textTitle = document.getElementById("text-title");
+                    textTitle.innerText = "Message from the ISS Riddle";
                 }
                 if (msg["language"] == "deutsch") {
                     language = "de";
+                    textTitle = document.getElementById("text-title");
+                    textTitle.innerText = "Nachricht der ISS Riddle";
                 }
                 //client.end()
                 }
             );
+            movie.onended = function() {    
+                console.info("Movie ended");
+                movie.src = "background.mp4";
+                movie.loop = true;
+                const textContainer = document.getElementById('text-overlay');
+                textContainer.style.display = last_display_tag_value;
+                    
 
-            movie.onended = function() {
-                movieContainer.style.display = 'none';
-                backgroundImage.style.display = 'block';
-                textOverlay.style.display = 'block';
+                movie.play();
             };
         };
     </script>
