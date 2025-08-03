@@ -104,6 +104,7 @@
             var last_display_tag_value = "none";
             var language = "de"
             var overheat_message_counter = 0;
+            var last_overheat_message = null;
             
             // Create an MQTT client instance
             const options = {
@@ -198,11 +199,14 @@
                 }
 
                 if (msg["display"] == "Cockpit overheated") {
-                    overheat_message_counter++;
-                    if (overheat_message_counter > 4) {
-                        showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
-                    } else {
-                        showMovie("cockpit_overheated_" + language + ".mp4");
+                    if (last_overheat_message == null || (new Date().getTime() - last_overheat_message.getTime()) / 1000 > 7) {
+                        last_overheat_message = new Date();
+                        overheat_message_counter++;
+                        if (overheat_message_counter > 4) {
+                            showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
+                        } else {
+                            showMovie("cockpit_overheated_" + language + ".mp4");
+                        }
                     }
                     return;
                 }

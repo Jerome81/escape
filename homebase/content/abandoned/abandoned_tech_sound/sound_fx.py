@@ -1,4 +1,5 @@
 from time import sleep
+from time import time
 from threading import Thread
 from random import randint
 
@@ -22,6 +23,7 @@ _gameState = "STOPPED"
 _dock_door_unlocked = False
 _language = "de"
 _overheat_message_counter = 0
+_last_overheat_message = None
 
 _jsonData = {
     "id": deviceId,
@@ -178,6 +180,7 @@ def on_connect(client, userdata, flags, reason_code):
 def on_message(client, userdata, msg):
     global _gameState
     global _overheat_message_counter
+    global _last_overheat_message
     print(msg.topic)
     print(msg.payload)
     payload = json.loads(msg.payload.decode('utf-8'))
@@ -198,11 +201,13 @@ def on_message(client, userdata, msg):
         if 'display' in payload:
             display = payload["display"]
             if display == "Cockpit overheated":
-                _overheat_message_counter = _overheat_message_counter + 1
-                if _overheat_message_counter > 4:
-                    play_message("cockpit_overheated_annoyed")
-                else:
-                    play_message("cockpit_overheated")
+                if _last_overheat_message == None or time() - _last_overheat_message > 8:
+                    _last_overheat_message = time()    
+                    _overheat_message_counter = _overheat_message_counter + 1
+                    if _overheat_message_counter > 4:
+                        play_message("cockpit_overheated_annoyed")
+                    else:
+                        play_message("cockpit_overheated")
             else:
                 play_sound("notification.mp3")
 
