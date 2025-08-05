@@ -62,6 +62,8 @@ def on_event(event):
     if event == "Pyrometer produced":
         on_activate()
 
+
+
 ### Global commands ###
 def on_started():
     pass
@@ -89,8 +91,6 @@ def on_unsolved(client):
     
 def on_reset(client):
     global _puzzleState
-    global _currentData
-    _currentData = ""
     _puzzleState = "RESET"
     stop_heaters()
     sendUpdate()
@@ -204,11 +204,8 @@ mqttc.loop_start()
 
 try:    
     while True:
-        if _puzzleState == "SOLVED":
-            sleep(0.3)
-
         if _currentData == _solution:
-            on_solved(mqttc)
+            on_solved()
         sleep(0.1)
        
 

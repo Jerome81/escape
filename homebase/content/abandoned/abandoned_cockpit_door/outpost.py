@@ -1,3 +1,4 @@
+import os
 import paho.mqtt.client as mqtt
 import json
 import gpiozero
@@ -34,12 +35,19 @@ GPIO.setup(12, GPIO.OUT)
 
 
 def sendUpdate():
-    print("Game is: %s - Puzzle is: %s - Data: %s" % (_gameState, _puzzleState, _currentData))
+    print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
 
     jsonData = _jsonData
-    jsonData["input"] = _currentData
+    jsonData["input"] = ""
     jsonData["state"] = _puzzleState
-    jsonData["game_state"] = _gameState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
     
 def lock_door():
@@ -58,7 +66,7 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -70,23 +78,23 @@ def on_language_change(language):
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
-    if _puzzleState == "ACTIVE":
-        _puzzleState = "SOLVED"
-        unlock_door()
-        sendUpdate()
-        jsonData = {
-            "event": "Cockpit door open"
-        }
-        client.publish("ToDevice/All", json.dumps(jsonData))
-    else:
-        jsonData = {
-            "display": "Cockpit overheated"
-        }
-        client.publish("ToDevice/Comms", json.dumps(jsonData))
+    if _gameState == "STARTED":
+        if _puzzleState == "ACTIVE":
+            _puzzleState = "SOLVED"
+            unlock_door()
+            sendUpdate()
+            jsonData = {
+                "event": "Cockpit door open"
+            }
+            client.publish("ToDevice/All", json.dumps(jsonData))
+        else:
+            jsonData = {
+                "display": "Cockpit overheated"
+            }
+            client.publish("ToDevice/Comms", json.dumps(jsonData))
 
 def on_reset(client):
     global _puzzleState
-    global _currentData
     _puzzleState = "INACTIVE"
     lock_door()
     sendUpdate()
@@ -143,6 +151,7 @@ def on_message(client, userdata, msg):
             if command == "ACTIVATE":
                 on_activate()
 
+
 def connect(client):
     disconnected = True
     while disconnected:
@@ -166,6 +175,8 @@ mqttc.loop_start()
 on_reset(mqttc)
 
 button.when_pressed = lambda: on_solved(mqttc)
+
+sendUpdate()
 
 try:
     while True:       

@@ -13,12 +13,16 @@ Wird verwendet in folgenden Raspis:
 
 abandoned_dock_comm_1:
 LEDS = 184
-
-abandoned_crew_comm:
-LEDS = 171
+communicator_1
 
 abandoned_tech_comm_1:
 LEDS = 151
+communicator_2
 
 abandoned_tech_comm_2:
 LEDS = 121
+communicator_3
+
+abandoned_crew_comm:
+LEDS = 171
+communicator_4

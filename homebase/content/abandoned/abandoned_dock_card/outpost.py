@@ -14,7 +14,7 @@ deviceId = "abandoned_dock_door"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [406868850262]
+_solution = [406868850262, 870035386129, 1006585081853, 662954143627, 455738683197, 595425390425]
 _currentData = ""
 
 
