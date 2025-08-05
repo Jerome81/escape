@@ -7,7 +7,7 @@ const url = 'ws://192.168.5.11:8083'
 
 var language = "de";
 var current_blueprint = "";
-var product_complete;
+var product_complete = false;
 var powered = false;
 var pyrometer_cartridge = false;
 var ring_cartridge = false;
@@ -118,11 +118,22 @@ client.on('message', function (topic, message) {
       return;
     }
     if (msg["event"].indexOf(" produced") > -1) {
-      product_complete=true;
+      production_started = false;
+      product_complete = true;
     }
 
     if (msg["event"] == "All devices powered") {
       powered = true;
+    }
+
+    if (msg["event"] == "Replicator ready again") {
+      powered = true;
+      current_blueprint = ""
+      product_complete = false;
+      production_started = false;
+      pyrometer_cartridge = false;
+      ring_cartridge = false;
+      bubbles_cartridge = false;
     }
 
     if (msg["event"] == "Power down") {

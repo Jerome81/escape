@@ -73,18 +73,26 @@ def sendUpdate():
 
 ### Game events ###
 def on_event(event):
+    global _cartridges
     if event == "All devices powered":
         on_activate()
+    try:
+        if event == "Replicator ring production started":
+            if 3 in _cartridges:
+                _cartridges.pop(3)
+            on_solved(mqttc)
 
-    if event == "Replicator ring production started":
-        on_solved(mqttc)
+        if event == "Replicator pyrometer production started":
+            if 2 in _cartridges:
+                _cartridges.pop(2)
+            on_solved(mqttc)
 
-    if event == "Replicator pyrometer production started":
-        on_solved(mqttc)
-
-    if event == "Replicator bubbles production started":
-        on_solved(mqttc)
-
+        if event == "Replicator bubbles production started":
+            if 4 in _cartridges:
+                _cartridges.pop(4)
+            on_solved(mqttc)
+    except Exception as e:
+        print('An exception occurred: {}'.format(e))
 
 def blueprint_inserted(event):
     global _blueprint
@@ -105,11 +113,12 @@ def cartridge_removed():
 
 def new_cartridge():
     print("Cartridge %s" % _cartridge_number)
-    sendUpdate()
-    try:
-        publish_event("%s inserted" % _cartridges[_cartridge_number])
-    except Exception as e:
-        print("No cartridge with number: %s" % _cartridge_number)
+    if _cartridge_number in _cartridges:
+        sendUpdate()
+        try:
+            publish_event("%s inserted" % _cartridges[_cartridge_number])
+        except Exception as e:
+            print("No cartridge with number: %s" % _cartridge_number)
 
 
 def publish_event(event):
@@ -142,7 +151,6 @@ def on_solved(client):
     sendUpdate()
 
 
-
 def on_unsolved(client):
     global _puzzleState
     _puzzleState = "ACTIVE"
@@ -150,8 +158,18 @@ def on_unsolved(client):
     
 def on_reset(client):
     global _puzzleState
-    _puzzleState = "RESET"  # Always active
+    global _cartridges
+    global _blueprint
+    global _cartridge_number
+    _puzzleState = "RESET" 
     sendUpdate()
+    _cartridges = {
+        2: "Hexapolym",
+        3: "Amorata",
+        4: "Partynom"    
+    }
+    _cartridge_number = 0
+    _blueprint = ""
 
 def on_activate():
     global _puzzleState
@@ -239,6 +257,8 @@ def inserted(n):
 def removed(n):
     global _cartridge_number
     _cartridge_number = _cartridge_number - n
+    if _cartridge_number < 0:
+        _cartridge_number = 0
     print("Cartridge number: %s" % _cartridge_number)
 
 
@@ -290,7 +310,7 @@ try:
                             blueprint_inserted(event)
                     if time() - last_blueprint_insertion > 2 and _blueprint != "":
                         blueprint_removed()
-                sleep(0.1)
+                sleep(0.05)
                 if last_cartridge != _cartridge_number:
                     last_cartridge = _cartridge_number
                     if _cartridge_number == 0:
@@ -300,8 +320,13 @@ try:
             else:
                 if _production_completed_at > 0 and time() - _production_completed_at > 120:
                     _production_completed_at = 0
+                    _blueprint = ""
+                    _cartridge_number = 0
+                    _puzzleState = "ACTIVE"
                     close_drawer()
+                    publish_event("Replicator ready again")
                     sendUpdate()
+                ser.reset_input_buffer()
                 sleep(0.3)
 
 except Exception as e:
