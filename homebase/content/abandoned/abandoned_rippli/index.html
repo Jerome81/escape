@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+        
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Image and Movie</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #000; /* Ensure black background */
+        }
+        @font-face {
+            font-family: 'Welbut';
+            src: url('Welbut__.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+        }  
+
+        #text-overlay {
+            display: block;
+            color: white;
+            z-index: 10; /* Ensure the text is above the video */
+        }
+
+        #text-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em; 
+            font-family: Welbut;
+            position: absolute;
+            top: 40%;
+            width: 50%;
+            left: 25%;
+            color: white;
+            padding: 20px;
+            background: darkblue;
+            opacity: 0.5;
+            border: 2px solid lightblue;
+            border-radius: 7px;
+            text-align: center;
+            z-index: 10;
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+
+
+        #movie-container {
+            position: fixed; /* Fix the video to the viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3; /* Place the video above the text */
+            display: none; /* Initially hide the video */
+        }
+
+        #movie {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Scale the video to cover the entire viewport */
+        }
+    </style>
+</head>
+<body>  
+    <div id="movie-container">
+        <video id="movie" src="background.mp4" controls></video>
+    </div>
+    <div id="text-overlay">
+        <div id="text-message">Persönliches Logbuch von Dr. Helen Rippli</div>
+    </div>
+
+
+    <script>
+        var _just_shown = false;
+        window.onload = function() {
+            console.log(_just_shown);
+            const movieContainer = document.getElementById('movie-container');
+            const textContainer = document.getElementById('text-container');
+            const movie = document.getElementById('movie');
+            const device_id = 'rippli_screen';
+            const url = 'ws://192.168.5.11:8083'
+            
+            var language = "de";
+
+            // Create an MQTT client instance
+            const options = {
+                // Clean session
+                clean: true,
+                connectTimeout: 4000,
+                // Authentication
+                clientId: device_id, 
+                username: 'outpost',
+                password: 'CallingHome',
+            }
+            
+            function showMovieAndText(movie, text) {
+                showText(text);
+                playMovie(movie);
+            }   
+
+            function playMovie(name) {
+                const movieContainer = document.getElementById('movie-container');
+                const movie = document.getElementById('movie');
+                movie.src = name;
+                movieContainer.style.display = 'block'; // Show the video container
+                movie.play(); // Start playing the video
+                movie.controls = false; //remove controls
+            }
+
+            function showMovie(name) {
+                playMovie(name);
+                movie.loop = false;
+            }
+            
+            function showText(text) {  
+                const textContainer = document.getElementById('text-overlay');
+                const textMessage = document.getElementById('text-message');
+                textContainer.style.display = "block";
+                textMessage.style.display = "flex";
+                textMessage.innerText = text;
+            }
+
+            const client  = mqtt.connect(url, options)
+            client.on('connect', function () {
+                console.log('Connected')
+                // Subscribe to a topic
+                client.subscribe('ToDevice/All', function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                    }
+                });
+                client.subscribe('ToDevice/Comms', function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                    }
+                });
+                client.subscribe('ToDevice/' + device_id, function (err) {
+                    if (!err) {
+                        console.log("Subscription Successful")
+                        showMovieAndText("background.mp4", "Persönliches Logbuch von Dr. Helen Rippli");
+                    }
+                });
+            });
+
+            
+            // Receive messages
+            client.on('message', function (topic, message) {
+                // message is Buffer
+                console.log(message);
+                msg = JSON.parse(message);
+                console.log(msg);
+                if (msg["display"] == "Show start") {
+                    showMovieAndText("background.mp4", "Persönliches Logbuch von Dr. Helen Rippli");
+                    return;
+                }
+                if (msg["display"] == "Show end") {
+                    
+                    showMovieAndText("background.mp4", "Keine weiteren Einträge");
+                    return;
+                }
+                if (msg["language"] == "english") {
+                    language = "en";
+                    textMessage = document.getElementById("text-message");
+                    textMessage.innerText = "Personal logbook of Dr. Helen Rippli";
+                    return;
+                }
+                if (msg["language"] == "deutsch") {
+                    language = "de";
+                    textMessage = document.getElementById("text-message");
+                    textMessage.innerText = "Persönliches Logbuch von Dr. Helen Rippli";
+                    return;
+                }
+                const textContainer = document.getElementById('text-overlay');
+                textContainer.style.display = "none";
+                showMovie(msg["display"] + "_" + language + ".mp4");    
+            });
+
+            movie.onended = function() {    
+                console.info("Movie ended");
+                //const textContainer = document.getElementById('text-overlay');
+                //textContainer.style.display = "block";
+                //showText("Ende des Logbuch-Eintrags");
+                    
+            };
+        };
+    </script>
+</body>
+</html>
