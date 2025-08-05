@@ -125,6 +125,15 @@ def on_event(event):
     if event == "Access granted":
         play_sound("keypad_approved.mp3")
 
+    ##### ENDINGS #####
+    if event == "Communication channel established":
+        play_message("saved_by_aliens.mp3")
+        jsonData = {
+            "event": "Mystery solved"
+        }
+        mqttc.publish("ToDevice/All", json.dumps(jsonData))
+        
+
 
 
 ### Global commands ###
