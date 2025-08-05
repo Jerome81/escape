@@ -180,10 +180,10 @@ def on_event(event):
     if event == "Activate orbital":
         on_activate()
 
-    if event == "Trigger easy ending":
+    if event == "Easy ending":
         _easy_ending = True
     
-    if event == "Trigger hard ending":
+    if event == "Hard ending":
         _easy_ending = False
 
     if event == "Power down":
@@ -219,7 +219,7 @@ def on_solved(client):
     sendUpdate()
     if _easy_ending:
         jsonData = {
-            "event": "Mystery solved"
+            "event": "Communication channel established"
         }
         client.publish("ToDevice/All", json.dumps(jsonData))
     else:    
