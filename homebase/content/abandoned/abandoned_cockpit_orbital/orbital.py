@@ -13,6 +13,7 @@ l.show()
 
 button_pressed = False
 total_tries = 0
+_easy_ending = True
 
 mq_ip = "192.168.5.11"
 deviceId = "abandoned_cockpit_orbital"
@@ -33,7 +34,7 @@ level_min_speed = [0.02, 0.03, 0.06]
 l.fill((0, 0, 0))
 
 BUTTON_PIN = 14  #GPIO14
-button = gpiozero.Button(BUTTON_PIN, bounce_time = 0.1)
+button = gpiozero.Button(BUTTON_PIN, hold_time = 0.05, bounce_time = 0.1)
 
 LED_PIN = 26  #GPIO26
 light = gpiozero.LED(LED_PIN)
@@ -152,21 +153,38 @@ def show_solution():
         sleep(0.8)
 
 ### MQ send ###
+
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
+
+    cpu_temp = "?"
+    try:
+        cpu_temp = os.popen('vcgencmd measure_temp').readline()
+        cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
+    except e:
+        print(e)
+
     jsonData = _jsonData
     jsonData["input"] = level
-    jsonData["game_state"] = _gameState
     jsonData["state"] = _puzzleState
+    jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
+    
 
 def attract():
     pass
 
 ### Game events ###
 def on_event(event):
+    global _easy_ending
     if event == "Activate orbital":
         on_activate()
+
+    if event == "Trigger easy ending":
+        _easy_ending = True
+    
+    if event == "Trigger hard ending":
+        _easy_ending = False
 
     if event == "Power down":
         on_reset()
@@ -199,10 +217,16 @@ def on_solved(client):
     level = 3
     show_solution()
     sendUpdate()
-    jsonData = {
-        "event": "Access granted"
-    }
-    client.publish("ToDevice/All", json.dumps(jsonData))
+    if _easy_ending:
+        jsonData = {
+            "event": "Mystery solved"
+        }
+        client.publish("ToDevice/All", json.dumps(jsonData))
+    else:    
+        jsonData = {
+            "event": "Access granted"
+        }
+        client.publish("ToDevice/All", json.dumps(jsonData))
     client.publish("Stats", json.dumps( {"Orbital": total_tries } ))
 
 def on_reset():
