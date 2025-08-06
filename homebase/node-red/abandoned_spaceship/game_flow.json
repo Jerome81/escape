@@ -61,8 +61,7 @@
         "y": 300,
         "wires": [
             [
-                "fa84c8d1165d477d",
-                "e78970e13a543bf4"
+                "fa84c8d1165d477d"
             ]
         ]
     },
@@ -119,7 +118,7 @@
         "type": "function",
         "z": "3a0b50343819716a",
         "name": "calcRemainingTime",
-        "func": "var currentTime = msg.payload;\nvar lastTickTime = global.get(\"lastTickTime\") || currentTime;\nvar timeRemaining = global.get(\"timeRemaining\") || 0;\nvar gameState = global.get(\"gameState\");\n\nif (gameState == \"playing\") {\n    timeRemaining -= (currentTime - lastTickTime);\n    global.set(\"timeRemaining\", timeRemaining);\n\n}\n\nmsg.timeRemaining = timeRemaining;\nglobal.set(\"lastTickTime\", currentTime);\n\nnode.status({fill: \"green\", shape:\"dot\", text:timeRemaining});\n\nreturn msg;",
+        "func": "var currentTime = msg.payload;\nvar lastTickTime = global.get(\"lastTickTime\") || currentTime;\nvar timeRemaining = global.get(\"timeRemaining\") || 0;\nvar gameState = global.get(\"gameState\");\n\nif (gameState == \"STARTED\") {\n    timeRemaining -= (currentTime - lastTickTime);\n    global.set(\"timeRemaining\", timeRemaining);\n\n}\n\nmsg.timeRemaining = timeRemaining;\nglobal.set(\"lastTickTime\", currentTime);\n\nnode.status({fill: \"green\", shape:\"dot\", text:timeRemaining});\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -263,8 +262,8 @@
         "font": "",
         "fontSize": 16,
         "color": "#000000",
-        "x": 810,
-        "y": 300,
+        "x": 870,
+        "y": 260,
         "wires": []
     },
     {
@@ -328,7 +327,7 @@
         "type": "function",
         "z": "3a0b50343819716a",
         "name": "format time",
-        "func": "var t = msg.timeRemaining;\nt = t / 1000;\nvar h = Math.floor(t / 3600);\nvar m = Math.floor(t % 3600 / 60);\nvar s = Math.floor(t % 3600 % 60);\n\nif (h > 0) {\n    msg.formattedTimeRemaining = (\"0\" + h).slice(-2) + \":\" + (\"0\" + m).slice(-2);\n} else {\n    if (m > 0) {\n        msg.formattedTimeRemaining = m + \" min\";\n    } else {\n        msg.formattedTimeRemaining = s + \" sec\";\n    }\n}\n\nmsg.oxygenRemaining = Math.floor(t * 100000 / global.get(\"timeForRoom\"));\n\nnode.status({fill: \"green\", shape:\"dot\", text:msg.oxygenRemaining});\n\nreturn msg;",
+        "func": "var t = msg.timeRemaining;\nt = t / 1000;\nvar h = Math.floor(t / 3600);\nvar m = Math.floor(t % 3600 / 60);\nvar s = Math.floor(t % 3600 % 60);\n\nif (h > 0) {\n    msg.formattedTimeRemaining = (\"0\" + h).slice(-2) + \":\" + (\"0\" + m).slice(-2);\n} else {\n    if (m > 0) {\n        msg.formattedTimeRemaining = m + \" min\";\n    } else {\n        msg.formattedTimeRemaining = s + \" sec\";\n    }\n}\n\nmsg.oxygenRemaining = Math.floor(t * 100000 / global.get(\"timeForRoom\"));\n\nnode.status({fill: \"green\", shape:\"dot\", text:msg.oxygenRemaining});\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -339,7 +338,10 @@
         "y": 300,
         "wires": [
             [
-                "ba6b218d01d3d0e2"
+                "ba6b218d01d3d0e2",
+                "bbac4dd2ec149a74",
+                "fbe9267cb592d891",
+                "fb4ada04984e125c"
             ]
         ]
     },
@@ -381,26 +383,14 @@
         "wires": []
     },
     {
-        "id": "e78970e13a543bf4",
-        "type": "link out",
-        "z": "3a0b50343819716a",
-        "name": "on Game Loop",
-        "mode": "link",
-        "links": [],
-        "x": 335,
-        "y": 260,
-        "wires": []
-    },
-    {
         "id": "c281f96af67d0de3",
         "type": "link in",
         "z": "3a0b50343819716a",
         "name": "Send to all devices",
         "links": [
-            "53b805360fa84a4e",
+            "a614a89c5677075a",
             "cc7440c09a18f288",
-            "eb87a026f959e661",
-            "a614a89c5677075a"
+            "eb87a026f959e661"
         ],
         "x": 85,
         "y": 840,
@@ -463,62 +453,6 @@
         "reg": false,
         "x": 230,
         "y": 840,
-        "wires": [
-            [
-                "4a15d020a1b94a70"
-            ]
-        ]
-    },
-    {
-        "id": "ea16e1151b93c3b9",
-        "type": "ui_button",
-        "z": "3a0b50343819716a",
-        "name": "",
-        "group": "75624f21de130f6c",
-        "order": 5,
-        "width": "4",
-        "height": "1",
-        "passthru": false,
-        "label": "Dock keypad solved",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "",
-        "icon": "",
-        "payload": "{\"event\":\"Dock keypad solved\"}",
-        "payloadType": "json",
-        "topic": "ToDevice/All",
-        "topicType": "str",
-        "x": 800,
-        "y": 400,
-        "wires": [
-            [
-                "4a15d020a1b94a70"
-            ]
-        ]
-    },
-    {
-        "id": "ea245a70a11b3a03",
-        "type": "ui_button",
-        "z": "3a0b50343819716a",
-        "name": "",
-        "group": "75624f21de130f6c",
-        "order": 5,
-        "width": "4",
-        "height": "1",
-        "passthru": false,
-        "label": "Dock door unlocked",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "",
-        "icon": "",
-        "payload": "{\"event\":\"Dock door unlocked\"}",
-        "payloadType": "json",
-        "topic": "ToDevice/All",
-        "topicType": "str",
-        "x": 800,
-        "y": 440,
         "wires": [
             [
                 "4a15d020a1b94a70"
@@ -594,6 +528,41 @@
                 "pt": "global",
                 "to": "RESET",
                 "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "DockDoorUnlocked",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "RipplisHint",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "IntruderAlert",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "ISSHelp",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "AIWarning",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
             }
         ],
         "action": "",
@@ -601,7 +570,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 350,
+        "x": 330,
         "y": 620,
         "wires": [
             [
@@ -641,7 +610,7 @@
         "id": "a614a89c5677075a",
         "type": "link out",
         "z": "3a0b50343819716a",
-        "name": "on Game Stop",
+        "name": "on Game Reset",
         "mode": "link",
         "links": [
             "c281f96af67d0de3"
@@ -679,60 +648,419 @@
         ]
     },
     {
-        "id": "42e6aee36fd4d667",
-        "type": "ui_button",
+        "id": "bbac4dd2ec149a74",
+        "type": "ui_text",
         "z": "3a0b50343819716a",
+        "group": "37a4c34b22d20ff1",
+        "order": 3,
+        "width": 0,
+        "height": 0,
         "name": "",
-        "group": "75624f21de130f6c",
-        "order": 5,
-        "width": "4",
-        "height": "1",
-        "passthru": false,
-        "label": "Power up",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
+        "label": "Zeit",
+        "format": "{{msg.formattedTimeRemaining}}",
+        "layout": "row-spread",
         "className": "",
-        "icon": "",
-        "payload": "{\"event\":\"Power up\"}",
-        "payloadType": "json",
-        "topic": "ToDevice/All",
-        "topicType": "str",
-        "x": 760,
-        "y": 480,
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 790,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "12b03affdf373d82",
+        "type": "inject",
+        "z": "3a0b50343819716a",
+        "name": "Ripplis Hint",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "20",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 720,
         "wires": [
             [
-                "4a15d020a1b94a70"
+                "495c3334b61e6312"
             ]
         ]
     },
     {
-        "id": "4d2497fab1935794",
+        "id": "495c3334b61e6312",
+        "type": "function",
+        "z": "3a0b50343819716a",
+        "name": "Ripplis Hint",
+        "func": "let timeRemaining = global.get(\"timeRemaining\") || 0;\n\nif (timeRemaining > 342000 && timeRemaining < 343000) {\n    // Send Ripplis Hint\n\n    // Disable this trigger\n\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4447c11529b879ad",
+        "type": "mqtt in",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "topic": "ToDevice/All",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 730,
+        "y": 540,
+        "wires": [
+            [
+                "fbe9267cb592d891"
+            ]
+        ]
+    },
+    {
+        "id": "fbe9267cb592d891",
+        "type": "function",
+        "z": "3a0b50343819716a",
+        "name": "GameLogic",
+        "func": "/**\n * This function gets called:\n * 1. When time has passed (every second) for which it receives:\n *  - msg.timeRemaining\n *  - msg.formattedTimeRemaining\n *  - msg.oxygenRemaining (0 - 100 - x % of 1 h)\n * \n * 2. A message was received (ToDevice/All).\n */\n\nlet dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\nmsg.payload.dockdoorunlocked = dockdoorunlocked;\n//node.status({fill: \"green\", shape:\"dot\", text:dockdoorunlocked});\n\nif (msg.payload.event != null) {\n    node.status({fill: \"green\", shape:\"dot\", text:msg.payload.event});\n\n    if (msg.payload.event == \"Dock door unlocked\") {\n        global.set(\"DockDoorUnlocked\", true);\n        msg.payload.dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\n    }\n    if (msg.payload.event == \"Mystery solved\") {\n        msg.event = \"lightcontroller\";\n        flow.set(\"effect\", \"rain\");\n        node.status({fill: \"green\", shape:\"dot\", text:msg.event});\n    }\n    \n    if (msg.payload.event == \"Self destruct\") {\n        msg.event = \"lightcontroller\";\n        flow.set(\"effect\", \"broken\");\n        node.status({fill: \"green\", shape:\"dot\", text:msg.event});\n    }\n    \n    if (msg.payload.event == \"Core removed\") {\n        msg.event = \"lightcontroller\";\n        flow.set(\"effect\", \"rain\");\n        node.status({fill: \"green\", shape:\"dot\", text:msg.event});\n    }\n    \n    return msg;\n} else {\n\n    // After a few seconds, start intruder alarm\n    if (msg.timeRemaining > 3585000 && msg.timeRemaining < 3600000) {\n        if (! (global.get(\"IntruderAlert\") || false)) {\n            global.set(\"IntruderAlert\", true);\n            msg.topic = \"ToDevice/All\";\n            msg.event = \"Intruder alert\";\n            return msg;\n        }\n    }\n\n    // These events only happen if the dock door is still locked.\n    if (! dockdoorunlocked) {\n        // After about 3 minutes, automatically trigger Ripplis hint\n        if (msg.timeRemaining > 3420000 && msg.timeRemaining < 3422000) {\n        //if (msg.timeRemaining > 3590000 && msg.timeRemaining < 3592000) {\n            if (! (global.get(\"RipplisHint\") || false)) {\n                global.set(\"RipplisHint\", true);\n                node.status({ fill: \"green\", shape: \"dot\", text: \"Trigger Ripplis Hint\" });\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"Ripplis hint\";\n            }\n            return msg;\n        }\n        \n        // After 4 min, trigger AI warning\n        if (msg.timeRemaining > 3360000 && msg.timeRemaining < 3362000) {\n            if (! (global.get(\"AIWarning\") || false)) {\n                global.set(\"AIWarning\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"AI warning\";\n                return msg;\n            }\n        }\n\n        // After 4 min 40, trigger help from ISS RIDDLE\n        if (msg.timeRemaining > 3320000 && msg.timeRemaining < 3322000) {\n            if (!(global.get(\"ISSHelp\") || false)) {\n                global.set(\"ISSHelp\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"ISS Riddle intervention\";\n                return msg;\n            }\n        }\n    }\n    return null;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 500,
+        "wires": [
+            [
+                "9c6a40cb39aea799",
+                "0b400a37768318ea",
+                "c8109bc70c7a77ed"
+            ]
+        ]
+    },
+    {
+        "id": "9c6a40cb39aea799",
+        "type": "ui_text",
+        "z": "3a0b50343819716a",
+        "group": "7f07ff54df469be4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Event",
+        "format": "{{msg.payload.event}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1170,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "0b400a37768318ea",
+        "type": "ui_text",
+        "z": "3a0b50343819716a",
+        "group": "7f07ff54df469be4",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Dock door unlocked",
+        "format": "{{msg.payload.dockdoorunlocked}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1220,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "c8109bc70c7a77ed",
+        "type": "switch",
+        "z": "3a0b50343819716a",
+        "name": "MessageDispatcher",
+        "property": "event",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "lightcontroller",
+                "vt": "str"
+            },
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1200,
+        "y": 580,
+        "wires": [
+            [
+                "0e0c71f706c846ac"
+            ],
+            [
+                "0c5548bb7f35c09e"
+            ]
+        ]
+    },
+    {
+        "id": "8c060ab81127c6b1",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "23d9a8932a3d2d13"
+        ],
+        "x": 1675,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "0c5548bb7f35c09e",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.event",
+                "pt": "msg",
+                "to": "event",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/All",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1430,
+        "y": 600,
+        "wires": [
+            [
+                "21f99a92fb4dfd58"
+            ]
+        ]
+    },
+    {
+        "id": "21f99a92fb4dfd58",
+        "type": "json",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 1590,
+        "y": 580,
+        "wires": [
+            [
+                "8c060ab81127c6b1"
+            ]
+        ]
+    },
+    {
+        "id": "d1b199d26bb370e9",
         "type": "ui_button",
         "z": "3a0b50343819716a",
         "name": "",
-        "group": "75624f21de130f6c",
-        "order": 5,
-        "width": "4",
-        "height": "1",
+        "group": "34e8639407232c25",
+        "order": 0,
+        "width": 0,
+        "height": 0,
         "passthru": false,
-        "label": "Power down",
+        "label": "Neues Spiel",
         "tooltip": "",
         "color": "",
         "bgcolor": "",
         "className": "",
         "icon": "",
-        "payload": "{\"event\":\"Power down\"}",
-        "payloadType": "json",
-        "topic": "ToDevice/All",
-        "topicType": "str",
-        "x": 910,
-        "y": 480,
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 110,
+        "y": 220,
         "wires": [
             [
-                "4a15d020a1b94a70"
+                "665ad7d045fd79c6",
+                "d04365bfb38ea290",
+                "e618afdbb080448d"
             ]
         ]
+    },
+    {
+        "id": "fb4ada04984e125c",
+        "type": "switch",
+        "z": "3a0b50343819716a",
+        "name": "oxygenRemaining",
+        "property": "oxygenRemaining",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "prev"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 830,
+        "y": 160,
+        "wires": [
+            [
+                "733d68b9073211ef"
+            ]
+        ]
+    },
+    {
+        "id": "733d68b9073211ef",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.oxygenRemaining",
+                "pt": "msg",
+                "to": "oxygenRemaining",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ToDevice/Oxygen",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 160,
+        "wires": [
+            [
+                "21f99a92fb4dfd58"
+            ]
+        ]
+    },
+    {
+        "id": "db3f3730992f5862",
+        "type": "mqtt out",
+        "z": "3a0b50343819716a",
+        "name": "LightController",
+        "topic": "Lighting/All",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "478b4d8a12ba50ee",
+        "x": 1840,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "0e0c71f706c846ac",
+        "type": "change",
+        "z": "3a0b50343819716a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "effect",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1570,
+        "y": 500,
+        "wires": [
+            [
+                "db3f3730992f5862",
+                "743b521308e5671a"
+            ]
+        ]
+    },
+    {
+        "id": "743b521308e5671a",
+        "type": "debug",
+        "z": "3a0b50343819716a",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 1790,
+        "y": 420,
+        "wires": []
     },
     {
         "id": "37a4c34b22d20ff1",
@@ -760,7 +1088,7 @@
         "id": "125f6c81.60151b",
         "type": "mqtt-broker",
         "name": "MQTT Server",
-        "broker": "192.168.178.11",
+        "broker": "192.168.5.11",
         "port": "1883",
         "tls": "",
         "clientid": "",
@@ -786,21 +1114,64 @@
         "sessionExpiry": ""
     },
     {
-        "id": "75624f21de130f6c",
+        "id": "7f07ff54df469be4",
         "type": "ui_group",
         "name": "Events",
         "tab": "33e76ba13f360a06",
         "order": 3,
         "disp": true,
-        "width": "12",
+        "width": "6",
         "collapse": false,
         "className": ""
+    },
+    {
+        "id": "34e8639407232c25",
+        "type": "ui_group",
+        "name": "Neues Spiel",
+        "tab": "33e76ba13f360a06",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "478b4d8a12ba50ee",
+        "type": "mqtt-broker",
+        "name": "LightController",
+        "broker": "192.168.5.12",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
     },
     {
         "id": "33e76ba13f360a06",
         "type": "ui_tab",
         "name": "Home",
         "icon": "dashboard",
+        "order": 2,
         "disabled": false,
         "hidden": false
     }
