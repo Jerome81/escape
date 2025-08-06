@@ -152,7 +152,7 @@ def on_solved(client):
     _puzzleState = "SOLVED"
     sendUpdate()
     jsonData = {
-        "event": "Cartridge produced"
+        "event": "Recycling complete"
     }
     client.publish("ToDevice/All", json.dumps(jsonData)) 
     sleep(2)
