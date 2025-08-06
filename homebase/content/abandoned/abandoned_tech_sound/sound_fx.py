@@ -125,6 +125,8 @@ def on_event(event):
     if event == "Access granted":
         play_sound("keypad_approved.mp3")
 
+    if event == "Overheat solved":
+        play_message("overheat_solved")
 
 
 ### Global commands ###
