@@ -66,7 +66,7 @@ def on_event(event):
 
 ### Global commands ###
 def on_started():
-    pass
+    sendUpdate()
 
 def on_stopped():
     pass
@@ -181,14 +181,14 @@ def right(inOut):
     _currentData = _left + _middle + _right
     sendUpdate()
 
-button1.when_pressed = lambda: left("LEFT-")
-button1.when_released = lambda: left("")
+button3.when_pressed = lambda: left("LEFT-")
+button3.when_released = lambda: left("")
 
 button2.when_pressed = lambda: middle("MIDDLE-")
 button2.when_released = lambda: middle("")
 
-button3.when_pressed = lambda: right("RIGHT")
-button3.when_released = lambda: right("")
+button1.when_pressed = lambda: right("RIGHT")
+button1.when_released = lambda: right("")
 
 stop_heaters()
 
@@ -202,10 +202,13 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
+sendUpdate()
+
 try:    
     while True:
-        if _currentData == _solution:
-            on_solved()
+        if _puzzleState != "SOLVED":
+            if _currentData == _solution:
+                on_solved(mqttc)
         sleep(0.1)
        
 
