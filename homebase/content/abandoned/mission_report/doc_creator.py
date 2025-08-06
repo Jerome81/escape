@@ -58,6 +58,15 @@ DOCK_DOOR_UNLOCKED = {
     "deutsch": "%s - Dock Türe geöffnet",
     "english": "%s - Dock door opened"
 }
+CREW_DOOR_UNLOCKED = {
+    "deutsch": "%s - Türe zum Crew Raum geöffnet",
+    "english": "%s - Door to crew room opened"
+}
+
+COCKPIT_DOOR_UNLOCKED = {
+    "deutsch": "%s - Türe zum Cockpit geöffnet",
+    "english": "%s - Cockpit door opened"
+}
 
 INTRUDER_ALERT_SUCCESS = {
     "deutsch": "Eindringlingsalarm erfolgreich ausgeschaltet",
@@ -65,9 +74,20 @@ INTRUDER_ALERT_SUCCESS = {
 }
 
 INTRUDER_ALERT_FAILED = {
-    "deutsch": "Eindringlingsalarm ausgelöst\t",
+    "deutsch": "Eindringlingsalarm ausgelöst",
     "english": "Intruder alert triggered"
 }
+
+POWER_UP = {
+    "deutsch": "Hauptstrom eingeschaltet",
+    "english": "Main power activated"
+}
+
+POWER_DOWN = {
+    "deutsch": "Hauptstrom ausgeschaltet...",
+    "english": "Main power deactivated..."
+}
+
 
 QUICKNESS_BONUS = {
     "deutsch": "Geschwindigkeitsbonus",
@@ -84,7 +104,20 @@ ACCESS_CHECK_TRIES = {
     "english": "for failed access check attempts"
 }
 
+NOBLE_SACRIFICE = {
+    "deutsch": "Selbstzerstörung aktiviert. ISS Hofmann zerstört.",
+    "english": "Self destruction activated. ISS Hofmann destroyed."
+}
 
+CORE_REMOVED = {
+    "deutsch": "AI Core entfernt. Upload abgebrochen. ISS Riddle gerettet.",
+    "english": "AI Core removed. Upload stopped. ISS Riddle saved."
+}
+
+MYSTERY_SOLVED = {
+    "deutsch": "Funkverbindung mit Dr. Helen Rippli und Sgt. Olo aufgebaut.",
+    "english": "Connection with Dr. Helen Rippli and Sgt. Olo established."
+}
 
 _start_time = None
 
@@ -174,8 +207,34 @@ def on_event(event):
         else:
             add_to_score(-10, INTRUDER_ALERT_FAILED[_language])
 
+    if event == "Crew door unlocked":
+        add_to_log_with_time(CREW_DOOR_UNLOCKED[_language])
+        add_to_score(100, CREW_DOOR_UNLOCKED[_language])
+
+    if event == "Cockpit door unlocked":
+        add_to_log_with_time(COCKPIT_DOOR_UNLOCKED[_language])
+        add_to_score(100, COCKPIT_DOOR_UNLOCKED[_language])
+
     if event == "Dock keypad solved":
         add_to_log_with_time(DOCK_KEYPAD_SOLVED[_language])
+
+    if event == "Power up":
+        add_to_log_with_time(POWER_UP[_language])
+
+    if event == "Power down":
+        add_to_log_with_time(POWER_DOWN[_language])
+
+    if event == "Self destruct":
+        add_to_log_with_time(NOBLE_SACRIFICE[_language])
+        add_to_score(400, NOBLE_SACRIFICE[_language])
+
+    if event == "Core removed":
+        add_to_log_with_time(CORE_REMOVED[_language])
+        add_to_score(500, CORE_REMOVED[_language])
+
+    if event == "Mystery solved":
+        add_to_log_with_time(MYSTERY_SOLVED[_language])
+        add_to_score(300, MYSTERY_SOLVED[_language])
 
     if event == "Access granted":
         add_to_log_with_time(ACCESS_GRANTED[_language])

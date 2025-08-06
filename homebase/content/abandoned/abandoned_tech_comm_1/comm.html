@@ -198,6 +198,10 @@
                     showMovie("intruder_detected_" + language + ".mp4");
                 }
 
+                if (msg["event"] == "Communication channel established") {
+                    showMovie("saved_by_alien_" + language + ".mp4");
+                }
+
                 if (msg["display"] == "Cockpit overheated") {
                     if (last_overheat_message == null || (new Date().getTime() - last_overheat_message.getTime()) / 1000 > 7) {
                         last_overheat_message = new Date();

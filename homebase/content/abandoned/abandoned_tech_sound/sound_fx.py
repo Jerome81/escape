@@ -128,6 +128,14 @@ def on_event(event):
     if event == "Overheat solved":
         play_message("overheat_solved")
 
+    ##### ENDINGS #####
+    if event == "Communication channel established":
+        play_message("saved_by_aliens.mp3")
+        jsonData = {
+            "event": "Mystery solved"
+        }
+        mqttc.publish("ToDevice/All", json.dumps(jsonData))
+
 
 ### Global commands ###
 def on_started():
