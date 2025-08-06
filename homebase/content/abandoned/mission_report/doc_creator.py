@@ -24,7 +24,7 @@ DOCUMENT_ID = "13Pzz7txy-8j__LoPIHu55LGJe_C-2miZvtY-eeqvqlw"  # https://docs.goo
 # The ID of the folder into which the new doc is created
 FOLDER_ID = '1ohugy5OyUwvX2D7UWaa9_8oOp8T65c6e'  # https://drive.google.com/drive/folders/1ohugy5OyUwvX2D7UWaa9_8oOp8T65c6e
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 deviceId = "DocWriter"
 
