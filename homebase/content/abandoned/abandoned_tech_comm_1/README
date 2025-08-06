@@ -15,14 +15,28 @@ abandoned_dock_comm_1:
 LEDS = 184
 communicator_1
 
+dock_comm_1 (index.html)
+
+abandoned_dock_comm_2:
+LEDS = 184
+communicator_11
+
+dock_comm_11 (index.html)
+
 abandoned_tech_comm_1:
 LEDS = 151
 communicator_2
 
+tech_comm_1 (index.html)
+
 abandoned_tech_comm_2:
 LEDS = 121
-communicator_3
+communicator_22
+
+No index.html required
 
 abandoned_crew_comm:
 LEDS = 171
 communicator_4
+
+crew_comm_1 (index.html)
