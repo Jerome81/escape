@@ -78,7 +78,7 @@ def on_language_change(language):
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
-    if _gameState == "STARTED":
+    if _gameState == "STARTED" and _puzzleState != "SOLVED":
         if _puzzleState == "ACTIVE":
             _puzzleState = "SOLVED"
             unlock_door()
