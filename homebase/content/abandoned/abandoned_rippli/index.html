@@ -75,6 +75,18 @@
 
     <script>
         var _just_shown = false;
+        var deutsch = {
+            "start": "Persönliches Logbuch von Dr. Helen Rippli",
+            "end": "Keine weiteren Einträge"
+        };
+        var english = {
+            "start": "Personal logbook of Dr. Helen Rippli",
+            "end": "No more entries"
+        }
+        var messages = {
+            "de": deutsch,
+            "en": english
+        };
         window.onload = function() {
             console.log(_just_shown);
             const movieContainer = document.getElementById('movie-container');
@@ -140,7 +152,7 @@
                 client.subscribe('ToDevice/' + device_id, function (err) {
                     if (!err) {
                         console.log("Subscription Successful")
-                        showMovieAndText("background.mp4", "Persönliches Logbuch von Dr. Helen Rippli");
+                     
                     }
                 });
             });
@@ -152,25 +164,30 @@
                 console.log(message);
                 msg = JSON.parse(message);
                 console.log(msg);
+                if (msg["gameState"] == "STARTED") {
+                    showMovieAndText("background.mp4", messages[language]["start"]);
+                    return;
+                }
+
                 if (msg["display"] == "Show start") {
-                    showMovieAndText("background.mp4", "Persönliches Logbuch von Dr. Helen Rippli");
+                    showMovieAndText("background.mp4", messages[language]["start"]);
                     return;
                 }
                 if (msg["display"] == "Show end") {
                     
-                    showMovieAndText("background.mp4", "Keine weiteren Einträge");
+                    showMovieAndText("background.mp4", messages[language]["end"]);
                     return;
                 }
                 if (msg["language"] == "english") {
                     language = "en";
                     textMessage = document.getElementById("text-message");
-                    textMessage.innerText = "Personal logbook of Dr. Helen Rippli";
+                    textMessage.innerText = messages[language]["start"];
                     return;
                 }
                 if (msg["language"] == "deutsch") {
                     language = "de";
                     textMessage = document.getElementById("text-message");
-                    textMessage.innerText = "Persönliches Logbuch von Dr. Helen Rippli";
+                    textMessage.innerText = messages[language]["start"];
                     return;
                 }
                 const textContainer = document.getElementById('text-overlay');
