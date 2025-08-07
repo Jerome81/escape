@@ -13,7 +13,7 @@ import os
 CHUNK = 1024
 
 mq_ip = "192.168.5.11"
-deviceId = "abandoned_tech_soundfx"
+deviceId = "abandoned_crew_soundfx"
 
 random_sounds = 5
 random_min_wait = 30 # seconds
@@ -88,10 +88,9 @@ def on_event(event):
         
 
     if event == "Dock door unlocked":
-        intruder_alert_thread.do_run = False
-        play_message("dock_door_unlocked")
-        
+        intruder_alert_thread.do_run = False        
         _dock_door_unlocked = True
+        play_message("dock_door_unlocked")
         t2.start()
 
     if event == "All devices powered":
@@ -121,6 +120,10 @@ def on_event(event):
 
     if event == "Cockpit door open":
         play_sound("doors.mp3")
+        jsonData = {
+            "CockpitButton": _overheat_message_counter
+        }
+        mqttc.publish("Stats", json.dumps(jsonData)) 
 
     if event == "Access granted":
         play_sound("keypad_approved.mp3")
@@ -214,10 +217,14 @@ def on_message(client, userdata, msg):
                 if _last_overheat_message == None or time() - _last_overheat_message > 8:
                     _last_overheat_message = time()    
                     _overheat_message_counter = _overheat_message_counter + 1
-                    if _overheat_message_counter > 4:
-                        play_message("cockpit_overheated_annoyed")
+                    if _overheat_message_counter >= 10:
+                        if _overheat_message_counter == 10:
+                            play_message("cockpit_overheated_super_annoyed")
                     else:
-                        play_message("cockpit_overheated")
+                        if _overheat_message_counter > 4:
+                            play_message("cockpit_overheated_annoyed")
+                        else:
+                            play_message("cockpit_overheated")
             else:
                 play_sound("notification.mp3")
 

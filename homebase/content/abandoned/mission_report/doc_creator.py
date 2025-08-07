@@ -119,6 +119,16 @@ MYSTERY_SOLVED = {
     "english": "Connection with Dr. Helen Rippli and Sgt. Olo established."
 }
 
+ANNOYED_THE_HELL_OUT_OF_THE_AI = {
+    "deutsch": "Die KI geärgert, in dem ihr 10x versucht habt ins überhitzte Cockpit zu gelangen.",
+    "english": "Annoyed the hell out of the AI by trying to enter the overheated cockpit 10 times."
+}
+
+INSANE = {
+    "deutsch": "\"Die Definition von Wahnsinn ist, immer wieder das Gleiche zu tun und andere Ergebnisse zu erwarten.\"",
+    "english": "\"Insanity is doing the same thing over and over again and expecting different results.\""
+}
+
 _start_time = None
 
 
@@ -244,6 +254,15 @@ def add_stats(payload):
         total_tries = payload['Orbital']
         print(total_tries)
         add_to_score((total_tries - 3) * -10, ACCESS_CHECK_TRIES[_language])
+    if 'CockpitButton' in payload:
+        total_button_presses = payload['CockpitButton']
+        print("Total button presses: %s" % total_button_presses)
+        if total_button_presses >= 10:
+            add_to_score(100, ANNOYED_THE_HELL_OUT_OF_THE_AI[_language])
+        else:
+            if total_button_presses > 4:
+                add_to_score(-25, INSANE[_language])
+
 
 ### Google Login ###
 def login():
