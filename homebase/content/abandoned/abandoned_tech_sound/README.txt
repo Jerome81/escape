@@ -9,6 +9,9 @@ sudo nano /boot/firmware/config.txt
 Uncomment: 
 # dtparam=i2s=on
 
+Remove:
+dtparam=audio=on
+
 Add:
 dtoverlay=rpi-dacplus
 
