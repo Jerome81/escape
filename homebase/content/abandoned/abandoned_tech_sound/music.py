@@ -12,7 +12,6 @@ import os
 mq_ip = "192.168.178.11"
 deviceId = "abandoned_tech_sound"
 
-
 _jsonData = {
     "id": deviceId,
 }
@@ -28,7 +27,9 @@ def play_background_music():
 
 ### Game events ###
 def on_event(event):
-    pass
+    global stop_background_music
+    if event == "Exit door opened"
+        pass  # How do we stop?
 
 ### Global commands ###
 def on_started():
