@@ -37,6 +37,7 @@ _jsonData = {
 }
 
 _language = "deutsch"
+_iss_intervention = False
 _score = 0
 
 MISSION_STARTED = {
@@ -76,6 +77,16 @@ INTRUDER_ALERT_SUCCESS = {
 INTRUDER_ALERT_FAILED = {
     "deutsch": "Eindringlingsalarm ausgelöst",
     "english": "Intruder alert triggered"
+}
+
+RIPPLIS_HINT = {
+    "deutsch": "Ripplis Hilfe mit dem Dock Code benötigt",
+    "english": "Needed Ripplis help with the dock code"
+}
+
+ISS_INTERVENTION = {
+    "deutsch": "ISS Riddle musste das den Eindringlingsalarm ausschalten",
+    "english": "ISS Riddle had to deactivate the intruder alert"
 }
 
 POWER_UP = {
@@ -207,15 +218,24 @@ def on_language_change(language):
         replace_text(text_en, text_de)
 
 def on_event(event):
+    global _intervention
+    if event == "Ripplis hint":
+        add_to_log_with_time(RIPPLIS_HINT[_language])
+        add_to_score(-20, RIPPLIS_HINT[_language])
+
+    if event == "ISS Riddle intervention":
+        add_to_log_with_time(ISS_INTERVENTION[_language])
+        add_to_score(-50, ISS_INTERVENTION[_language])
+        _iss_intervention = True
+
     if event == "Dock door unlocked":
         add_to_log_with_time(DOCK_DOOR_UNLOCKED[_language])
         t = time_elapsed_in_s()
-        if t.seconds < 300:
+        if not _iss_intervention:
             add_to_score(100, INTRUDER_ALERT_SUCCESS[_language])
             if t.seconds < 180:
                 add_to_score(180 - t.seconds, QUICKNESS_BONUS[_language])
-        else:
-            add_to_score(-10, INTRUDER_ALERT_FAILED[_language])
+
 
     if event == "Crew door unlocked":
         add_to_log_with_time(CREW_DOOR_UNLOCKED[_language])
@@ -248,6 +268,9 @@ def on_event(event):
 
     if event == "Access granted":
         add_to_log_with_time(ACCESS_GRANTED[_language])
+
+
+
                 
 def add_stats(payload):
     if 'Orbital' in payload:
