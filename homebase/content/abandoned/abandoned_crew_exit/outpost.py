@@ -8,7 +8,7 @@ from random import randint
 from time import sleep
 
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_crew_exit"
 
 _gameState = "STOPPED"
@@ -72,6 +72,7 @@ def on_solved():
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData))
     unlock_door()
+    client.publish("cmnd/sleeping_pods/Power", "off")
 
 def on_reset():
     global _puzzleState
