@@ -77,8 +77,13 @@ def led_state():
 
 ### Game events ###
 def on_event(event):
-    if  event == "Dock keypad solved":
+    if event == "Dock keypad solved":
         on_activate()
+    if event == "Crew door open":
+        # The door should already be open at this point.
+        # This is only for the case where the game master has locked himself in.
+        unlock_door()
+
 
 ### Global commands ###
 def on_started():
