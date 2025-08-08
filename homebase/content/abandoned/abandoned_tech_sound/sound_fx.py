@@ -91,7 +91,8 @@ def on_event(event):
         intruder_alert_thread.do_run = False        
         _dock_door_unlocked = True
         play_message("dock_door_unlocked")
-        t2.start()
+        if not t2.is_alive():
+            t2.start()
 
     if event == "All devices powered":
         play_sound("stromkreis_2.mp3")
