@@ -83,7 +83,7 @@ def power_on_animation():
     for i in range(len(lightstrip) - 1, -1, -1):
         lightstrip[i] = color
         if i < 106:
-            color = (255, 0, 0)
+            color = (255, 255, 255)
             continue
         else:          
             lightstrip.show() 
@@ -199,8 +199,6 @@ def on_activate():
     global _puzzleState
     _puzzleState = "ACTIVE"
     sendUpdate()
-    #sound = pygame.mixer.Sound('/var/lib/outposts/power_up.wav')
-    #sound.play()
     power_on_animation()
 
 
