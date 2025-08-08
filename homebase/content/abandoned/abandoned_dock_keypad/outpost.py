@@ -10,7 +10,7 @@ deviceId = "abandoned_dock_keypad"
 
 _gameState = "STOPPED"
 _puzzleState = "ACTIVE"
-_solution = "3892"
+_solution = "8329"
 _currentData = ""
 
 _jsonData = {
