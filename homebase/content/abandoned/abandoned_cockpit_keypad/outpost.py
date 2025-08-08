@@ -5,12 +5,12 @@ import os
 
 from time import sleep
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_cockpit_keypad"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = "1234"
+_solution = "40925"
 _currentData = ""
 
 _jsonData = {
