@@ -27,7 +27,7 @@ _jsonData = {
 
 BUTTON_PIN = 14  #GPIO14
 
-button = gpiozero.Button(BUTTON_PIN, hold_time = 1, bounce_time = 0.2)
+button = gpiozero.Button(BUTTON_PIN, hold_time = 0.05, bounce_time = 0.2)
 
 
 # initialize door
@@ -169,17 +169,12 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
-on_reset(mqttc)
+on_reset()
 
 button.when_pressed = lambda: on_solved(mqttc)
 
 try:
     while True:
-        
-        if _gameState == "STOPPED":
-            # Always be ready
-            pass 
-       
         sleep(0.2)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
