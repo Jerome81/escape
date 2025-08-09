@@ -103,7 +103,7 @@ def on_event(event):
     global _solved
     if event == "All devices powered":
         on_activate()
-    if event == "Cartridge produced":
+    if event == "Recycling complete":
         _solved = True
         for i in range(0, 4):
             kit.servo[i].angle = 0
@@ -280,6 +280,7 @@ try:
                     if _puzzleState == "ACTIVE" or _puzzleState == "SOLVED":
                         if not _solved:
                             # Only update if the cartridge hasn't been produced.
+                            # puzzleState is whether the current solution is correct. _solved is whether the cartridge was produced.
                             update_servos(line)
             sleep(0.1)
 

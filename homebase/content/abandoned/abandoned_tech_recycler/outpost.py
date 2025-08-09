@@ -149,15 +149,16 @@ def on_solved(client):
     play_sound("Analyse_3.mp3 &")
     sleep(1)
     unlock_trapdoor()
-    _puzzleState = "SOLVED"
+    _puzzleState = "SOLVED"    
     sendUpdate()
     jsonData = {
         "event": "Recycling complete"
     }
-    client.publish("ToDevice/All", json.dumps(jsonData)) 
+    client.publish("ToDevice/All", json.dumps(jsonData))
     sleep(2)
     play_sound("recycler_working.mp3")
     unlock_cartridgedoor()
+ 
 
 
 def on_reset():
