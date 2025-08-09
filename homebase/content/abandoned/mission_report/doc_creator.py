@@ -115,6 +115,7 @@ ACCESS_CHECK_TRIES = {
     "english": "for failed access check attempts"
 }
 
+### Endings ######
 NOBLE_SACRIFICE = {
     "deutsch": "Selbstzerstörung aktiviert. ISS Hofmann zerstört.",
     "english": "Self destruction activated. ISS Hofmann destroyed."
@@ -130,14 +131,44 @@ MYSTERY_SOLVED = {
     "english": "Connection with Dr. Helen Rippli and Sgt. Olo established."
 }
 
+OUT_OF_OXYGEN = {
+    "deutsch": "Missionsabbruch: Kein Sauerstoff mehr.",
+    "english": "Mission aborted: Out of oxygen."
+}
+
+AI_WON = {
+    "deutsch": "Die ISS Riddle wurde von der AI übernommen.",
+    "english": "The AI took over the ISS Riddle."
+}
+
+EASY_ENDING = {
+    "deutsch": "Einfaches Ende freigeschaltet.",
+    "english": "Easy ending activated."
+}
+
+HARD_ENDING = {
+    "deutsch": "Schwieriges Ende freigeschaltet.",
+    "english": "Hard ending activated."
+}
+
 ANNOYED_THE_HELL_OUT_OF_THE_AI = {
     "deutsch": "Die KI geärgert, in dem ihr 10x versucht habt ins überhitzte Cockpit zu gelangen.",
     "english": "Annoyed the hell out of the AI by trying to enter the overheated cockpit 10 times."
 }
 
 INSANE = {
-    "deutsch": "\"Die Definition von Wahnsinn ist, immer wieder das Gleiche zu tun und andere Ergebnisse zu erwarten.\"",
-    "english": "\"Insanity is doing the same thing over and over again and expecting different results.\""
+    "deutsch": "Anstrengender Knopfdrücker.",
+    "english": "Notorious button presser."
+}
+
+RECYCLER_COMPLETE = {
+    "deutsch": "Hexapolym Patrone hergestellt.",
+    "english": "Hexapolym cartridge created."
+}
+
+OVERHEAT_SOLVED = {
+    "deutsch": "Kühlsystem abgekühlt.",
+    "english": "Cooling system cooled down."
 }
 
 _start_time = None
@@ -189,14 +220,7 @@ def time_elapsed_in_s():
     return datetime.now() - _start_time
 
 def on_started():
-    global _start_time
-    replace_text("#DATUM", datetime.today().strftime('%Y-%m-%d'))
-    # Start timer
-    _start_time = datetime.today()
-    # Add to log
-    add_to_log(MISSION_STARTED[_language] % _start_time.strftime('%Y-%m-%d %H:%M:%S'))
-    add_to_log(ENTERED_SPACESHIP[_language] % (_start_time + timedelta(seconds=11)).strftime('%Y-%m-%d %H:%M:%S'))
-    
+    pass
 
 def on_reset():
     # Reset timer
@@ -219,10 +243,20 @@ def on_language_change(language):
 
 def on_event(event):
     global _intervention
+    global _start_time
+    
     if event == "Ripplis hint":
         add_to_log_with_time(RIPPLIS_HINT[_language])
         add_to_score(-20, RIPPLIS_HINT[_language])
 
+    if event == "Intruder alert":
+        replace_text("#DATUM", datetime.today().strftime('%Y-%m-%d'))
+        # Start timer
+        _start_time = datetime.today()
+        # Add to log
+        add_to_log(MISSION_STARTED[_language] % _start_time.strftime('%Y-%m-%d %H:%M:%S'))
+        add_to_log(ENTERED_SPACESHIP[_language] % (_start_time + timedelta(seconds=11)).strftime('%Y-%m-%d %H:%M:%S'))    
+    
     if event == "ISS Riddle intervention":
         add_to_log_with_time(ISS_INTERVENTION[_language])
         add_to_score(-50, ISS_INTERVENTION[_language])
@@ -240,6 +274,10 @@ def on_event(event):
     if event == "Crew door unlocked":
         add_to_log_with_time(CREW_DOOR_UNLOCKED[_language])
         add_to_score(100, CREW_DOOR_UNLOCKED[_language])
+        t = time_elapsed_in_s()
+        if t.seconds < 600:
+            add_to_score(20, QUICKNESS_BONUS[_language])
+
 
     if event == "Cockpit door unlocked":
         add_to_log_with_time(COCKPIT_DOOR_UNLOCKED[_language])
@@ -250,6 +288,12 @@ def on_event(event):
 
     if event == "Power up":
         add_to_log_with_time(POWER_UP[_language])
+
+    if event == "Recycler complete":
+        add_to_log_with_time(RECYCLER_COMPLETE[_language])
+
+    if event == "Overheat solved":
+        add_to_log_with_time(OVERHEAT_SOLVED[_language])
 
     if event == "Power down":
         add_to_log_with_time(POWER_DOWN[_language])
@@ -269,7 +313,16 @@ def on_event(event):
     if event == "Access granted":
         add_to_log_with_time(ACCESS_GRANTED[_language])
 
+    if event == "Out of oxygen":
+        add_to_log_with_time(OUT_OF_OXYGEN[_language])
+        add_to_score(-100, OUT_OF_OXYGEN[_language])
 
+    if event == "Easy ending":
+        add_to_score(20, HARD_ENDING[_language])
+
+    if event == "AI won":
+        add_to_log_with_time(AI_WON[_language])
+        add_to_score(-100, AI_WON[_language])
 
                 
 def add_stats(payload):
