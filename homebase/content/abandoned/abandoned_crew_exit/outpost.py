@@ -47,6 +47,12 @@ def on_event(event):
             on_solved()
 
         if  event == "Mystery solved":
+            on_solved()       
+        
+        if  event == "Out of oxygen":
+            on_solved()
+
+        if  event == "AI won":
             on_solved()
 
 
@@ -72,7 +78,7 @@ def on_solved():
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData))
     unlock_door()
-    client.publish("cmnd/sleeping_pods/Power", "off")
+    mqttc.publish("cmnd/sleeping_pods/Power", "off")
 
 def on_reset():
     global _puzzleState
