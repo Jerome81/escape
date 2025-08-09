@@ -24,7 +24,6 @@
             display: none;
             z-index: 10; /* Ensure the text is above the video */
         }
-
         #text-title {
             position:absolute;
             top: 15%;
@@ -72,7 +71,7 @@
             width: 100%;
             height: 100%;
             z-index: 3; /* Place the video above the text */
-            display: none; /* Initially hide the video */
+            display: block; /* Initially hide the video */
         }
 
         #movie {
@@ -82,9 +81,9 @@
         }
     </style>
 </head>
-<body>  
+<body>
     <div id="movie-container">
-        <video id="movie" src="" muted="muted" controls loop></video>
+        <video id="movie" src="background.mp4" preload="auto" muted="muted" controls loop></video>
     </div>
     <div id="text-overlay">
         <div id="text-title">NACHRICHT DER ISS RIDDLE</div>
@@ -94,12 +93,12 @@
 
     <script>
         var _just_shown = false;
-        window.onload = function() {
+        document.addEventListener("DOMContentLoaded", function(arg) {
             console.log(_just_shown);
             const movieContainer = document.getElementById('movie-container');
             const textContainer = document.getElementById('text-container');
             const movie = document.getElementById('movie');
-            const device_id = 'tech_comm_1';
+            const device_id = 'dock_comm_1';
             const url = 'ws://192.168.5.11:8083'
             var last_display_tag_value = "none";
             var language = "de"
@@ -118,21 +117,37 @@
             }
             
             function showMovieAndText(movie, text) {
+                console.log("Showing movie and text: " + movie + "/" + text);
                 showText(text);
                 playMovie(movie);
                 movie.loop = true;
             }   
 
             function playMovie(name) {
+                console.log("Playing movie: " + name);
                 const movieContainer = document.getElementById('movie-container');
                 const movie = document.getElementById('movie');
                 movie.src = name;
                 movieContainer.style.display = 'block'; // Show the video container
-                movie.play(); // Start playing the video
                 movie.controls = false; //remove controls  
+                playPromise = movie.play(); // Start playing the video
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        console.log("movie started");
+                        // Automatic playback started!
+                        // Show playing UI.
+                    })
+                    .catch(error => {
+                        console.log("Error when starting video");
+                        console.error(error);
+                        // Auto-play was prevented
+                        // Show paused UI.
+                    });
+                }
             }
 
             function showMovie(name) {
+                console.log("Showing movie: " + name);
                 const textContainer = document.getElementById('text-overlay');
                 last_display_tag_value = textContainer.style.display;
                 textContainer.style.display = "none";
@@ -141,6 +156,7 @@
             }
             
             function showText(text) {  
+                console.log("Showing text: " + text);
                 const textContainer = document.getElementById('text-overlay');
                 const textMessage = document.getElementById('text-message');
                 const textTitle = document.getElementById("text-title");
@@ -165,20 +181,25 @@
                 // Subscribe to a topic
                 client.subscribe('ToDevice/All', function (err) {
                     if (!err) {
-                        console.log("Subscription Successful")
+                        console.log("Subscription Successful");
+                        setTimeout(() => {
+                            showMovieAndText("background.mp4", "Communication system is ready.");
+                        }, 10000);
+                        setTimeout(() => {
+                            showMovieAndText("background.mp4", "Communication to ISS Riddle established.");
+                        }, 30000);
                     }
                 });
                 client.subscribe('ToDevice/Comms', function (err) {
                     if (!err) {
-                        console.log("Subscription Successful")
+                        console.log("Subscription Successful");
                     }
                 });
                 client.subscribe('ToDevice/' + device_id, function (err) {
                     if (!err) {
-                        console.log("Subscription Successful")
+                        console.log("Subscription Successful");
                     }
                 });
-                showMovie("background.mp4");
             });
 
             
@@ -206,12 +227,6 @@
                     if (last_overheat_message == null || (new Date().getTime() - last_overheat_message.getTime()) / 1000 > 7) {
                         last_overheat_message = new Date();
                         overheat_message_counter++;
-                        if (overheat_message_counter >= 10) {
-			    if (overheat_message_counter == 10) {
-				// Stop playing after 10 button presses.
-               	                showMovie("cockpit_overheated_super_annoyed_" + language + ".mp4");       
-			    }
-                        }
                         if (overheat_message_counter > 4) {
                             showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
                         } else {
@@ -253,7 +268,7 @@
                     textTitle.innerText = "Nachricht der ISS Riddle";
                 }
                 //client.end()
-                }
+            }
             );
             movie.onended = function() {    
                 console.info("Movie ended");
@@ -265,7 +280,7 @@
 
                 movie.play();
             };
-        };
+        });
     </script>
 </body>
 </html>
