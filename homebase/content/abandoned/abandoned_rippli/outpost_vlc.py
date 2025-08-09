@@ -29,8 +29,8 @@ playback_finished = False
 
 language = "de"
 playlists = {
-    "de": [ "/var/lib/outposts/background.mp4", "/var/lib/outposts/video_0_de.mp4", "/var/lib/outposts/video_1_de.mp4", "/var/lib/outposts/video_2_de.mp4", "/var/lib/outposts/background.mp4" ],
-    "en": [ "/var/lib/outposts/background.mp4", "/var/lib/outposts/video_0_en.mp4", "/var/lib/outposts/video_1_en.mp4", "/var/lib/outposts/video_2_en.mp4", "/var/lib/outposts/background.mp4" ]
+    "de": [ "/var/lib/outposts/olo_start_de.mp4", "/var/lib/outposts/hans_olo_1_de.mp4", "/var/lib/outposts/hans_olo_2_de.mp4", "/var/lib/outposts/hans_olo_3_de.mp4", "/var/lib/outposts/end_de.mp4" ],
+    "en": [ "/var/lib/outposts/olo_start_en.mp4", "/var/lib/outposts/hans_olo_1_en.mp4", "/var/lib/outposts/hans_olo_2_en.mp4", "/var/lib/outposts/hans_olo_3_en.mp4", "/var/lib/outposts/end_en.mp4" ]
 }
 
 instance = vlc.Instance()
