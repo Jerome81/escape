@@ -184,7 +184,7 @@ try:
                             if key != lastInput:  # Prevent auto repeat
                                 lastInput = key
                                 _currentData = _currentData + key
-                                _currentData = _currentData[-4:]  # last 4 characters only
+                                _currentData = _currentData[-len(_solution):]  # Only as many characters as in the solution
                                 print(_currentData)
                                 sendUpdate()
                             if _currentData == _solution:
