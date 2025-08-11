@@ -139,7 +139,10 @@ def on_event(event):
             "event": "Mystery solved"
         }
         mqttc.publish("ToDevice/All", json.dumps(jsonData))
-
+    
+    if event == "Out of oxygen":
+        play_message("out_of_oxygen.mp3")
+        
 
 ### Global commands ###
 def on_started():
