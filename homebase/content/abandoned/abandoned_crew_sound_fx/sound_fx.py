@@ -3,6 +3,7 @@ from time import time
 from threading import Thread
 from random import randint
 
+import subprocess
 import paho.mqtt.client as mqtt
 import pyaudio
 import wave
@@ -19,7 +20,7 @@ deviceId = "abandoned_crew_soundfx"
 random_sounds = 5
 random_min_wait = 30 # seconds
 random_max_wait = 120 # seconds
-_currently_playing = False
+_currently_running = None
 _gameState = "STOPPED"
 _dock_door_unlocked = False
 _language = "de"
@@ -31,30 +32,30 @@ _jsonData = {
 }
 
 def play_message(file):
-    global _currently_playing
     # Messages take precedence over sound files.
-    _currently_playing = False
+    if _currently_running != None:
+        _currently_running.kill()
+        _currently_running = None
     play_sound("%s_%s.mp3" % (file, _language))
 
 def play_sound(file):
-    global _currently_playing
-    _currently_playing = True
-    os.system("mpg321 %s" % file)
-    _currently_playing = False
+    global _currently_running
+    _currently_running = subprocess.Popen(['mpg321', file])
+    _currently_running.wait()
+    _currently_running = None
 
 def play_random_sound():
     sleep_time = randint(random_min_wait, random_max_wait)
     print("Next random sound in %s seconds" % sleep_time)
     sleep(sleep_time)
-    while _currently_playing:
+    while _currently_running != None:
         sleep(0.3)
     play_sound("random_%s.mp3" % randint(1, random_sounds))
     t2 = Thread(target = play_random_sound)
     t2.start()
 
 def intruder_alert():
-
-    while _currently_playing:
+    while _currently_running != None:
         sleep(0.3)
     play_sound("alarm_%s.mp3" % _language)    
     sleep_time = 15
@@ -174,7 +175,6 @@ def sendUpdate():
 def on_solved(client):
     pass
 
-
 def on_reset():
     pass
 
@@ -204,56 +204,59 @@ def on_message(client, userdata, msg):
     global _last_overheat_message
     print(msg.topic)
     print(msg.payload)
-    payload = json.loads(msg.payload.decode('utf-8'))
+    try:
+        payload = json.loads(msg.payload.decode('utf-8'))
 
-    if msg.topic == "ToDevice/All":
-        if 'gameState' in payload:
-            _gameState = payload["gameState"]
-            if _gameState == "STARTED":
-                on_started()
-            if _gameState == "STOPPED":
-                on_stopped()
-            if _gameState == "RESET":
-                on_reset()
-        if 'event' in payload:
-            on_event(payload["event"])
-    
-    if msg.topic == "ToDevice/Comms":
-        if 'display' in payload:
-            display = payload["display"]
-            if display == "Cockpit overheated":
-                if _last_overheat_message == None or time() - _last_overheat_message > 8:
-                    _last_overheat_message = time()    
-                    _overheat_message_counter = _overheat_message_counter + 1
-                    if _overheat_message_counter >= 10:
-                        if _overheat_message_counter == 10:
-                            play_message("cockpit_overheated_super_annoyed")
-                    else:
-                        if _overheat_message_counter > 4:
-                            play_message("cockpit_overheated_annoyed")
+        if msg.topic == "ToDevice/All":
+            if 'gameState' in payload:
+                _gameState = payload["gameState"]
+                if _gameState == "STARTED":
+                    on_started()
+                if _gameState == "STOPPED":
+                    on_stopped()
+                if _gameState == "RESET":
+                    on_reset()
+            if 'event' in payload:
+                on_event(payload["event"])
+        
+        if msg.topic == "ToDevice/Comms":
+            if 'display' in payload:
+                display = payload["display"]
+                if display == "Cockpit overheated":
+                    if _last_overheat_message == None or time() - _last_overheat_message > 8:
+                        _last_overheat_message = time()    
+                        _overheat_message_counter = _overheat_message_counter + 1
+                        if _overheat_message_counter >= 10:
+                            if _overheat_message_counter == 10:
+                                play_message("cockpit_overheated_super_annoyed")
                         else:
-                            play_message("cockpit_overheated")
-            else:
-                play_sound("notification.mp3")
+                            if _overheat_message_counter > 4:
+                                play_message("cockpit_overheated_annoyed")
+                            else:
+                                play_message("cockpit_overheated")
+                else:
+                    play_sound("notification.mp3")
 
-        if 'movie' in payload:
-            movie = payload["movie"]
-            play_message(movie)
+            if 'movie' in payload:
+                movie = payload["movie"]
+                play_message(movie)
 
-        if 'language' in payload:
-            on_language_change(payload["language"])
-            
+            if 'language' in payload:
+                on_language_change(payload["language"])
+                
 
-    if msg.topic == "ToDevice/%s" % deviceId:
-        if 'command' in payload:
-            command = payload["command"]
-            if command == "SOLVED":
-                on_solved(client)
-            if command == "RESET":
-                on_reset()
-            if command == "ACTIVATE":
-                on_activate()
-   
+        if msg.topic == "ToDevice/%s" % deviceId:
+            if 'command' in payload:
+                command = payload["command"]
+                if command == "SOLVED":
+                    on_solved(client)
+                if command == "RESET":
+                    on_reset()
+                if command == "ACTIVATE":
+                    on_activate()
+    except Exception as e:
+        print("An error occured while handling msg: %s" % msg)
+        print(traceback.format_exc())
 
 def connect(client):
     disconnected = True
