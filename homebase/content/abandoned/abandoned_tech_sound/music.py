@@ -2,6 +2,7 @@ from time import sleep
 from threading import Thread
 from random import randint
 
+import subprocess
 import paho.mqtt.client as mqtt
 import pyaudio
 import wave
@@ -9,30 +10,50 @@ import sys
 import json
 import os
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_tech_sound"
 
 _jsonData = {
     "id": deviceId,
 }
 
+_currently_running = None
+
+def stop_currently_running_music():
+    if _currently_running != None:
+        print("Stopping process with id: %s" % _currently_running.pid)
+        _currently_running.kill()
+
 def play_sound(file):
-    os.system("mpg321 %s" % file)
+    global _currently_running
+    stop_currently_running_music()
+    _currently_running = subprocess.Popen(['mpg321', file])
+    _currently_running.wait()
+    #os.system("mpg321 %s" % file)
 
 
 def play_background_music():
     while True:
         play_sound("dark_space_music.mp3")
-        print("Let's play it again.")
+        if stop_background_music:
+            return
+        else:
+            print("Let's play it again.")
 
 ### Game events ###
 def on_event(event):
     global stop_background_music
-    if event == "Exit door opened"
-        pass  # How do we stop?
+    print(event)
+    if event == "Exit door opened":
+        stop_background_music = True
+        stop_currently_running_music()
+    if event == "Communication channel established":
+        stop_background_music = True
+        stop_currently_running_music()
 
 ### Global commands ###
 def on_started():
+    thread = Thread(target = play_background_music)
     thread.start()
 
 def on_stopped():
@@ -130,7 +151,6 @@ connect(mqttc)
 print("starting message queue.")
 mqttc.loop_start()
 
-thread = Thread(target = play_background_music)
 
 while True:
     sleep(0.5)
