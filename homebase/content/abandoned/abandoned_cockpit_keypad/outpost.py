@@ -55,7 +55,7 @@ def sendUpdate():
 
 ### Game events ###
 def on_event(event):
-    if event == "Data inserted to send":
+    if event == "Cockpit door open":
         on_activate()
 
 
