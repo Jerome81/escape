@@ -41,68 +41,109 @@ _iss_intervention = False
 _score = 0
 
 MISSION_STARTED = {
-    "deutsch": "%s - Mission start",
-    "english": "%s = Mission started"
+    "deutsch": "%s\tMission start",
+    "english": "%s\tMission started"
 }
 
 ENTERED_SPACESHIP = {
-    "deutsch": "%s - Das verlassene Raumschiff betreten",
-    "english": "%s - Entered the abandoned spaceship"
+    "deutsch": "%s\tDas verlassene Raumschiff betreten",
+    "english": "%s\tEntered the abandoned spaceship"
 }
 
 DOCK_KEYPAD_SOLVED = {
-    "deutsch": "%s - Zutrittscode geknackt",
-    "english": "%s - Access code cracked"
+    "deutsch": "%s\tZutrittscode geknackt",
+    "english": "%s\tAccess code cracked"
 }
 
 DOCK_DOOR_UNLOCKED = {
-    "deutsch": "%s - Dock Türe geöffnet",
-    "english": "%s - Dock door opened"
+    "deutsch": "%s\tDock Türe geöffnet",
+    "english": "%s\tDock door opened"
 }
 CREW_DOOR_UNLOCKED = {
-    "deutsch": "%s - Türe zum Crew Raum geöffnet",
-    "english": "%s - Door to crew room opened"
+    "deutsch": "%s\tTüre zum Crew Raum geöffnet",
+    "english": "%s\tDoor to crew room opened"
 }
 
 COCKPIT_DOOR_UNLOCKED = {
-    "deutsch": "%s - Türe zum Cockpit geöffnet",
-    "english": "%s - Cockpit door opened"
-}
-
-INTRUDER_ALERT_SUCCESS = {
-    "deutsch": "Eindringlingsalarm erfolgreich ausgeschaltet",
-    "english": "Intruder alert successfully avoided"
-}
-
-INTRUDER_ALERT_FAILED = {
-    "deutsch": "Eindringlingsalarm ausgelöst",
-    "english": "Intruder alert triggered"
+    "deutsch": "%s\tTüre zum Cockpit geöffnet",
+    "english": "%s\tCockpit door opened"
 }
 
 RIPPLIS_HINT = {
-    "deutsch": "Ripplis Hilfe mit dem Dock Code benötigt",
-    "english": "Needed Ripplis help with the dock code"
+    "deutsch": "%s\tRipplis Hilfe mit dem Dock Code benötigt",
+    "english": "%s\tNeeded Ripplis help with the dock code"
 }
 
 ISS_INTERVENTION = {
-    "deutsch": "ISS Riddle musste das den Eindringlingsalarm ausschalten",
-    "english": "ISS Riddle had to deactivate the intruder alert"
+    "deutsch": "%s\tISS Riddle deaktiviert den Eindringlingsalarm",
+    "english": "%s\tISS Riddle deactivated the intruder alert"
 }
 
 POWER_UP = {
-    "deutsch": "Hauptstrom eingeschaltet",
-    "english": "Main power activated"
+    "deutsch": "%s\tHauptstrom eingeschaltet",
+    "english": "%s\tMain power activated"
 }
 
 POWER_DOWN = {
-    "deutsch": "Hauptstrom ausgeschaltet...",
-    "english": "Main power deactivated..."
+    "deutsch": "%s\tHauptstrom ausgeschaltet...",
+    "english": "%s\tMain power deactivated..."
 }
 
+RECYCLER_COMPLETE = {
+    "deutsch": "%s\tHexapolym Patrone hergestellt.",
+    "english": "%s\tHexapolym cartridge created."
+}
+
+OVERHEAT_SOLVED = {
+    "deutsch": "%s\tKühlsystem abgekühlt.",
+    "english": "%s\tCooling system cooled down."
+}
+
+### Endings ######
+NOBLE_SACRIFICE = {
+    "deutsch": "%s\tSelbstzerstörung aktiviert. ISS Hofmann zerstört.",
+    "english": "%s\tSelf destruction activated. ISS Hofmann destroyed."
+}
+
+CORE_REMOVED = {
+    "deutsch": "%s\tAI Core entfernt. Upload abgebrochen. ISS Riddle gerettet.",
+    "english": "%s\tAI Core removed. Upload stopped. ISS Riddle saved."
+}
+
+MYSTERY_SOLVED = {
+    "deutsch": "%s\tFunkverbindung mit Dr. Helen Rippli und Sgt. Olo aufgebaut.",
+    "english": "%s\tConnection with Dr. Helen Rippli and Sgt. Olo established."
+}
+
+OUT_OF_OXYGEN = {
+    "deutsch": "%s\tMissionsabbruch: Kein Sauerstoff mehr.",
+    "english": "%s\tMission aborted: Out of oxygen."
+}
+
+AI_WON = {
+    "deutsch": "%s\tDie ISS Riddle wurde von der AI übernommen.",
+    "english": "%s\tThe AI took over the ISS Riddle."
+}
+#### Scores ####
 
 QUICKNESS_BONUS = {
     "deutsch": "Geschwindigkeitsbonus",
     "english": "Bonus for speed"
+}
+
+RIPPLIS_HINT_MALUS = {
+    "deutsch": "Rippli's Hinweis gebraucht",
+    "english": "Needed Rippli's hint"
+}
+
+ISS_INTERVENTION_MALUS = {
+    "deutsch": "ISS Riddle musste mit dem Eindringlingsalarm helfen",
+    "english": "ISS Riddle had to help deactivate the intruder alert"
+}
+
+COCKPIT_DOOR_UNLOCKED_BONUS = {
+    "deutsch": "Türe zum Cockpit geöffnet",
+    "english": "Cockpit door opened"
 }
 
 ACCESS_GRANTED = {
@@ -115,31 +156,11 @@ ACCESS_CHECK_TRIES = {
     "english": "for failed access check attempts"
 }
 
-### Endings ######
-NOBLE_SACRIFICE = {
-    "deutsch": "Selbstzerstörung aktiviert. ISS Hofmann zerstört.",
-    "english": "Self destruction activated. ISS Hofmann destroyed."
+INTRUDER_ALERT_SUCCESS = {
+    "deutsch": "Eindringlingsalarm erfolgreich ausgeschaltet",
+    "english": "Intruder alert successfully deactivated"
 }
 
-CORE_REMOVED = {
-    "deutsch": "AI Core entfernt. Upload abgebrochen. ISS Riddle gerettet.",
-    "english": "AI Core removed. Upload stopped. ISS Riddle saved."
-}
-
-MYSTERY_SOLVED = {
-    "deutsch": "Funkverbindung mit Dr. Helen Rippli und Sgt. Olo aufgebaut.",
-    "english": "Connection with Dr. Helen Rippli and Sgt. Olo established."
-}
-
-OUT_OF_OXYGEN = {
-    "deutsch": "Missionsabbruch: Kein Sauerstoff mehr.",
-    "english": "Mission aborted: Out of oxygen."
-}
-
-AI_WON = {
-    "deutsch": "Die ISS Riddle wurde von der AI übernommen.",
-    "english": "The AI took over the ISS Riddle."
-}
 
 EASY_ENDING = {
     "deutsch": "Einfaches Ende freigeschaltet.",
@@ -161,15 +182,6 @@ INSANE = {
     "english": "Notorious button presser."
 }
 
-RECYCLER_COMPLETE = {
-    "deutsch": "Hexapolym Patrone hergestellt.",
-    "english": "Hexapolym cartridge created."
-}
-
-OVERHEAT_SOLVED = {
-    "deutsch": "Kühlsystem abgekühlt.",
-    "english": "Cooling system cooled down."
-}
 
 _start_time = None
 
@@ -217,6 +229,8 @@ def replace_text(old_text, new_text):
     return result
 
 def time_elapsed_in_s():
+    if _start_time == None:
+        return datetime.now() - datetime.now()
     return datetime.now() - _start_time
 
 def on_started():
@@ -242,12 +256,12 @@ def on_language_change(language):
         replace_text(text_en, text_de)
 
 def on_event(event):
-    global _intervention
+    global _iss_intervention
     global _start_time
     
     if event == "Ripplis hint":
         add_to_log_with_time(RIPPLIS_HINT[_language])
-        add_to_score(-20, RIPPLIS_HINT[_language])
+        add_to_score(-20, RIPPLIS_HINT_MALUS[_language])
 
     if event == "Intruder alert":
         replace_text("#DATUM", datetime.today().strftime('%Y-%m-%d'))
@@ -259,7 +273,7 @@ def on_event(event):
     
     if event == "ISS Riddle intervention":
         add_to_log_with_time(ISS_INTERVENTION[_language])
-        add_to_score(-50, ISS_INTERVENTION[_language])
+        add_to_score(-50, ISS_INTERVENTION_MALUS[_language])
         _iss_intervention = True
 
     if event == "Dock door unlocked":
@@ -281,7 +295,7 @@ def on_event(event):
 
     if event == "Cockpit door unlocked":
         add_to_log_with_time(COCKPIT_DOOR_UNLOCKED[_language])
-        add_to_score(100, COCKPIT_DOOR_UNLOCKED[_language])
+        add_to_score(100, COCKPIT_DOOR_UNLOCKED_BONUS[_language])
 
     if event == "Dock keypad solved":
         add_to_log_with_time(DOCK_KEYPAD_SOLVED[_language])
@@ -461,7 +475,8 @@ def main():
     new_doc_title = 'Copied Document'
 
     # Copy the original document
-    doc_id = "10u1GsKIHa-fthmwbpOJegzUKAUTQL7_udV85EXODlQ8" #copy_doc(drive_service, DOCUMENT_ID, new_doc_title)
+  # "1xdCcBmQlunlxvBE5UpFoEnUE7sF9mMx7aFIG1pIgV2w" #
+    doc_id = copy_doc(drive_service, DOCUMENT_ID, new_doc_title)
 
     # Replace "#TEXT" with "Hello world" in the copied document
     # replace_text(docs_service, new_doc_id, 'as', 'ASS')
