@@ -228,7 +228,14 @@
                         last_overheat_message = new Date();
                         overheat_message_counter++;
                         if (overheat_message_counter > 4) {
-                            showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
+                            if (overheat_message_counter > 10) {
+                                return;
+                            }
+                            if (overheat_message_counter == 10) {
+                                showMovie("cockpit_overheated_super_annoyed_" + language + ".mp4");
+                            } else {
+                                showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
+                            }
                         } else {
                             showMovie("cockpit_overheated_" + language + ".mp4");
                         }
