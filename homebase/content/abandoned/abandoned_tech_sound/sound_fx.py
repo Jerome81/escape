@@ -9,6 +9,7 @@ import wave
 import sys
 import json
 import os
+import traceback
 
 CHUNK = 1024
 
@@ -66,83 +67,86 @@ def intruder_alert():
 ### Game events ###
 def on_event(event):
     global _dock_door_unlocked
+    try:
+        if event == "Intruder alert":
+            play_message("intruder_detected")
+            sleep(1)
+            intruder_alert_thread.start()
 
-    if event == "Intruder alert":
-        play_message("intruder_detected")
-        sleep(1)
-        intruder_alert_thread.start()
+        if event == "Ripplis hint":
+            play_message("ripplis_hint")
 
-    if event == "Ripplis hint":
-        play_message("ripplis_hint")
+        if event == "AI warning":
+            play_message("ai_warning")
 
-    if event == "AI warning":
-        play_message("ai_warning")
-
-    if event == "ISS Riddle intervention":
-        intruder_alert_thread.do_run = False
-        play_message("iss_riddle_help")
-        jsonData = {
-            "command": "SOLVED"
-        }
-        mqttc.publish("ToDevice/abandoned_dock_door", json.dumps(jsonData))        	
+        if event == "ISS Riddle intervention":
+            intruder_alert_thread.do_run = False
+            play_message("iss_riddle_help")
+            jsonData = {
+                "command": "SOLVED"
+            }
+            mqttc.publish("ToDevice/abandoned_dock_door", json.dumps(jsonData))        	
         
 
-    if event == "Dock door unlocked":
-        intruder_alert_thread.do_run = False        
-        _dock_door_unlocked = True
-        play_message("dock_door_unlocked")
-        if not t2.is_alive():
-            t2.start()
+        if event == "Dock door unlocked":
+            intruder_alert_thread.do_run = False        
+            _dock_door_unlocked = True
+            play_message("dock_door_unlocked")
+            if not t2.is_alive():
+                t2.start()
 
-    if event == "All devices powered":
-        play_sound("stromkreis_2.mp3")
+        if event == "All devices powered":
+            play_sound("stromkreis_2.mp3")
 
-    if event == "Power up":
-        play_sound("stromkreis_1.mp3")
+        if event == "Power up":
+            play_sound("stromkreis_1.mp3")
 
-    if event == "Self destruct":
-        play_sound("explosion_2.mp3")
-        play_sound("self_destruct.mp3")
+        if event == "Self destruct":
+            play_sound("explosion_2.mp3")
+            play_sound("self_destruct.mp3")
 
-    if event == "Self destruction activated":
-        play_sound("nooooo.mp3")
+        if event == "Self destruction activated":
+            play_sound("nooooo.mp3")
 
-    if event == "Power down":
-        play_sound("shutdown_server.mp3")
+        if event == "Power down":
+            play_sound("shutdown_server.mp3")
 
-    if event == "Crew door open":
-        play_sound("doors.mp3")
+        if event == "Crew door open":
+            play_sound("doors.mp3")
 
-    if event == "Replicator ring production started" or event == "Replicator pyrometer production started" or event == "Replicator bubbles production started":
-        play_sound("replicator.mp3")
+        if event == "Replicator ring production started" or event == "Replicator pyrometer production started" or event == "Replicator bubbles production started":
+            play_sound("replicator.mp3")
 
-    if event == "Joystick done":
-        play_sound("doors.mp3")
+        if event == "Joystick done":
+            play_sound("doors.mp3")
 
-    if event == "Cockpit door open":
-        play_sound("doors.mp3")
-        jsonData = {
-            "CockpitButton": _overheat_message_counter
-        }
-        mqttc.publish("Stats", json.dumps(jsonData)) 
+        if event == "Cockpit door open":
+            play_sound("doors.mp3")
+            jsonData = {
+                "CockpitButton": _overheat_message_counter
+            }
+            mqttc.publish("Stats", json.dumps(jsonData)) 
 
-    if event == "Access granted":
-        play_sound("keypad_approved.mp3")
+        if event == "Access granted":
+            play_sound("keypad_approved.mp3")
 
-    if event == "Overheat solved":
-        play_message("overheat_solved")
+        if event == "Overheat solved":
+            play_message("overheat_solved")
 
-    ##### ENDINGS #####
-    if event == "Communication channel established":
-        play_message("saved_by_aliens.mp3")
-        jsonData = {
-            "event": "Mystery solved"
-        }
-        mqttc.publish("ToDevice/All", json.dumps(jsonData))
+        ##### ENDINGS #####
+        if event == "Communication channel established":
+            play_message("saved_by_aliens")
+            jsonData = {
+                "event": "Mystery solved"
+            }
+            mqttc.publish("ToDevice/All", json.dumps(jsonData))
     
-    if event == "Out of oxygen":
-        play_message("out_of_oxygen.mp3")
+        if event == "Out of oxygen":
+            play_message("out_of_oxygen.mp3")
         
+    except Exception as e:
+        print("An error occured while handling event: %s" % event)
+        print(traceback.format_exc())
 
 ### Global commands ###
 def on_started():
