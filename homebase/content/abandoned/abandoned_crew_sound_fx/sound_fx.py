@@ -33,6 +33,7 @@ _jsonData = {
 
 def play_message(file):
     # Messages take precedence over sound files.
+    global _currently_running
     if _currently_running != None:
         _currently_running.kill()
         _currently_running = None
