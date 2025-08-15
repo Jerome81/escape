@@ -18,6 +18,10 @@ _puzzleState = "INACTIVE"
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(12, GPIO.OUT)
 
+# initialize fog machine
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(16, GPIO.OUT)
+
 _jsonData = {
     "id": deviceId,
     "description": ("Ausgangstüre"),
@@ -30,6 +34,15 @@ def lock_door():
 def unlock_door():
     GPIO.setup(12, GPIO.HIGH)
     print("Door unlocked")
+
+def do_fog():
+    GPIO.setup(16, GPIO.LOW)
+    print("Fogging")
+
+def dont_fog():
+    GPIO.setup(16, GPIO.HIGH)
+    print("Not fogging")
+
 
 def sendUpdate():
     jsonData = _jsonData
@@ -44,6 +57,9 @@ def on_event(event):
             on_solved()
 
         if  event == "Self destruct":
+            do_fog()
+            sleep(30)
+            dont_fog()
             on_solved()
 
         if  event == "Mystery solved":
@@ -160,6 +176,7 @@ print("starting message queue.")
 mqttc.loop_start()
 
 lock_door()
+dont_fog()
 
 try:
     while True:
