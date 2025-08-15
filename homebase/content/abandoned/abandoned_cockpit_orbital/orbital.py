@@ -308,6 +308,10 @@ def connect(client):
             l[i] = (255, 0, 0)
             l.show()
             i = i + 1
+            if i >= len(l):
+                l.fill((200, 0, 0))
+                l.show()
+                i = 0
             print('An exception occured: {}'.format(e))
             sleep(5)
 
