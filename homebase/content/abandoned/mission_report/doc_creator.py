@@ -115,6 +115,11 @@ MYSTERY_SOLVED = {
     "english": "%s\tConnection with Dr. Helen Rippli and Sgt. Olo established."
 }
 
+MYSTERY_SOLVED_BONUS = {
+    "deutsch": "Funkverbindung mit Dr. Helen Rippli und Sgt. Olo aufgebaut.",
+    "english": "Connection with Dr. Helen Rippli and Sgt. Olo established."
+}
+
 OUT_OF_OXYGEN = {
     "deutsch": "%s\tMissionsabbruch: Kein Sauerstoff mehr.",
     "english": "%s\tMission aborted: Out of oxygen."
@@ -198,7 +203,7 @@ def add_score(text):
 
 def add_to_log_with_time(text):
     print(text)
-    add_to_log(text % datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+    add_to_log(text % datetime.today().strftime('%H:%M:%S'))
 
 def add_to_score(score, text):
     global _score
@@ -285,15 +290,14 @@ def on_event(event):
                 add_to_score(180 - t.seconds, QUICKNESS_BONUS[_language])
 
 
-    if event == "Crew door unlocked":
+    if event == "Crew door open":
         add_to_log_with_time(CREW_DOOR_UNLOCKED[_language])
         add_to_score(100, CREW_DOOR_UNLOCKED[_language])
         t = time_elapsed_in_s()
         if t.seconds < 600:
             add_to_score(20, QUICKNESS_BONUS[_language])
 
-
-    if event == "Cockpit door unlocked":
+    if event == "Cockpit door open":
         add_to_log_with_time(COCKPIT_DOOR_UNLOCKED[_language])
         add_to_score(100, COCKPIT_DOOR_UNLOCKED_BONUS[_language])
 
@@ -322,7 +326,7 @@ def on_event(event):
 
     if event == "Mystery solved":
         add_to_log_with_time(MYSTERY_SOLVED[_language])
-        add_to_score(300, MYSTERY_SOLVED[_language])
+        add_to_score(300, MYSTERY_SOLVED_BONUS[_language])
 
     if event == "Access granted":
         add_to_log_with_time(ACCESS_GRANTED[_language])
