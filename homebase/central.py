@@ -103,6 +103,7 @@ def get_actions(outpost, number, ip):
     actions = ""
     actions = actions + action_template % ("GET", ip + ":5001", "status", "Boot Status")
     actions = actions + action_template % ("GET", ip + ":5001", "download", "Download")
+    actions = actions + action_template % ("GET", ip + ":5001", "reboot?pwd=why_not", "Reboot")
     actions = actions + action_template % ("GET", ip + ":5002", "attraction_mode", "Attraction mode")
     actions = actions + action_template % ("GET", ip + ":5002", "stats", "Statistics")
     actions = actions + action_template % ("GET", ip + ":5002", "status", "Status")
