@@ -105,6 +105,7 @@ def on_event(event):
 
         if event == "Self destruct":
             play_sound("explosion_2.mp3")
+            play_sound("multi_explosion.mp3")
             play_sound("self_destruct.mp3")
 
         if event == "Self destruction activated":
@@ -236,7 +237,7 @@ def on_message(client, userdata, msg):
                             else:
                                 play_message("cockpit_overheated")
                 else:
-                    play_sound("notification.mp3")
+                    play_message("notification")
 
             if 'movie' in payload:
                 movie = payload["movie"]
