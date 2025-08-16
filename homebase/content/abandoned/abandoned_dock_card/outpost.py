@@ -49,7 +49,7 @@ def sendUpdate():
     try:
         cpu_temp = os.popen('vcgencmd measure_temp').readline()
         cpu_temp = cpu_temp[len("temp="):cpu_temp.index("'")]
-    except e:
+    except Exception as e:
         print(e)
 
     jsonData = _jsonData
