@@ -3,7 +3,7 @@
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
 //const mqtt = require('mqtt')
-const url = 'ws://192.168.178.11:8083'
+const url = 'ws://192.168.5.11:8083'
 
 var language = "de";
 var locked = true;
@@ -35,7 +35,12 @@ client.on('connect', function () {
   });
   client.subscribe('ToDevice/console_screen', function (err) {
     if (!err) {
-        console.log("Subscription Successful")
+        console.log("Subscription Successful");
+        setTimeout(function() {
+          client.publish('FromDevice/' + options["clientId"], "Connected");
+          console.log("Published to: FromDevice/" + options["clientId"]);
+        }, 10000);
+        
     }
   });
 });

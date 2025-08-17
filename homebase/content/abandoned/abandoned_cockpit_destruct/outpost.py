@@ -10,7 +10,7 @@ from time import sleep
 
 deviceId = "abandoned_cockpit_destruct"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
