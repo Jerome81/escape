@@ -253,7 +253,12 @@
                 if (msg["event"] == "Dock door unlocked") {
                     showMovie("dock_door_unlocked_" + language + ".mp4");
                 }
-
+                if (msg["event"] == "Crew door open") {
+                    // Door open sound effect is played first.
+                    setTimeout(function() {
+                        showMovie("cooling_system_overheated_" + language + ".mp4");
+                    }, 3000);
+                }
                 if (msg["movie"] != null) {
                     showMovie(msg["movie"] + language + ".mp4");
                 }

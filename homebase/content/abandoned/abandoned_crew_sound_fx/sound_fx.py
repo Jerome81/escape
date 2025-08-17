@@ -116,6 +116,7 @@ def on_event(event):
 
         if event == "Crew door open":
             play_sound("doors.mp3")
+            play_message("cooling_system_overheated")
 
         if event == "Replicator ring production started" or event == "Replicator pyrometer production started" or event == "Replicator bubbles production started":
             play_sound("replicator.mp3")
