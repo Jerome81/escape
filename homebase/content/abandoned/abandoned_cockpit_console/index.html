@@ -75,7 +75,9 @@ client.on('message', function (topic, message) {
     locked = false;
     displayImage("welcome");
   }
-
+  if (msg["event"] == "Virus uploaded") {
+      window.location.href = "memory.html";
+  }
   if (msg["event"] == "Show log") {
     displayImage("log_" + currentLog);
   }
@@ -123,6 +125,10 @@ client.on('message', function (topic, message) {
 
   if (msg["event"] == "Scan environment") {
     displayImage("scan");
+  }
+
+  if (msg["event"] == "Virus uploaded") {
+    displayImage("data2_2");
   }
 
   if (msg["event"] == "Ship status") {

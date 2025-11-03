@@ -188,6 +188,10 @@ client.on('message', function (topic, message) {
     displayImage("empty")
   }
 
+  if (msg["event"] == "Virus uploaded") {
+    window.location.href = "memory.html";
+  }
+
   if (msg["event"] == "Floppy inserted") {
     floppyInserted = true;
     img = document.getElementById("main");
