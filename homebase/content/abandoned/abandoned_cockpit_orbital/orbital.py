@@ -137,21 +137,22 @@ def go_around(level, color, direction):
         sleep(speed)
 
 def show_solution():
-        l[104] = ((0, 0, 255))
+        l[108] = ((0, 255, 0))
+        l.show()
+        sleep(0.8)
+        l[107] = ((0, 0, 255))
+        l.show()        
+        sleep(0.8)
+        l[106] =  ((255, 0, 0))
         l.show()
         sleep(0.8)
         l[105] = ((255, 255, 0))
         l.show()
         sleep(0.8)
-        l[106] =  ((255, 0, 0))
+        l[104] = ((0, 0, 255))
         l.show()
         sleep(0.8)
-        l[107] = ((255, 255, 0))
-        l.show()
-        sleep(0.8)
-        l[108] = ((0, 255, 0))
-        l.show()
-        sleep(0.8)
+        
 
 ### MQ send ###
 

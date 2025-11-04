@@ -12,8 +12,9 @@ deviceId = "abandoned_cockpit_joystick"
 
 mq_ip = "192.168.5.11"
 
-# Blue, Yellow, Red, Yellow, Green
-_solution = ["W", "N", "S", "N", "E"]
+# Green, Blue, Red, Yellow, Blue (Left to right)
+_solution = ["E", "W", "S", "N", "W"]
+
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
@@ -145,7 +146,7 @@ def light_up_segment():
     color = ((255, 255, 0))
     start = 43
     if _segment == "N":
-        color = ((255, 255, 0))
+        color = ((180, 255, 0))
         start = 19
     if _segment == "E":
         color = ((0, 255, 0))
