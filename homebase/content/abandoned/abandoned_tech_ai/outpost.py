@@ -13,7 +13,7 @@ from effects import Effects
 
 deviceId = "abandoned_tech_ai"
 demo = True
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
