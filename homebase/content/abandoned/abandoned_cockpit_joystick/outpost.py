@@ -10,7 +10,7 @@ from time import sleep
 
 deviceId = "abandoned_cockpit_joystick"
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 
 # Blue, Yellow, Red, Yellow, Green
 _solution = ["W", "N", "S", "N", "E"]

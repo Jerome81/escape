@@ -33,7 +33,12 @@ client.on('connect', function () {
   // Subscribe to a topic
   client.subscribe('ToDevice/All', function (err) {
     if (!err) {
-        console.log("Subscription Successful")
+        console.log("Subscription Successful");
+        setTimeout(function() {
+          client.publish('FromDevice/' + options["clientId"], "Connected");
+          console.log("Published to: FromDevice/" + options["clientId"]);
+        }, 10000);
+        console.log("Sending connection for startup check");
     }
   })
 });

@@ -10,7 +10,7 @@ from time import sleep
 from mfrc522 import SimpleMFRC522
 
 
-mq_ip = "192.168.178.11"
+mq_ip = "192.168.5.11"
 deviceId = "abandoned_cockpit_floppy"
 
 _gameState = "STOPPED"

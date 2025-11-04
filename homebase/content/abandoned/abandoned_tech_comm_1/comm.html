@@ -184,6 +184,8 @@
                         console.log("Subscription Successful");
                         setTimeout(() => {
                             showMovieAndText("background.mp4", "Communication system is ready.");
+                            client.publish('FromDevice/' + options["clientId"], "Connected");
+                            console.log("Published to: FromDevice/" + options["clientId"]);
                         }, 10000);
                         setTimeout(() => {
                             showMovieAndText("background.mp4", "Communication to ISS Riddle established.");
