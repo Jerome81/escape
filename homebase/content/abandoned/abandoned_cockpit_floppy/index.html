@@ -141,7 +141,7 @@ function addClickListener() {
     if (img.src.indexOf("data2_1") > -1) {
       if (x > 73 && x < 370 && y > 197 && y < 269) {
         // Transmit virus
-        sendMessageToAll("Virus uploaded");
+        window.location.href = "trojan_upload.html";
         return;
       }
       if (x > 410 && x < 707 && y > 197 && y < 269) {
@@ -186,10 +186,6 @@ client.on('message', function (topic, message) {
   if ( msg["gameState"] == "RESET") {
     locked = true;
     displayImage("empty")
-  }
-
-  if (msg["event"] == "Virus uploaded") {
-    window.location.href = "memory.html";
   }
 
   if (msg["event"] == "Floppy inserted") {

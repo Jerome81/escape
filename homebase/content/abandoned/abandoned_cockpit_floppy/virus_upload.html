@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critical Danger Progress</title>
+    <link rel="stylesheet" href="virus_upload.css">    
+    <script src="mqtt-min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>⚠️ VIRUS UPLOAD ⚠️</h1>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <p class="status-text">TIME: <span id="timeRemaining">Calculating</span></p>
+        <p class="status-text warning-glow">STATUS: Unknown</p>
+    </div>
+    <script>
+        const url = 'ws://192.168.5.11:8083'
+
+        var language = "de";
+
+
+        // Create an MQTT client instance
+        const options = {
+            // Clean session
+            clean: true,
+            connectTimeout: 4000,
+            // Authentication
+            clientId: 'cockpit_floppy3',
+            username: 'outpost',
+            password: 'CallingHome',
+        }
+
+        const client  = mqtt.connect(url, options)
+
+        client.on('connect', function () {
+
+        console.log('Connected')
+        // Subscribe to a topic
+            client.subscribe('ToDevice/All', function (err) {
+                if (!err) {
+                    console.log("Subscription Successful")
+                }
+            });
+            client.subscribe('ToDevice/Oxygen', function (err) {
+                if (!err) {
+                    console.log("Subscription Successful");
+                    setTimeout(function() {
+                        client.publish('FromDevice/' + options["clientId"], "Connected");
+                        console.log("Published to: FromDevice/" + options["clientId"]);
+                    }, 10000);
+                    
+                }
+            });
+        });
+
+
+        client.on('disconnect', function () {
+            console.log('disonnected')
+        });
+
+
+        client.on('error', function () {
+            console.log('error')
+        });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const progressBar = document.getElementById('progressBar');
+    const timeRemainingDisplay = document.getElementById('timeRemaining');
+    const DURATION = 100;
+    const UPDATE_INTERVAL_MS = 1000; // Update every 1 second
+    let timeElapsed = 0;
+
+    messages = [
+        "Infiltrating network",
+        "Shutting down life support systems",
+        "Locking armory",
+        "Reversing anti-gravitation field",
+        "Turning off shields",
+        "Spreading fake news on internal comm channels",
+        "Turning off fridges to make the beers warm",
+        "Killing host AI"
+    ];
+
+    // Receive messages
+    client.on('message', function (topic, message) {
+        // message is Buffer
+        msg = JSON.parse(message);
+        console.log(msg);
+        if (msg["oxygenRemaining"] != null) {
+           timeElapsed = DURATION - msg["oxygenRemaining"];
+        }
+        
+        if (msg["event"] == "AI won") {
+ 	    // DO SOMETHING
+        }
+    });
+
+
+    // Function to update the progress bar and timer
+    function updateProgress() {
+        if (timeElapsed >= DURATION) {
+            // The danger has happened! Stop the interval and finalize.
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            timeRemainingDisplay.textContent = '00:00';
+            document.querySelector('h1').textContent = '💥 UPLOAD COMPLETE 💥';
+            document.querySelector('.warning-glow').textContent = 'STATUS: FINISHED';
+            return;
+        }
+
+        // 1. Update Progress Bar
+        const percentage = (timeElapsed / DURATION) * 100;
+        if (progressBar.style.width != percentage + '%') {
+            document.querySelector('.warning-glow').textContent = 'STATUS: ' + messages[Math.floor(Math.random() * messages.length)];
+        }
+        progressBar.style.width = percentage + '%';
+
+        // 2. Update Countdown Percentage
+        const pctRemaining = Math.floor(percentage);
+
+        const formattedPct = 
+            String(pctRemaining).padStart(2, '0') + '%'; 
+        
+        timeRemainingDisplay.textContent = formattedPct;
+	
+    }
+
+    // Start the progress update interval
+    const progressInterval = setInterval(updateProgress, UPDATE_INTERVAL_MS);
+
+    // Run once immediately to set the initial state (10:00 and 0%)
+    updateProgress();
+});
+    </script>
+
+</body>
+</html>
