@@ -213,7 +213,7 @@ def on_solved(client):
     sendUpdate()
     fade_out()
     jsonData = {
-        "event": "Joystick done"
+        "event": "Core access granted"
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
