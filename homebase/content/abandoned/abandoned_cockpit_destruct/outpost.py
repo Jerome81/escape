@@ -93,7 +93,7 @@ def on_language_change(language):
     
 
 ### Puzzle commands ###
-def on_solved(client):
+def on_solved():
     global _puzzleState
     global _destructor
     if _safety == True and _puzzleState == "ACTIVE":        
@@ -103,7 +103,7 @@ def on_solved(client):
         jsonData = {
             "event": "Self destruct"
         }
-        client.publish("ToDevice/All", json.dumps(jsonData))
+        mqttc.publish("ToDevice/All", json.dumps(jsonData))
 
 def on_reset(client):
     global _puzzleState
