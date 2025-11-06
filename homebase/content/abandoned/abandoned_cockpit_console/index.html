@@ -75,7 +75,7 @@ client.on('message', function (topic, message) {
     locked = false;
     displayImage("welcome");
   }
-  if (msg["event"] == "Virus uploaded") {
+  if (msg["event"] == "Virus upload started") {
       window.location.href = "memory.html";
   }
   if (msg["event"] == "Show log") {
