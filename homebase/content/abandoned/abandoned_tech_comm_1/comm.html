@@ -261,6 +261,23 @@
                         showMovie("cooling_system_overheated_" + language + ".mp4");
                     }, 3000);
                 }
+
+                if (msg["event"] == "Virus upload started") {
+                    // Wait 2 seconds for upload to happen before playing
+                    setTimeout(function() {
+                        showMovie("virus_upload.mp4"); // TODO: English version
+                    }, 2000);
+
+                } 
+
+                if (msg["event"] == "Self destruction activated") {
+                    showMovie("self_destruction_activated.mp4"); // TODO: English version
+                }   
+          
+                if (msg["event"] == "Dock door unlocked") {
+                    showMovie("dock_door_unlocked_" + language + ".mp4");
+                }
+
                 if (msg["movie"] != null) {
                     showMovie(msg["movie"] + language + ".mp4");
                 }

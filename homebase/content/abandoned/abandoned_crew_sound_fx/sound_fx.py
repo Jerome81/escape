@@ -108,9 +108,6 @@ def on_event(event):
             play_sound("multi_explosion.mp3")
             play_sound("self_destruct.mp3")
 
-        if event == "Self destruction activated":
-            play_sound("nooooo.mp3")
-
         if event == "Power down":
             play_sound("shutdown_server.mp3")
 
@@ -137,6 +134,14 @@ def on_event(event):
         if event == "Overheat solved":
             play_message("overheat_solved")
 
+        if event == "Virus upload started":
+            sleep(2)
+            play_message("virus_upload")
+
+        if event == "Self destruction activated":
+            play_message("self_destruction_activated")
+
+
         ##### ENDINGS #####
         if event == "Communication channel established":
             play_message("saved_by_aliens")
@@ -146,7 +151,10 @@ def on_event(event):
             mqttc.publish("ToDevice/All", json.dumps(jsonData))
     
         if event == "Out of oxygen":
-            play_message("out_of_oxygen.mp3")
+            play_message("out_of_oxygen")
+
+        if event == "AI won":
+            play_message("ai_won")
         
     except Exception as e:
         print("An error occured while handling event: %s" % event)
