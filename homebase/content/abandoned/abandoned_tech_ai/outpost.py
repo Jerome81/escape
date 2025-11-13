@@ -57,7 +57,7 @@ def on_event(event):
     
     if event == "Hard ending":
         effects.trigger_hard_ending()
-    
+
     if event == "Core removed":
         sleep(1)
         effects.off(color = (255, 0, 0))
