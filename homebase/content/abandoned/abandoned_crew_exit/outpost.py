@@ -58,7 +58,7 @@ def on_event(event):
 
         if  event == "Self destruct":
             do_fog()
-            sleep(30)
+            sleep(20)
             dont_fog()
             on_solved()
 
