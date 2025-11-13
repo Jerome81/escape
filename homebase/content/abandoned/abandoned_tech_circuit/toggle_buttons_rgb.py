@@ -116,7 +116,7 @@ def on_event(event):
 
     if event == "Power down":
         on_reset()
-    
+
     if event == "Attract":
         attract()
 
