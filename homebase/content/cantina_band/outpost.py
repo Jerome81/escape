@@ -25,11 +25,12 @@ def play_sound(file):
 ### Game events ###
 def on_event(event):
     if event == "Mystery solved":
-        play_sound("cantina_band.mp3")
+        play_sound("cantina_band.mp3") 
     if event == "Self destruct":
-        play_sound("star_wars_funeral_march.mp3")    
-if event == "Self destruct":
         play_sound("diva_dance.mp3")
+    if event == "Core removed":
+        play_sound("cantina_band.mp3")
+
 
 
 ### Global commands ###
