@@ -8,6 +8,9 @@ from time import sleep
 from random import randint
 from random import shuffle
 
+_solution_joystick = ["E", "W", "S", "N", "W"]  # MUST BE THE SAME AS IN JOYSTICK
+_correct_inputs = 0
+
 l = neopixel.NeoPixel(board.D18, 109, brightness = 0.8, auto_write = False)
 l.fill((0, 0, 255))
 l.show()
@@ -35,7 +38,7 @@ level_min_speed = [0.02, 0.03, 0.06]
 l.fill((0, 0, 0))
 
 BUTTON_PIN = 14  #GPIO14
-button = gpiozero.Button(BUTTON_PIN, hold_time = 0.05, bounce_time = 0.1)
+button = gpiozero.Button(BUTTON_PIN, hold_time = 0.02, bounce_time = 0.1)
 
 LED_PIN = 26  #GPIO26
 light = gpiozero.LED(LED_PIN)
@@ -122,7 +125,7 @@ def go_around(level, color, direction):
         if nextPixel == goal_led:
             l[nextPixel] = (0, 0, 0)
         else:
-            l[nextPixel] = (0, 153, 255)
+            l[nextPixel] = (255, 255, 0) 
         l[diff_pixel(nextPixel, level, direction, 2)] = (51, 102, 204)
         l[diff_pixel(nextPixel, level, direction, 3)] = (0, 51, 102)
         l[diff_pixel(nextPixel, level, direction, 4)] = (0, 10, 20)
@@ -174,7 +177,17 @@ def sendUpdate():
     
 
 def attract():
-    pass
+    if _puzzleState == "SOLVED":
+        l.fill((0, 0, 0))
+        l.show()
+        show_solution()
+    else:
+        for i in range(5):
+            l.fill((0, 0, 255))
+            l.show()
+            sleep(0.3)
+            l.fill((0, 0, 0))
+            l.show()
 
 ### Game events ###
 def on_event(event):
@@ -193,6 +206,25 @@ def on_event(event):
     
     if event == "Attract":
         attract()
+    
+def on_try_solve(input):
+    global _correct_inputs
+    if input == _solution_joystick[_correct_inputs]:
+        l[108 - _correct_inputs] = (0, 0, 0)
+        l.show()
+        _correct_inputs = _correct_inputs + 1
+        print("Correct inputs: %s" % _correct_inputs)
+
+    else:
+        _correct_inputs = 0
+        l[104] = (0, 0, 0)
+        l[105] = (0, 0, 0)
+        l[106] = (0, 0, 0)
+        l[107] = (0, 0, 0)
+        l[108] = (0, 0, 0)
+        l.show()
+        sleep(0.5)
+        show_solution()
 
 ### Global commands ###
 def on_started():
@@ -289,6 +321,10 @@ def on_message(client, userdata, msg):
             
 
     if msg.topic == "ToDevice/%s" % deviceId:
+        
+        if 'try_solve' in payload:
+            on_try_solve(payload["try_solve"])
+
         if 'command' in payload:
             command = payload["command"]
             if command == "SOLVED":

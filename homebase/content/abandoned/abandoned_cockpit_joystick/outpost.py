@@ -13,8 +13,8 @@ deviceId = "abandoned_cockpit_joystick"
 mq_ip = "192.168.5.11"
 
 # Green, Blue, Red, Yellow, Blue (Left to right)
-_solution = ["E", "W", "S", "N", "W"]
-
+_solution = ["E", "W", "S", "N", "W"]  # MUST BE THE SAME AS IN ORBITAL
+_currently_running = True
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
@@ -146,7 +146,7 @@ def light_up_segment():
     color = ((255, 255, 0))
     start = 43
     if _segment == "N":
-        color = ((180, 255, 0))
+        color = ((255, 255, 0))
         start = 19
     if _segment == "E":
         color = ((0, 255, 0))
@@ -190,10 +190,39 @@ def sendUpdate():
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
 
+def show_segment():
+    for i in range(0, 48):
+        if i > 6 and i < 19:
+            color = (0, 0, 255)
+        if i > 18 and i < 31:
+            color = (255, 255, 0)
+        if i > 30 and i < 43:
+            color = (0, 255, 0)
+        if i > 42:
+            color = (255, 0, 0)
+        light[i] = color
+    light.show()
+
 ### Game events ###
 def on_event(event):
+    global _currently_running
     if event == "Access granted":
         on_activate()
+
+    if event == "Attract":
+        print("Attraction mode")
+        _currently_running = False
+        show_segment()
+        sleep(0.5)
+        light.fill((0, 0, 0))
+        light.show()
+        sleep(0.1)
+        show_segment()
+        sleep(0.3)
+        light.fill((0, 0, 0))
+        light.show()
+        _currently_running = True
+
 
 ### Global commands ###
 def on_started():
@@ -229,6 +258,11 @@ def on_activate():
     _puzzleState = "ACTIVE"
     sendUpdate()
 
+def send_to_orbital(value):
+    jsonData = {
+        "try_solve": value
+    }
+    mqttc.publish("ToDevice/abandoned_cockpit_orbital", json.dumps(jsonData))
 
 ### Message Queue Events ###
 
@@ -318,18 +352,20 @@ try:
     while True:
         
         if _gameState == "STARTED" and _puzzleState == "ACTIVE":
-            move_segment()
-            current_value = getValue()
-            if current_value != _last_value:
-                _last_value = current_value
-                if current_value != "":
-                    _currentData.pop(0)
-                    _currentData.append(current_value)
-                    light_up_segment()
-                    sendUpdate()
-                    if _currentData == _solution:
-                        on_solved(mqttc)
-                        print("You've done it! %s" % _currentData)
+            if _currently_running:
+                move_segment()
+                current_value = getValue()
+                if current_value != _last_value:
+                    _last_value = current_value
+                    if current_value != "":
+                        send_to_orbital(current_value)
+                        _currentData.pop(0)
+                        _currentData.append(current_value)
+                        light_up_segment()
+                        sendUpdate()
+                        if _currentData == _solution:
+                            on_solved(mqttc)
+                            print("You've done it! %s" % _currentData)
         sleep(0.05)
 except Exception as e:
     print('An exception occurred: {}'.format(e))
