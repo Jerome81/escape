@@ -43,12 +43,20 @@ def safety_deactivate():
     if _puzzleState == "ACTIVE":
         unlock_door()
         lightstrip.fill((0, 255, 0))
+        jsonData = {
+            "event": "Self destruction safety deactivated"
+        }
+        mqttc.publish("ToDevice/All", json.dumps(jsonData))
         sendUpdate()
 
 def safety_activate():
     global _safety
     lightstrip.fill((255, 0, 0))
     _safety = False
+    jsonData = {
+        "event": "Self destruction safety activated"
+    }
+    mqttc.publish("ToDevice/All", json.dumps(jsonData))
     sendUpdate()
 
 def lock_door():
