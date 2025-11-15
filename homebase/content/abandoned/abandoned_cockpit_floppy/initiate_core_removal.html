@@ -1,0 +1,109 @@
+<html>
+    <head>
+    <script src="mqtt-min.js"></script>
+<script>
+//const mqtt = require('mqtt')
+const url = 'ws://192.168.5.11:8083'
+
+const params = new URLSearchParams(window.location.search);
+var language = params.get("lang");
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  clientId: 'floppy_screen5',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToDevice/All', function (err) {
+    if (!err) {
+        console.log("Subscription Successful");
+        setTimeout(function() {
+          client.publish('FromDevice/' + options["clientId"], "Connected");
+          console.log("Published to: FromDevice/" + options["clientId"]);
+        }, 10000);
+
+    }
+  })
+});
+
+
+client.on('disconnect', function () {
+  console.log('disonnected')
+});
+
+
+client.on('error', function () {
+  console.log('error')
+});
+
+function sendMessageToAll(message) {
+  client.publish('ToDevice/All', JSON.stringify({ "event": message }))
+}
+
+function addClickListener() {
+  document.getElementById('main').addEventListener('click', function(event) {
+    const x = event.clientX;
+    const y = event.clientY;
+    console.log(`Mouse clicked at X: ${x}, Y: ${y}`);
+    
+    img = document.getElementById("main");
+
+    if (x > 153 && x < 614 && y > 197 && y < 269) {
+        sendMessageToAll("Initiate core removal process");
+        window.location.href = "memory.html?lang=" + language;
+        return;
+    }
+  });
+}
+
+function change_language() {
+    img = document.getElementById("main");
+    img.src = img.src.replace("_en", "_" + language);
+    img.src = img.src.replace("_de", "_" + language);
+}
+
+function displayImage(name) {
+  img = document.getElementById("main");
+  img.src = name + "_" + language + ".png";
+}
+
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  msg = JSON.parse(message);
+  console.log(msg);
+
+  if (msg["language"] == "english") {
+    language = "en";
+    console.debug("English");
+  }
+  if (msg["language"] == "deutsch") {
+    language = "de";
+    console.debug("Deutsch");
+  }
+
+})
+</script>
+
+    </head>
+    <body style="padding:0px;margin:0px;">
+        <img id="main" src="empty_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+        
+<script>
+displayImage("initiate_core_removal");
+addClickListener();
+</script>
+    </body>
+</html>

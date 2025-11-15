@@ -14,51 +14,63 @@
             <div id="progressBar" class="progress-bar"></div>
         </div>
         <p class="status-text">TIME: <span id="timeRemaining">Calculating</span></p>
-        <p class="status-text warning-glow">I AM THE UNIVERSE</p>
+        <p id="claim" class="status-text warning-glow">I AM THE UNIVERSE</p>
     </div>
     <script>
-        const url = 'ws://192.168.5.11:8083'
+const url = 'ws://192.168.5.11:8083'
 
-        var language = "de";
+const params = new URLSearchParams(window.location.search);
+var language = params.get("lang");
+change_language_to(language)
 
+function change_language_to(lang) {
+    if (lang == "de") {
+        document.querySelector("h1").innerText = "⚠️ EL TROYANO - UPLOAD ⚠️";
+        document.getElementById("claim").innerText = "ICH BIN DAS UNIVERSUM";
+    }
+    if (lang == "en") {
+        document.querySelector("h1").innerText = "⚠️ EL TROYANO - UPLOADING ⚠️";
+        document.getElementById("claim").innerText = "I AM THE UNIVERSE";
+    }
+}
 
-        // Create an MQTT client instance
-        const options = {
-            // Clean session
-            clean: true,
-            connectTimeout: 4000,
-            // Authentication
-            clientId: 'cockpit_floppy4',
-            username: 'outpost',
-            password: 'CallingHome',
+// Create an MQTT client instance
+const options = {
+    // Clean session
+    clean: true,
+    connectTimeout: 4000,
+    // Authentication
+    clientId: 'cockpit_floppy4',
+    username: 'outpost',
+    password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+console.log('Connected')
+// Subscribe to a topic
+    client.subscribe('ToDevice/All', function (err) {
+        if (!err) {
+            console.log("Subscription Successful")
         }
-
-        const client  = mqtt.connect(url, options)
-
-        client.on('connect', function () {
-
-        console.log('Connected')
-        // Subscribe to a topic
-            client.subscribe('ToDevice/All', function (err) {
-                if (!err) {
-                    console.log("Subscription Successful")
-                }
-            });
-        });
+    });
+});
 
 
-        client.on('disconnect', function () {
-            console.log('disonnected')
-        });
+client.on('disconnect', function () {
+    console.log('disonnected')
+});
 
 
-        client.on('error', function () {
-            console.log('error')
-        });
+client.on('error', function () {
+    console.log('error')
+});
 
-        function sendMessageToAll(message) {
-            client.publish('ToDevice/All', JSON.stringify({ "event": message }))
-        }  
+function sendMessageToAll(message) {
+    client.publish('ToDevice/All', JSON.stringify({ "event": message }))
+}  
 
 document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progressBar');
@@ -73,8 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (timeElapsed > DURATION) {
             clearInterval(progressInterval);
             progressBar.style.width = '100%';
-	    sendMessageToAll("Virus upload started");
-	    window.location.href = "memory.html";
+            // sleep for 2 seconds and then redirect
+	        sendMessageToAll("Virus upload started");
+                setTimeout(function() { 
+                window.location.href = "initiate_core_removal.html?lang=" + language;
+            }, 4000);
             return;
         }
 

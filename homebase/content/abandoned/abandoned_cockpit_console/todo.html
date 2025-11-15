@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="mqtt-min.js"></script>
+    <title>Ship's Task Log</title>
+    <style>
+        /* --- Global Styles --- */
+        body {
+            background-color: #000000; /* Pure black background */
+            color: rgb(0, 170, 255); /* Bright, blueish font */
+            font-family: 'Consolas', 'Courier New', monospace; /* Tech-like font */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Todo Container --- */
+        .todo-container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 50px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            background-color: #0a0a0f; /* Very dark blue-black */
+            border: 2px solid #08F; /* Blue border */
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.5); /* Glowing effect */
+        }
+
+        /* --- Header --- */
+        h1 {
+            color: #0CF; /* Lighter, brighter blue for header */
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            border-bottom: 1px dashed #08F;
+            padding-bottom: 15px;
+        }
+
+        /* --- Input Area --- */
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #task-input {
+            flex-grow: 1; /* Input takes most of the space */
+            background-color: #000;
+            border: 1px solid #05A;
+
+            color: #0AF;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 4px;
+        }
+
+        #task-input::placeholder {
+            color: #05A;
+            opacity: 0.7;
+        }
+
+        #add-task-btn {
+            background-color: #05A;
+            border: 1px solid #08F;
+            color: #FFF;
+            padding: 0 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        #add-task-btn:hover {
+            background-color: #08F;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.7);
+        }
+
+        /* --- Task List --- */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-list li {
+            display: flex;
+            align-items: center;
+            padding: 12px 5px;
+            border-bottom: 1px solid #035; /* Dark blue divider */
+            transition: background-color 0.3s;
+        }
+
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+
+        .task-list li label {
+            flex-grow: 1;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+
+        /* --- Custom Checkbox (basic) --- */
+        .task-list input[type="checkbox"] {
+            /* Basic styling for the checkbox */
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            border: 2px solid #08F;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .task-list input[type="checkbox"]:checked {
+            background-color: #0AF;
+        }
+
+        .task-list input[type="checkbox"]:checked::after {
+            /* Simple checkmark */
+            content: '✓';
+            position: absolute;
+            color: #000;
+            font-weight: bold;
+            top: -2px;
+            left: 2px;
+        }
+
+        /* Style for completed tasks */
+        .task-list input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #05A; /* Faded blue */
+            opacity: 0.7;
+        }
+
+        /* --- Delete Button --- */
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #F00; /* Red for 'danger' */
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+            color: #F55; /* Brighter red on hover */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="todo-container">
+        <h1 id="group1">AI Core Entfernungs-Prozess</h1>
+
+        <ul class="task-list">
+            <li>
+                <input type="checkbox" id="task1">
+                <label for="task1">Core Entfernungs-Prozess starten</label>
+            </li>
+
+            <li>
+                <input type="checkbox" id="task2">
+                <label for="task2">Identifikation Crew ISS Hofmann</label>
+            </li>
+
+            <li>
+                <input type="checkbox" id="task3">
+                <label for="task3">Zugriffscheck</label>
+            </li>
+
+            <li>
+                <input type="checkbox" id="task4">
+                <label for="task4">Core Tower Wartungstür öffnen</label>
+            </li>
+            
+            <li>
+                <input type="checkbox" id="task5">
+                <label for="task5">Core Entfernen</label>
+            </li>
+        </ul>
+    </div>
+
+    <div id="selfdestruct" class="todo-container" style="display: none;">
+        <h1 id="group2">Selbstzerstörung</h1>
+
+        <ul class="task-list">
+            <li>
+                <input type="checkbox" id="task6">
+                <label for="task6">Sicherheitsschalter deaktivieren</label>
+            </li>
+
+            <li>
+                <input type="checkbox" id="task7">
+                <label for="task7">Grosser roter Knopf drücken</label>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+const url = 'ws://192.168.5.11:8083'
+const params = new URLSearchParams(window.location.search);
+
+var language = params.get("lang");
+change_language_to(language)
+
+function change_language_to(lang) {
+    if (lang == "de") {
+        document.getElementById("group1").innerText = "AI Core Entfernungs-Prozess";
+        document.querySelector("label[for='task1']").innerText = "Core Entfernungs-Prozess starten";
+        document.querySelector("label[for='task2']").innerText = "Identifikation Crew ISS Hofmann";
+        document.querySelector("label[for='task3']").innerText = "Zugriffscheck";
+        document.querySelector("label[for='task4']").innerText = "Core Tower Wartungstür öffnen";
+        document.querySelector("label[for='task5']").innerText = "Core Entfernen";
+        
+        document.getElementById("group2").innerText = "Selbstzerstörung";
+        document.querySelector("label[for='task6']").innerText = "Sicherheitsschalter deaktivieren";
+        document.querySelector("label[for='task7']").innerText = "Grosser roter Knopf drücken (wenn das Licht grün ist)";
+    }
+    if (lang == "en") {
+        document.querySelector("h1").innerText = "AI Core Removal Process";
+        document.querySelector("label[for='task1']").innerText = "Initiate core removal process";
+        document.querySelector("label[for='task2']").innerText = "Identify crew of ISS Hofmann";
+        document.querySelector("label[for='task3']").innerText = "Access check";
+        document.querySelector("label[for='task4']").innerText = "Open core tower maintenance door";
+        document.querySelector("label[for='task5']").innerText = "Remove core";
+
+        document.getElementById("group2").innerText = "Self-Destruction";
+        document.querySelector("label[for='task6']").innerText = "Deactivate safety switch";
+        document.querySelector("label[for='task7']").innerText = "Press big red button (when the light is green)";
+    }
+}
+
+if (params.get("check_task") == "1") {
+    task = document.getElementById("task1");
+    task.checked = true;
+    task = document.getElementById("task2");
+    task.checked = true;
+}
+
+// Create an MQTT client instance
+const options = {
+    // Clean session
+    clean: true,
+    connectTimeout: 4000,
+    // Authentication
+    clientId: 'console_screen2',
+    username: 'outpost',
+    password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+console.log('Connected')
+// Subscribe to a topic
+    client.subscribe('ToDevice/All', function (err) {
+        if (!err) {
+            console.log("Subscription Successful")
+        }
+    });
+    client.subscribe('ToDevice/console_screen', function (err) {
+        if (!err) {
+            console.log("Subscription Successful");
+            setTimeout(function() {
+                client.publish('FromDevice/' + options["clientId"], "Connected");
+                console.log("Published to: FromDevice/" + options["clientId"]);
+            }, 10000);
+            
+        }
+    });
+});
+
+
+client.on('disconnect', function () {
+    console.log('disonnected')
+});
+
+
+client.on('error', function () {
+    console.log('error')
+});
+
+client.on('message', function (topic, message) {
+    // message is Buffer
+    // console.log(message);
+    msg = JSON.parse(message);
+    console.log(msg);
+
+    if (msg["event"] != null) {
+        if (msg["event"] == "Initiate core removal process") {
+            task = document.getElementById("task1");
+            task.checked = true;
+            // sleep for 2 seconds
+            setTimeout(function() {
+                window.location.href = "memory.html?lang=" + language;
+            }, 2000);
+        }
+        if (msg["event"] == "Orbital solved") {
+            task = document.getElementById("task3");
+            task.checked = true;
+        }
+        if (msg["event"] == "Core access granted") {
+            task = document.getElementById("task4");
+            task.checked = true;
+        }
+        if (msg["event"] == "Core removed") {
+            task = document.getElementById("task5");
+            task.checked = true;
+        }
+
+        if (msg["event"] == "Self destruction activated") {
+            div = document.getElementById("selfdestruct");
+            div.setAttribute("style", "display: block;");
+        }
+
+        if (msg["event"] == "Self destruction safety deactivated") {
+            task = document.getElementById("task6");
+            task.checked = true;
+        }
+
+        if (msg["event"] == "Self destruction safety activated") {
+            task = document.getElementById("task6");
+            task.checked = false;
+        }
+    }
+
+});
+    </script>
+</body>
+</html>

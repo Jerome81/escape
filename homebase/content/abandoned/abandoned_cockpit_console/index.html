@@ -76,7 +76,7 @@ client.on('message', function (topic, message) {
     displayImage("welcome");
   }
   if (msg["event"] == "Virus upload started") {
-      window.location.href = "memory.html";
+      window.location.href = "todo.html?lang=" + language;
   }
   if (msg["event"] == "Show log") {
     displayImage("log_" + currentLog);
