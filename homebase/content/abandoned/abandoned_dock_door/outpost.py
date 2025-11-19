@@ -207,15 +207,11 @@ try:
     while True:
         #print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
 
-        if _gameState == "STOPPED":
+        if _gameState == "STOPPED" or _puzzleState == "SOLVED":
             # Always be ready
             pass 
-        
-        if _puzzleState == "ACTIVE":
+        else:
             id = reader.read_id_no_block()
-            
-            if _puzzleState == "SOLVED":
-                break
 
             # After each successful read, there is a None read.
             if id == None:
@@ -228,13 +224,22 @@ try:
             if id != _currentData:
                 _currentData = id
                 sendUpdate()
-                #print(_currentData)
-                #print(_currentData in _solution)
-                if _currentData in _solution:
-                    print("solved")
-                    on_solved(mqttc)
-        else:
-            sleep(1)
+                if _puzzleState == "ACTIVE":
+                
+                    _currentData = id
+                    sendUpdate()
+                    #print(_currentData)
+                    #print(_currentData in _solution)
+                    if _currentData in _solution:
+                        print("solved")
+                        on_solved(mqttc)
+                else:
+                    if id != None:
+                        for i in range(3):
+                            red.off()
+                            sleep(0.3)
+                            red.on()
+                            sleep(0.3)
         
         
         sleep(0.2)
