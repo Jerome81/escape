@@ -12,7 +12,7 @@ from time import sleep
 from effects import Effects
 
 deviceId = "abandoned_tech_ai"
-demo = True
+demo = False
 mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"

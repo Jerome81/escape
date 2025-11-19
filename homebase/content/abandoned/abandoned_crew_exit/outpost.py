@@ -54,6 +54,7 @@ def sendUpdate():
 def on_event(event):
     if _gameState == "STARTED":
         if  event == "Core removed":
+            sleep(30)  # Play sound and video
             on_solved()
 
         if  event == "Self destruct":
@@ -69,6 +70,10 @@ def on_event(event):
             on_solved()
 
         if  event == "AI won":
+            do_fog()
+            sleep(20)
+            dont_fog()
+            sleep(15)
             on_solved()
 
 

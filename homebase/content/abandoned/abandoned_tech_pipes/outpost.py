@@ -103,6 +103,10 @@ def on_event(event):
     global _solved
     if event == "All devices powered":
         on_activate()
+    if event == "Power up" and _puzzleState == "ACTIVE":
+        light_on()
+    if event == "Power down":
+        light_off()
     if event == "Recycling complete":
         _solved = True
         for i in range(0, 4):

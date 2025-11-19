@@ -87,14 +87,21 @@ def on_solved():
     print("removed")
     _puzzleState = "SOLVED"
     sendUpdate()
+    
+    light.fill((255, 0, 0))
+    jsonData = {
+        "event": "Power down"
+    }
+    mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
+
+    sleep(3)
+
     jsonData = {
         "event": "Core removed"
     }
     _core_removed = True
-    light.fill((255, 0, 0))
     mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
-    # sleep(2)
-    # play_sound("recycler_working.mp3")
+
 
 
 def on_reset():
@@ -153,7 +160,7 @@ def on_message(client, userdata, msg):
         if 'command' in payload:
             command = payload["command"]
             if command == "SOLVED":
-                on_solved(client)
+                on_solved()
             if command == "RESET":
                 on_reset()
             if command == "ACTIVATE":

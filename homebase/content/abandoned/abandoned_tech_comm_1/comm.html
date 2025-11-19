@@ -225,10 +225,6 @@
                     showMovie("saved_by_aliens_" + language + ".mp4");
                 }
 
-                if (msg["event"] == "Core removed") {
-                    showMovie("core_removed_" + language + ".mp4");
-                }
-
                 if (msg["display"] == "Cockpit overheated") {
                     if (last_overheat_message == null || (new Date().getTime() - last_overheat_message.getTime()) / 1000 > 7) {
                         last_overheat_message = new Date();
@@ -281,7 +277,15 @@
                 if (msg["event"] == "Self destruct") {
                     showMovie("static.mp4");
                 }
-          
+                
+                if (msg["event"] == "AI won") {
+                    showMovie("static.mp4");
+                }
+                
+                if (msg["event"] == "Core removed") {
+                    //showMovie("core_removed_" + language + ".mp4");
+                }
+
                 if (msg["event"] == "Dock door unlocked") {
                     showMovie("dock_door_unlocked_" + language + ".mp4");
                 }

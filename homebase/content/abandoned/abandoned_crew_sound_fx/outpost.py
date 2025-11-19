@@ -65,6 +65,10 @@ def intruder_alert():
         intruder_alert_thread = Thread(target = intruder_alert)
         intruder_alert_thread.start()
 
+def self_destruct():
+    play_sound("explosion_2.mp3")
+    play_sound("multi_explosion.mp3")
+    play_sound("self_destruct.mp3")
 
 ### Game events ###
 def on_event(event):
@@ -104,9 +108,7 @@ def on_event(event):
             play_sound("stromkreis_1.mp3")
 
         if event == "Self destruct":
-            play_sound("explosion_2.mp3")
-            play_sound("multi_explosion.mp3")
-            play_sound("self_destruct.mp3")
+            self_destruct()
 
         if event == "Power down":
             play_sound("shutdown_server.mp3")
@@ -154,7 +156,13 @@ def on_event(event):
             play_message("out_of_oxygen")
 
         if event == "AI won":
-            play_message("ai_won")
+            play_sound("ai_won.mp3")
+            self_destruct()
+
+        if event == "Core removed":
+            sleep(3)
+            play_message("core_removed")
+            play_sound("exit_door_open.mp3")
         
     except Exception as e:
         print("An error occured while handling event: %s" % event)
