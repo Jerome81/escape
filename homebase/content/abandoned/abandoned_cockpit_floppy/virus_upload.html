@@ -8,14 +8,13 @@
     <script src="mqtt-min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>⚠️ VIRUS UPLOAD ⚠️</h1>
-        <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
-        </div>
-        <p class="status-text">TIME: <span id="timeRemaining">Calculating</span></p>
-        <p class="status-text warning-glow">STATUS: Unknown</p>
+    <img id="main" src="virus1.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+
+    <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
     </div>
+    <p class="status-text"><span id="status-text">Upload-Status:</span>&nbsp;<span id="timeRemaining">Calculating</span></p>
+
     <script>
         const url = 'ws://192.168.5.11:8083'
 
@@ -73,17 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const UPDATE_INTERVAL_MS = 1000; // Update every 1 second
     let timeElapsed = 0;
 
-    messages = [
-        "Infiltrating network",
-        "Shutting down life support systems",
-        "Locking armory",
-        "Reversing anti-gravitation field",
-        "Turning off shields",
-        "Spreading fake news on internal comm channels",
-        "Turning off fridges to make the beers warm",
-        "Killing host AI"
-    ];
-
     // Receive messages
     client.on('message', function (topic, message) {
         // message is Buffer
@@ -106,16 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(progressInterval);
             progressBar.style.width = '100%';
             timeRemainingDisplay.textContent = '00:00';
-            document.querySelector('h1').textContent = '💥 UPLOAD COMPLETE 💥';
-            document.querySelector('.warning-glow').textContent = 'STATUS: FINISHED';
             return;
         }
 
         // 1. Update Progress Bar
         const percentage = (timeElapsed / DURATION) * 100;
-        if (progressBar.style.width != percentage + '%') {
-            document.querySelector('.warning-glow').textContent = 'STATUS: ' + messages[Math.floor(Math.random() * messages.length)];
-        }
+        
         progressBar.style.width = percentage + '%';
 
         // 2. Update Countdown Percentage

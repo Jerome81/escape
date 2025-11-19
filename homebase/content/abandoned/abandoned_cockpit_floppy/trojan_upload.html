@@ -8,14 +8,13 @@
     <script src="mqtt-min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>⚠️UPLOADING EL TROYANO ⚠️</h1>
-        <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
-        </div>
-        <p class="status-text">TIME: <span id="timeRemaining">Calculating</span></p>
-        <p id="claim" class="status-text warning-glow">I AM THE UNIVERSE</p>
+    <img id="main" src="virus1.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+
+    <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
     </div>
+    <p class="status-text"><span id="status-text">Verbleibende Upload-Zeit:</span>&nbsp;<span id="timeRemaining">Calculating</span></p>
+    
     <script>
 const url = 'ws://192.168.5.11:8083'
 
@@ -25,12 +24,10 @@ change_language_to(language)
 
 function change_language_to(lang) {
     if (lang == "de") {
-        document.querySelector("h1").innerText = "⚠️ EL TROYANO - UPLOAD ⚠️";
-        document.getElementById("claim").innerText = "ICH BIN DAS UNIVERSUM";
+        document.getElementById("status-text").innerText = "Verbleibende Upload-Zeit:";
     }
     if (lang == "en") {
-        document.querySelector("h1").innerText = "⚠️ EL TROYANO - UPLOADING ⚠️";
-        document.getElementById("claim").innerText = "I AM THE UNIVERSE";
+        document.getElementById("status-text").innerText = "Remaining upload time:";
     }
 }
 
@@ -75,8 +72,8 @@ function sendMessageToAll(message) {
 document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progressBar');
     const timeRemainingDisplay = document.getElementById('timeRemaining');
-    const DURATION = 500; /* 5 seconds because update is every 100ms */
-    const UPDATE_INTERVAL_MS = 10; // Update every 10 ms
+    const DURATION = 50; /* 5 seconds because update is every 100ms */
+    const UPDATE_INTERVAL_MS = 100; // Update every 10 ms
     let timeElapsed = 0;
 
     // Function to update the progress bar and timer
@@ -99,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = percentage + '%';
 
        // 2. Update Countdown Timer
-        const secondsRemaining = (DURATION - timeElapsed) / 100;
+        const secondsRemaining = (DURATION - timeElapsed) / 10;
         const minutes = Math.floor(secondsRemaining / 60);
         const seconds = secondsRemaining % 60;
         

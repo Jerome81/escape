@@ -102,6 +102,10 @@ client.on('message', function (topic, message) {
     displayImage("welcome");
   }
 
+  if (msg["event"] == "Connect to coordinates") {
+    displayImage("data1_2");
+  }
+
   if (msg["event"] == "Floppy inserted") {
     floppyInserted = true;
     img = document.getElementById("main");
@@ -151,10 +155,6 @@ client.on('message', function (topic, message) {
     } else {
       displayImage("no_data");
     }
-  }
-
-  if (msg["event"] == "Connect to coordinates") {
-    displayImage("data1_2");
   }
 
   if ( msg["gameState"] == "RESET") {

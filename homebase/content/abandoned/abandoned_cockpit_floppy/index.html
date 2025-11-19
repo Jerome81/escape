@@ -129,10 +129,11 @@ function addClickListener() {
     
     // Easy level
     if (img.src.indexOf("data1_1") > -1) {
-      if (x > 236 && x < 532 && y > 197 && y < 269) {
+      if (x > 236 && x < 550 && y > 197 && y < 275) {
         // Open comms
         sendMessageToMainScreen("Connect to coordinates");
         sendMessageToAll("Activate orbital");
+        displayImage("empty")
         return;
       }   
     }

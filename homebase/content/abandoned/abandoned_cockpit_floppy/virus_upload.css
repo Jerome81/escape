@@ -1,21 +1,8 @@
 body {
-    background-color: #0d0d0d; /* Very dark background */
-    color: #e0e0e0; /* Light gray text */
-    font-family: 'Consolas', 'Courier New', monospace; /* Monospace for sci-fi feel */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    overflow: hidden;
 }
 
 .container {
-    width: 80%;
-    max-width: 600px;
-    padding: 30px;
-    border: 1px solid #333;
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.4); /* Subtle yellow glow */
+    
     text-align: center;
     background-color: #1a1a1a;
 }
@@ -29,11 +16,11 @@ h1 {
 }
 
 .progress-container {
-    height: 40px;
-    background-color: #333; /* Dark background for the track */
-    border: 2px solid #ffcc00; /* Yellow border */
-    border-radius: 5px;
-    margin-bottom: 20px;
+    height: 45px;
+    position:absolute;
+    left: 44px;
+    top: 257px;
+    width:718px;
     overflow: hidden;
 }
 
@@ -46,8 +33,15 @@ h1 {
 }
 
 .status-text {
-    font-size: 1.2em;
-    margin: 10px 0;
+    position: absolute;
+    top: 300px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    left: 0;
+    height: 50px;  
+    font-size: 1.6em;
+    text-align: center;
+    width: 800px;
     color: #fff;
 }
 

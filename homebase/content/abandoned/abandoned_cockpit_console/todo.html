@@ -15,7 +15,6 @@
         body {
             background-color: #000000; /* Pure black background */
             color: rgb(0, 170, 255); /* Bright, blueish font */
-            font-family: 'Consolas', 'Courier New', monospace; /* Tech-like font */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -26,17 +25,20 @@
 
         /* --- Todo Container --- */
         .todo-container {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 50px;
-            margin-left: auto;
-            margin-right: auto;
-            position: relative;
-            background-color: #0a0a0f; /* Very dark blue-black */
-            border: 2px solid #08F; /* Blue border */
-            border-radius: 8px;
+            position: absolute;
+            font-family: 'Roboto', sans-serif;
+            left: 130px;            
+            font-size: larger;
+            width: 700px;
             padding: 25px;
-            box-shadow: 0 0 20px rgba(0, 170, 255, 0.5); /* Glowing effect */
+        }
+
+        #core {
+            top: 570px;
+        }
+
+        #selfdestruct {
+            top: 1450px;
         }
 
         /* --- Header --- */
@@ -101,9 +103,9 @@
 
         .task-list li {
             display: flex;
+            color: white;
             align-items: center;
             padding: 12px 5px;
-            border-bottom: 1px solid #035; /* Dark blue divider */
             transition: background-color 0.3s;
         }
 
@@ -113,9 +115,9 @@
 
         .task-list li label {
             flex-grow: 1;
-            margin-left: 12px;
+            margin-left: 40px;
             cursor: pointer;
-            font-size: x-large;
+            font-size: 1.7em;
         }
 
         /* --- Custom Checkbox (basic) --- */
@@ -123,70 +125,40 @@
             /* Basic styling for the checkbox */
             appearance: none;
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background-color: #000;
-            border: 2px solid #08F;
-            border-radius: 3px;
+            width: 30px;
+            height: 30px;
+            background-color: #ED0B4F;
+            border: 2px solid #ED0B4F;
             cursor: pointer;
             position: relative;
         }
 
         .task-list input[type="checkbox"]:checked {
-            background-color: #0AF;
-        }
-
-        .task-list input[type="checkbox"]:checked::after {
-            /* Simple checkmark */
-            content: '✓';
-            position: absolute;
-            color: #000;
-            font-weight: bold;
-            top: -2px;
-            left: 2px;
+            background-color: #06E322;
+            border: 2px solid  #06E322;
         }
 
         /* Style for completed tasks */
         .task-list input[type="checkbox"]:checked + label {
             text-decoration: line-through;
-            color: #05A; /* Faded blue */
-            opacity: 0.7;
-        }
-
-        /* --- Delete Button --- */
-        .delete-btn {
-            background: none;
-            border: none;
-            color: #F00; /* Red for 'danger' */
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-
-        .delete-btn:hover {
-            opacity: 1;
-            color: #F55; /* Brighter red on hover */
         }
 
     </style>
 </head>
 <body>
 
-    <div class="todo-container">
-        <h1 id="group1">AI Core</br>Entfernungs-Prozess</h1>
+    <img id="main" src="todo_no_destruct_de.png" alt="Idle" border="0" style="padding:0px;margin:0px" draggable="false""/>
+    <div id="core" class="todo-container">
 
         <ul class="task-list">
             <li>
                 <input type="checkbox" id="task1">
-                <label for="task1">Core Entfernungs-Prozess starten</label>
+                <label for="task1">Prozess starten</label>
             </li>
 
             <li>
                 <input type="checkbox" id="task2">
-                <label for="task2">Identifikation Crew ISS Hofmann</label>
+                <label for="task2">Identifikation</label>
             </li>
 
             <li>
@@ -196,18 +168,18 @@
 
             <li>
                 <input type="checkbox" id="task4">
-                <label for="task4">Core Tower Wartungstür öffnen</label>
+                <label for="task4">Wartungstür Core-Tower öffnen</label>
             </li>
             
             <li>
                 <input type="checkbox" id="task5">
-                <label for="task5">Core Entfernen</label>
+                <label for="task5">Core entfernen</label>
             </li>
         </ul>
     </div>
 
     <div id="selfdestruct" class="todo-container" style="display: none;">
-        <h1 id="group2">Selbstzerstörung</h1>
+
 
         <ul class="task-list">
             <li>
@@ -217,7 +189,7 @@
 
             <li>
                 <input type="checkbox" id="task7">
-                <label for="task7">Grosser roter Knopf drücken</label>
+                <label for="task7">Selbstzerstörung durch Drücken <br/>des roten Knopfes auslösen</label>
             </li>
         </ul>
     </div>
@@ -231,28 +203,24 @@ change_language_to(language)
 
 function change_language_to(lang) {
     if (lang == "de") {
-        document.getElementById("group1").innerText = "AI Core Entfernungs-Prozess";
-        document.querySelector("label[for='task1']").innerText = "Core Entfernungs-Prozess starten";
-        document.querySelector("label[for='task2']").innerText = "Identifikation Crew ISS Hofmann";
+        document.querySelector("label[for='task1']").innerText = "Prozess starten";
+        document.querySelector("label[for='task2']").innerText = "Identifikation";
         document.querySelector("label[for='task3']").innerText = "Zugriffscheck";
-        document.querySelector("label[for='task4']").innerText = "Core Tower Wartungstür öffnen";
-        document.querySelector("label[for='task5']").innerText = "Core Entfernen";
+        document.querySelector("label[for='task4']").innerText = "Wartungstür Core-Tower öffnen";
+        document.querySelector("label[for='task5']").innerText = "Core entfernen";
         
-        document.getElementById("group2").innerText = "Selbstzerstörung";
         document.querySelector("label[for='task6']").innerText = "Sicherheitsschalter deaktivieren";
-        document.querySelector("label[for='task7']").innerText = "Grosser roter Knopf drücken (wenn das Licht grün ist)";
+        document.querySelector("label[for='task7']").innerHTML = "Selbstzerstörung durch Drücken <br/>des roten Knopfes auslösen";
     }
     if (lang == "en") {
-        document.querySelector("h1").innerText = "AI Core Removal Process";
-        document.querySelector("label[for='task1']").innerText = "Initiate core removal process";
-        document.querySelector("label[for='task2']").innerText = "Identify crew of ISS Hofmann";
+        document.querySelector("label[for='task1']").innerText = "Initiate process";
+        document.querySelector("label[for='task2']").innerText = "Identification";
         document.querySelector("label[for='task3']").innerText = "Access check";
         document.querySelector("label[for='task4']").innerText = "Open core tower maintenance door";
         document.querySelector("label[for='task5']").innerText = "Remove core";
 
-        document.getElementById("group2").innerText = "Self-Destruction";
         document.querySelector("label[for='task6']").innerText = "Deactivate safety switch";
-        document.querySelector("label[for='task7']").innerText = "Press big red button (when the light is green)";
+        document.querySelector("label[for='task7']").innerHTML = "Immediately trigger self-destruction <br/>by pressing the red button";
     }
 }
 
@@ -336,8 +304,11 @@ client.on('message', function (topic, message) {
         }
 
         if (msg["event"] == "Self destruction activated") {
+            img = document.getElementById("main");
+            img.src = "todo_destruct_" + language + ".png";
             div = document.getElementById("selfdestruct");
             div.setAttribute("style", "display: block;");
+            
         }
 
         if (msg["event"] == "Self destruction safety deactivated") {
