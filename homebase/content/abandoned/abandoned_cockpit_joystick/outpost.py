@@ -191,6 +191,7 @@ def sendUpdate():
 
 
 def show_segment():
+    color = (255, 0, 0)
     for i in range(0, 48):
         if i > 6 and i < 19:
             color = (0, 0, 255)
@@ -294,11 +295,12 @@ def on_message(client, userdata, msg):
                 on_stopped()
             if _gameState == "RESET":
                 on_reset()
-        if 'event' in payload:
-            on_event(payload["event"])
         if 'language' in payload:
             on_language_change(payload["language"])
-            
+    
+
+    if 'event' in payload:
+        on_event(payload["event"])
 
     if msg.topic == "ToDevice/%s" % deviceId:
         if 'command' in payload:
