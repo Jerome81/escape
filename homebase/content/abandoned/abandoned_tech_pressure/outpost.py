@@ -15,7 +15,7 @@ mq_ip = "192.168.5.11"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [9, 2, 8, 7]
+_solution = [9, 4, 8, 7]
 _currentData = [ 0,0,0,0 ]
 _solved = False
 _pressureCorrect = False
