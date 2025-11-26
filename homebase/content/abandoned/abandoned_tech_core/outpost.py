@@ -70,9 +70,15 @@ def sendUpdate():
     except Exception as e:
         print(e)
 
-    jsonData["input"] = _core_removed
-    
     jsonData["state"] = _puzzleState
+    if _core_removed and _puzzleState == "INACTIVE":
+        jsonData["input"] = "!!! INACTIVE - CORE REMOVED !!!"
+    else:
+        if _core_removed:
+            jsonData["input"] = "CORE ENTFERNT"
+        else:
+            jsonData["input"] = "CORE DRIN"
+    
     jsonData["game_state"] = ("%s - %s" % (_gameState, cpu_temp))
     mqttc.publish("FromDevice/%s" % deviceId, json.dumps(jsonData))
 
@@ -84,9 +90,15 @@ def play_sound(file):
 def on_solved():
     global _puzzleState
     global _core_removed
-    print("removed")
-    _puzzleState = "SOLVED"
+    
+    _core_removed = True
+    print("Core removed")
     sendUpdate()
+    if _puzzleState == "INACTIVE":
+        print("Core removed while inactive, ignoring.")
+        return
+    
+    _puzzleState = "SOLVED"
     
     light.fill((255, 0, 0))
     jsonData = {
@@ -99,7 +111,6 @@ def on_solved():
     jsonData = {
         "event": "Core removed"
     }
-    _core_removed = True
     mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
 
 
@@ -174,6 +185,7 @@ def connect(client):
             client.connect(mq_ip, 1883, 60)
             light.fill((0, 255, 0))
             disconnected = False
+            sendUpdate()
         except Exception as e:
             print('An exception occured: {}'.format(e))
             sleep(5)
