@@ -314,11 +314,11 @@ def on_message(client, userdata, msg):
                 on_stopped()
             if _gameState == "RESET":
                 on_reset()
-        if 'event' in payload:
-            on_event(payload["event"])
         if 'language' in payload:
             on_language_change(payload["language"])
-            
+
+    if 'event' in payload:
+        on_event(payload["event"])
 
     if msg.topic == "ToDevice/%s" % deviceId:
         
