@@ -285,13 +285,18 @@
                 if (msg["event"] == "Core removed") {
                     //showMovie("core_removed_" + language + ".mp4");
                 }
-
-                if (msg["event"] == "Dock door unlocked") {
-                    showMovie("dock_door_unlocked_" + language + ".mp4");
+    
+                if (msg["event"] == "Out of oxygen") {
+                    showMovie("out_of_oxygen_" + language + ".mp4");
                 }
 
+
                 if (msg["movie"] != null) {
-                    showMovie(msg["movie"] + language + ".mp4");
+                    var movie = msg["movie"];
+                    if (!movie.endsWith("_")) {
+                        movie = movie + "_";
+                    }
+                    showMovie(movie + language + ".mp4");
                 }
 
                 if (msg["display"] != null) {
