@@ -121,6 +121,11 @@ def on_message(client, userdata, msg):
             print("Request to play movie: %s" % movie)
             play_movie(movie + "_" + language + ".mp4")
 
+        if 'cantina_song' in payload:
+            song = payload["cantina_song"]
+            print("Request to play song: %s" % song)
+            play_movie(song + ".mp3")
+
     if msg.topic == "ToDevice/%s" % deviceId:
         if 'command' in payload:
             command = payload["command"]
