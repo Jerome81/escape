@@ -86,6 +86,7 @@ def on_event(event):
             if 2 in _cartridges:
                 _cartridges.pop(2)
             on_solved(mqttc)
+            mqttc.publish("cmnd/sleeping_pods/Power", "on")
 
         if event == "Replicator bubbles production started":
             if 4 in _cartridges:
