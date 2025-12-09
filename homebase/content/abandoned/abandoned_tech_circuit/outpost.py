@@ -109,6 +109,12 @@ def attract():
         lightstrip.brightness = 0.6
         lightstrip.show()
 
+        for t in range(0, 2):
+            for i in range(0, 8):
+                button_pressed(i)
+                sleep(0.2)
+        
+
 ### Game events ###
 def on_event(event):
     if event == "Power up":
@@ -176,6 +182,8 @@ def button_pressed(number):
             on_solved(mqttc)
     else:
         print("Button %s pressed but puzzle not active" % number)
+        
+    sendUpdate()
 
 def on_release(number):
     if number == 0:
@@ -200,6 +208,8 @@ def on_activate():
     _puzzleState = "ACTIVE"
     sendUpdate()
     power_on_animation()
+    button_pressed(6)
+    button_pressed(7)
 
 
 ### Message Queue Events ###
