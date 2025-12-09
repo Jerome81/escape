@@ -145,6 +145,7 @@ const params = new URLSearchParams(window.location.search);
 
 var language = params.get("lang");
 change_language_to(language)
+var self_destruct = 0;
 
 function change_language_to(lang) {
     if (lang == "de") {
@@ -255,8 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (msg["event"] != null) {
                 if (msg["event"] == "Memory solved") {
-                    window.location.href = "todo.html?lang=" + language + "&check_task=1";
+                    window.location.href = "todo.html?lang=" + language + "&check_task=1&self_destruct=" + self_destruct;
                 }
+            }
+
+            if (msg["event"] == "Self destruction activated") {
+                self_destruct = 1;
             }
 
             if (msg["guess"] != null) {

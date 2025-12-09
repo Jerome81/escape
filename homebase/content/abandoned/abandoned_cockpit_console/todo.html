@@ -201,6 +201,8 @@ const params = new URLSearchParams(window.location.search);
 var language = params.get("lang");
 change_language_to(language)
 
+var self_destruct = params.get("self_destruct");
+
 function change_language_to(lang) {
     if (lang == "de") {
         document.querySelector("label[for='task1']").innerText = "Prozess starten";
@@ -231,6 +233,12 @@ if (params.get("check_task") == "1") {
     task.checked = true;
 }
 
+if (self_destruct == "1") {
+    img = document.getElementById("main");
+    img.src = "todo_destruct_" + language + ".png";
+    div = document.getElementById("selfdestruct");
+    div.setAttribute("style", "display: block;");
+}
 // Create an MQTT client instance
 const options = {
     // Clean session
