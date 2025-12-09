@@ -6,6 +6,7 @@ import board
 import neopixel
 import RPi.GPIO as GPIO
 
+from datetime import datetime, timedelta
 from time import sleep
 
 deviceId = "abandoned_cockpit_door"
@@ -33,6 +34,7 @@ button = gpiozero.Button(BUTTON_PIN, hold_time = 0.05, bounce_time = 0.2)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(12, GPIO.OUT)
 
+next_overheat_send = datetime.now()
 
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
@@ -78,6 +80,8 @@ def on_language_change(language):
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
+    global next_overheat_send
+
     if _gameState == "STARTED" and _puzzleState != "SOLVED":
         if _puzzleState == "ACTIVE":
             _puzzleState = "SOLVED"
@@ -88,10 +92,12 @@ def on_solved(client):
             }
             client.publish("ToDevice/All", json.dumps(jsonData))
         else:
-            jsonData = {
-                "display": "Cockpit overheated"
-            }
-            client.publish("ToDevice/Comms", json.dumps(jsonData))
+            if datetime.now() >= next_overheat_send:
+                jsonData = {
+                    "display": "Cockpit overheated"
+                }
+                next_overheat_send = datetime.now() + timedelta(seconds=7)
+                client.publish("ToDevice/Comms", json.dumps(jsonData))
 
 def on_reset(client):
     global _puzzleState
