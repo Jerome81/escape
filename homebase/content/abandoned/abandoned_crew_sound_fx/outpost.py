@@ -156,7 +156,7 @@ def on_event(event):
             play_message("out_of_oxygen")
 
         if event == "AI won":
-            play_sound("ai_won.mp3")
+            play_message("ai_won")
             self_destruct()
 
         if event == "Core removed":
