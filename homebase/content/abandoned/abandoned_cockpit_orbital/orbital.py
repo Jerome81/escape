@@ -255,11 +255,13 @@ def on_solved(client):
         jsonData = {
             "event": "Communication channel established"
         }
+        print("Sending: Communication channel established")
         client.publish("ToDevice/All", json.dumps(jsonData))
     else:    
         jsonData = {
             "event": "Access granted"
         }
+        print("Sending: Access granted")
         client.publish("ToDevice/All", json.dumps(jsonData))
     client.publish("Stats", json.dumps( {"Orbital": total_tries } ))
 
