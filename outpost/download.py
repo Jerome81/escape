@@ -9,7 +9,7 @@ def download(name, api_url, outpost_def):
     set_status("Downloading " + name + " to " + content_dir, outpost_def)
     r = requests.get(api_url + "content?id=" + name) #TODO: encode name
     if r.status_code == 404:
-        set_status("404 - Directory doesn't exist: %s" % name)
+        set_status("404 - Directory doesn't exist: %s" % name, outpost_def)
     else:
         set_status("Content received.", outpost_def)
         open(content_dir + "temp.zip", 'wb').write(r.content)
