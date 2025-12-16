@@ -1,0 +1,43 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('udmx',{
+        category: 'output',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            R: { value: 0 },
+            G: { value: 0 },
+            B: { value: 0 },
+            W: { value: 0 }  
+        },
+        inputs:1,
+        icon: "light.png",
+    	align: 'right',
+        label: function() {
+            return this.name||"rgbw-ledstrip";
+        }
+    });
+</script>
+<script type="text/x-red" data-template-name="lights">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-R"><i class="fa fa-tag"></i> R</label>
+        <input type="text" id="node-input-R">
+    </div>
+    <div class="form-row">
+        <label for="node-input-G"><i class="fa fa-tag"></i> G</label>
+        <input type="text" id="node-input-G">
+    </div>
+    <div class="form-row">
+        <label for="node-input-B"><i class="fa fa-tag"></i> B</label>
+        <input type="text" id="node-input-B">
+    </div>
+    <div class="form-row">
+        <label for="node-input-W"><i class="fa fa-tag"></i> W</label>
+        <input type="text" id="node-input-W">
+    </div>
+</script>

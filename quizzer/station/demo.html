@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <script src="mqtt-min.js"></script>
+<script>
+
+const url = 'ws://127.0.0.1:8083'
+
+
+// Create an MQTT client instance
+const options = {
+  // Clean session
+  clean: true,
+  connectTimeout: 4000,
+  // Authentication
+  stationId: '1',
+  roomId: '1',
+  username: 'outpost',
+  password: 'CallingHome',
+}
+
+const client  = mqtt.connect(url, options)
+
+client.on('connect', function () {
+
+  console.log('Connected')
+  // Subscribe to a topic
+  client.subscribe('ToStation/' + options["stationId"], function (err) {
+    if (!err) {
+        console.log("Subscription Successful");
+        setTimeout(function() {
+          client.publish('ToRoom/' + options["roomId"], "Connected: " + options["stationId"]);
+          console.log("Published to: ToRoom/" + options["roomId"]);
+        }, 500);
+        console.log("Sending connection for startup check");
+    }
+  });
+
+  client.subscribe('ToRoom/' + options["roomId"], function (err) {
+    if (!err) {
+        console.log("Subscription ToRoom Successful");
+        setTimeout(function() {
+          client.publish('ToRoom/' + options["roomId"], "Connected: " + options["stationId"]);
+          console.log("Published to: ToRoom/" + options["roomId"]);
+        }, 500);
+        console.log("Sending connection for startup check");
+    }
+  })
+});
+
+
+client.on('disconnect', function () {
+  console.log('disonnected')
+});
+
+
+client.on('error', function () {
+  console.log('error')
+});
+
+function showQuestion(question, answers) {
+    console.log("Current" + currentQuestion);
+    console.log("Total" + totalQuestions);
+    const percent = (currentQuestion / totalQuestions) * 100;
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+
+    const qText = document.getElementById('question-text');
+    // Glitch effect
+    qText.style.textShadow = '2px 0 0 red, -2px 0 0 blue';
+    setTimeout(() => {
+        qText.innerText = question;
+        qText.style.textShadow = 'none';
+    }, 100);
+
+    for(let i=0; i<4; i++) {
+        const btn = document.getElementById(`btn-${i}`);
+        btn.querySelector('span').innerText = answers[i];
+        btn.classList.remove('btn-disabled');
+        btn.disabled = false;
+    }
+    const overlay = document.getElementById('overlay');
+    document.addEventListener("keydown", answerQuestions)
+    overlay.classList.remove('active');
+    timeStarted = new Date();
+    var timebar = document.getElementById('time-bar').style.width = "100%";
+    timerInterval = setInterval(timer, (timeLimit * 1000) / 100 );
+
+}
+
+var timeElapsed = 0;
+var timeStarted;
+var timerInterval;
+
+function timer() {
+    timeElapsed = new Date() - timeStarted;
+    console.log(timeElapsed);
+    var timebar = document.getElementById('time-bar');
+    if (timeElapsed >= timeLimit * 1000) { 
+            clearInterval(timerInterval);
+            timebar.style.width = '0%';
+            // timeRemainingDisplay.textContent = '00:00';
+            showOverlay("Zeit abgelaufen", "Das wird nicht viele Punkte geben...");
+            client.publish("FromStation/1", "Answer: Out of time");
+            document.removeEventListener("keydown", answerQuestions);
+            return;
+        }
+
+        // 1. Update Progress Bar
+        const percentage = (timeElapsed / (timeLimit * 1000)) * 100;
+        // console.log(percentage);
+        timebar.style.width = (100 - percentage) + '%';
+
+        // 2. Update Countdown Percentage
+        /*const pctRemaining = Math.floor(percentage);
+
+        const formattedPct = 
+            String(pctRemaining).padStart(2, '0') + '%'; 
+        
+        timeRemainingDisplay.textContent = formattedPct;
+        */
+}
+
+function answerQuestions(event) {
+    switch (event.key) {
+        case '1':
+            handleAnswer(0);
+            break;
+        case '2':
+            handleAnswer(1);
+            break;
+        case '3':
+            handleAnswer(2);
+            break;
+        case '4':
+            handleAnswer(3);
+            break;
+    }
+}
+var question = null;
+var answers = null;
+var timeLimit = 100;
+var totalQuestions = 0;
+var currentQuestion = 0;
+var score = 0;
+
+// Receive messages
+client.on('message', function (topic, message) {
+  // message is Buffer
+  m = message.toString('utf8');
+  try {
+    msg = JSON.parse(m);
+    console.log(msg);
+    if (msg["event"] != null) {
+        showGetReadyMessage(msg["name"]);
+    }
+    if (msg["section"] != null) {
+        var section = msg["section"];
+        console.log("Section:");
+        console.log(section);
+        timeLimit = section.timeLimit;
+        totalQuestions = section.totalQuestions;
+        currentQuestion = 0;
+        showOverlay("Instruktionen", section.description);
+        console.log(totalQuestions);
+        console.log("--------------------------");
+    }
+    if (msg["question"] != null) {
+        question = msg["question"];
+        answers = [ question["answer1"], question["answer2"], question["answer3"], question["answer4"] ];
+        currentQuestion++;
+        showQuestion(question["question"], answers);
+        console.log("new question shown");
+        console.log(question);
+    }
+    if (msg["answer"] != null) {
+        showAnswer(msg);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE KNOWLEDGE GAUNTLET</title>
+    <!-- Edgy, industrial, and distressed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Special+Elite&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --edge-red: #D63447;
+            --edge-blue: #00ADB5;
+            --edge-yellow: #F9D342;
+            --edge-light: #EEEEEE;
+            --edge-purple: #6A0572;
+            --edge-dark: #222831;
+            --concrete-tex: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+/Pp/xhp4AAAAkSURBVHjaYvz//z8DJQAjjMyAA4gJ6HygB8iCYxQjLgAEGABmAgYleV3JggAAAABJRU5ErkJggg==');
+            --metal-tex: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+/Pvcs01IAAAAJSURBVHjaYmCgEAAAAh8AEEu31QkAAAAASUVORK5CYII=');
+        }
+
+        body {
+            font-family: 'Special Elite', cursive;
+            background-color: #1a1a1d;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)),
+                var(--concrete-tex);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--edge-light);
+        }
+
+        /* Background "Grate" */
+        .bg-grate {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* Main Game Card - Industrial & Angled */
+        .game-card {
+            background-color: #393e46;
+            background-image: var(--metal-tex);
+            /* Sharp angles using clip-path */
+            clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 10;
+            border: 4px solid #555;
+        }
+
+        /* Header */
+        h1 {
+            font-family: 'Black Ops One', cursive;
+            color: var(--edge-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        /* Question Bubble - Torn & Gritty */
+        .question-bubble {
+            background-color: var(--edge-light);
+            background-image: var(--concrete-tex);
+            color: var(--edge-dark);
+            padding: 2rem;
+            text-align: center;
+            border: 4px dashed var(--edge-dark);
+            position: relative;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Jagged edges */
+            clip-path: polygon(2% 2%, 98% 0%, 100% 98%, 0% 100%);
+            transform: rotate(-1deg);
+        }
+        .question-text {
+            font-family: 'Special Elite', cursive;
+            font-size: 2.2rem;
+            line-height: 1.1;
+            font-weight: bold;
+        }
+
+        /* Answer Buttons - Metal Plates */
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: 40%;
+        }
+
+        .edge-btn {
+            border: none;
+            font-family: 'Black Ops One', cursive;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            /* Angled corners */
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            background-image: linear-gradient(rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+        }
+
+        .edge-btn:active {
+            transform: scale(0.98);
+            filter: brightness(0.8);
+        }
+
+        .edge-btn:hover {
+            filter: brightness(1.2);
+            /* Jolt effect instead of bounce */
+            transform: translateX(-2px) translateY(-2px);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+        }
+        
+        /* Specific Button Colors - Grittier */
+        .btn-red { background-color: var(--edge-red); color: var(--edge-light); border-bottom: 4px solid #942431; }
+        .btn-blue { background-color: var(--edge-blue); color: var(--edge-light); border-bottom: 4px solid #007f85; }
+        .btn-white { background-color: #aaa; color: var(--edge-dark); border-bottom: 4px solid #777; background-image: var(--concrete-tex); }
+        .btn-yellow { background-color: var(--edge-yellow); color: var(--edge-dark); border-bottom: 4px solid #c4a533; }
+
+        .btn-disabled {
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            filter: grayscale(0.8) contrast(1.2);
+            border-color: #444 !important;
+            color: #888 !important;
+            background-color: #555 !important;
+        }
+
+        /* Progress Bar - Power Gauge */
+        .progress-container {
+            width: 100%;
+            background: #222;
+            height: 20px;
+            border: 2px solid #555;
+            margin-bottom: 1.5rem;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        }
+        .progress-bar {
+            height: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--edge-yellow),
+                var(--edge-yellow) 10px,
+                #000 10px,
+                #000 20px
+            );
+            width: 0%;
+            transition: width 0.3s ease-out;
+            box-shadow: 0 0 10px var(--edge-yellow);
+        }
+
+        /* Feedback Modal - Intense */
+        .feedback-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(2px);
+        }
+        .feedback-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .feedback-content {
+            background-color: var(--edge-dark);
+            background-image: var(--metal-tex);
+            color: var(--edge-light);
+            padding: 3rem;
+            text-align: center;
+            border: 4px solid var(--edge-red);
+            /* Aggressive shape */
+            clip-path: polygon(0 10%, 10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%);
+            animation: slamIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+            box-shadow: 0 0 30px var(--edge-red);
+        }
+
+        @keyframes slamIn {
+            0% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sparks Canvas */
+        #sparks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            mix-blend-mode: screen;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .answer-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+            .question-text { font-size: 1.5rem; }
+            .game-card { padding: 1.5rem; height: 95vh; width: 95%; }
+            .edge-btn { font-size: 1.1rem; padding: 0.8rem; }
+            .question-bubble { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Decoration -->
+    <div class="bg-grate"></div>
+
+    <canvas id="sparks-canvas"></canvas>
+
+    <div class="game-card">
+        
+        <!-- Header Info -->
+        <div class="flex justify-between items-end mb-6 border-b-2 border-zinc-700 pb-4">
+            <div class="flex items-center gap-3">
+                <!-- Harder Icon -->
+                <div class="bg-zinc-800 p-2 border-2 border-red-600 shadow-[0_0_10px_rgba(220,53,69,0.5)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl leading-none">THE GAUNTLET</h1>
+                    <span class="text-zinc-500 font-bold text-xs tracking-[0.3em] uppercase font-['Special_Elite']">Prove Your Worth</span>
+                </div>
+            </div>
+            <div class="bg-zinc-800 text-yellow-500 px-4 py-2 font-bold text-xl border-2 border-yellow-600 font-['Black_Ops_One'] tracking-wider">
+                SCORE: <span id="score-display">0</span>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar" id="time-bar"></div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="question-bubble">
+            <h2 id="question-text" class="question-text">INITIALIZING PROTOCOL...</h2>
+        </div>
+
+        <!-- Answer Grid -->
+        <div class="answer-grid">
+            <button onclick="handleAnswer(0)" id="btn-0" class="edge-btn btn-red">
+                <span>Option 1</span>
+            </button>
+            <button onclick="handleAnswer(1)" id="btn-1" class="edge-btn btn-blue">
+                <span>Option 2</span>
+            </button>
+            <button onclick="handleAnswer(2)" id="btn-2" class="edge-btn btn-white">
+                <span>Option 3</span>
+            </button>
+            <button onclick="handleAnswer(3)" id="btn-3" class="edge-btn btn-yellow">
+                <span>Option 4</span>
+            </button>
+        </div>
+
+        <!-- Feedback / Game Over Overlay -->
+        <div id="overlay" class="feedback-overlay">
+            <div class="feedback-content">
+                <div id="feedback-icon" class="text-7xl mb-4">🤘</div>
+                <h2 id="feedback-title" class="text-4xl font-bold mb-2 text-red-500 font-['Black_Ops_One'] uppercase tracking-wider">NAILED IT.</h2>
+                <p id="feedback-message" class="text-xl text-zinc-400 mb-8 font-bold font-['Special_Elite']">Try not to mess up the next one.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        function hideOverlay() {
+            overlay.classList.remove('active');
+        }
+
+        function showOverlay(title, text) {
+            const overlay = document.getElementById('overlay');
+            const titleElement = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const icon = document.getElementById('feedback-icon');
+
+            overlay.classList.add('active');
+
+            titleElement.innerText = title;
+            msg.innerText = text;
+        }
+
+        function initGame() {
+            document.getElementById('score-display').innerText = '0';
+            showOverlay("Please Wait", "The game is about to start.")
+        }
+
+
+        function handleAnswer(index) {
+            clearInterval(timerInterval);
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const icon = document.getElementById('feedback-icon');
+            const content = overlay.querySelector('.feedback-content');
+            console.log("Handling Answer");
+            console.log(answers);
+
+            title.innerText = "Deine Antwort: " + answers[index];
+            title.style.color = "var(--edge-blue)";
+            content.style.borderColor = "var(--edge-blue)";
+            content.style.boxShadow = "0 0 30px var(--edge-blue)";
+            msg.innerText = "";
+
+            overlay.classList.add('active');
+            client.publish("FromStation/1", "Answer: " + answers[index]);
+            document.removeEventListener("keydown", answerQuestions);
+        }
+
+        function showAnswer(message) {
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const icon = document.getElementById('feedback-icon');
+            const content = overlay.querySelector('.feedback-content');
+            
+            var answer = message["answer"];
+            console.log(answer);
+            msg.innerText = answer["explanation"];
+            if (answer["correct"]) {
+                title.innerText = "RICHTIG! " + answer["correctAnswer"];
+                title.style.color = "var(--edge-blue)";
+                content.style.borderColor = "var(--edge-blue)";
+                content.style.boxShadow = "0 0 30px var(--edge-blue)";
+            } else {
+                title.innerText = "Falsch! Richtig ist: " + answer["correctAnswer"];
+                title.style.color = "var(--edge-red)";
+                content.style.borderColor = "var(--edge-red)";
+                content.style.boxShadow = "0 0 30px var(--edge-red)";
+            }
+            score = answer["total"];
+            document.addEventListener("keydown", userReadyInput);
+        }
+
+        function showGetReadyMessage(name) {
+            console.log("showing name " + name);
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const icon = document.getElementById('feedback-icon');
+            const content = overlay.querySelector('.feedback-content');
+
+            title.innerText = name;
+            msg.innerText = "Bist Du bereit? Drücke einen Knopf!";
+            overlay.classList.add('active');
+            document.addEventListener("keydown", userReadyInput);
+        }
+
+        function userReadyInput(event) {
+            // React on any key
+            hideOverlay();
+            showOverlay("Bitte warten", "Die anderen Spieler sind leider etwas lahm.");
+            client.publish("FromStation/1", "Ready");
+            document.removeEventListener("keydown", userReadyInput);
+            fireSparks('yellow');
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = "" + score;
+        }
+
+        function showGameOver() {
+            isGameOver = true;
+            document.getElementById('progress-bar').style.width = `100%`;
+            
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const icon = document.getElementById('feedback-icon');
+            const btn = document.getElementById('action-btn');
+            const content = overlay.querySelector('.feedback-content');
+
+            title.innerText = "GAUNTLET RUN COMPLETE";
+            title.style.color = "var(--edge-yellow)";
+            content.style.borderColor = "var(--edge-yellow)";
+            content.style.boxShadow = "0 0 30px var(--edge-yellow)";
+            msg.innerText = `FINAL SCORE: ${score}. Mediocre.`;
+            icon.innerText = "🔥";
+            btn.innerText = "RETRY? ↺";
+            btn.className = "bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-3 px-10 text-xl border-4 border-yellow-800 font-['Black_Ops_One'] tracking-widest uppercase transition-all hover:shadow-[0_0_15px_rgba(249,211,66,0.8)] active:scale-95";
+            
+            overlay.classList.add('active');
+            playSound('win');
+            fireSparks('yellow');
+        }
+
+        // --- Particle System (Sparks instead of confetti) ---
+        const canvas = document.getElementById('sparks-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function fireSparks(colorTheme) {
+            let colors;
+            if (colorTheme === 'blue') colors = ['#00ADB5', '#A6E3E9', '#ffffff'];
+            else if (colorTheme === 'red') colors = ['#D63447', '#FF5722', '#ffffff'];
+            else colors = ['#F9D342', '#FFEB3B', '#ffffff'];
+
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2,
+                    vx: (Math.random() - 0.5) * 30, // Faster explosion
+                    vy: (Math.random() - 0.5) * 30,
+                    size: Math.random() * 3 + 1, // Smaller, spark-like
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100,
+                    gravity: 0.2
+                });
+            }
+            if (!animationRunning) animateParticles();
+        }
+
+        let animationRunning = false;
+
+        function animateParticles() {
+            if (particles.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                animationRunning = false;
+                return;
+            }
+            animationRunning = true;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Add a slight trail effect
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity; // Add gravity
+                p.life -= 2; // Fade faster
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 100;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Start
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1257 @@
+[
+    {
+        "id": "49590b83b2d0e982",
+        "type": "tab",
+        "label": "UI",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "28f9798abcc869de",
+        "type": "http request",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://quizzer.ch/api/quiz/list",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 390,
+        "y": 60,
+        "wires": [
+            [
+                "c45f01d2de0f2099"
+            ]
+        ]
+    },
+    {
+        "id": "fc360f4362eefb2f",
+        "type": "inject",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 60,
+        "wires": [
+            [
+                "28f9798abcc869de"
+            ]
+        ]
+    },
+    {
+        "id": "0bc85da9f807cabd",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Quizzes To Dropdown",
+        "func": "msg.options = [];\nfor (var quiz in msg.payload) {\n    msg.options.push({\"label\": quiz, \"value\": quiz});\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 60,
+        "wires": [
+            [
+                "e1bff5c97fbe48af"
+            ]
+        ]
+    },
+    {
+        "id": "e1bff5c97fbe48af",
+        "type": "ui-dropdown",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "Quiz",
+        "label": "Option auswählen:",
+        "tooltip": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "multiple": false,
+        "chips": false,
+        "clearable": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "typeIsComboBox": true,
+        "msgTrigger": "onChange",
+        "x": 970,
+        "y": 60,
+        "wires": [
+            [
+                "49deab86071b95cd"
+            ]
+        ]
+    },
+    {
+        "id": "c45f01d2de0f2099",
+        "type": "json",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 550,
+        "y": 60,
+        "wires": [
+            [
+                "0bc85da9f807cabd"
+            ]
+        ]
+    },
+    {
+        "id": "29dbba26a1863c69",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_1",
+        "label": "Station 1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": true,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 180,
+        "wires": [
+            [
+                "bfc4d8a3d32ae728"
+            ]
+        ]
+    },
+    {
+        "id": "0c12c21615c7e931",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_3",
+        "label": "Station 3",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "Spielername",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": false,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 260,
+        "wires": [
+            [
+                "4c7c398788c33cb6"
+            ]
+        ]
+    },
+    {
+        "id": "fee7fe9cb9ab1234",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_2",
+        "label": "Station 2",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "Spielername",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": false,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 220,
+        "wires": [
+            [
+                "c61944c6ec1a61d4"
+            ]
+        ]
+    },
+    {
+        "id": "3b1cb93c24053acc",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_4",
+        "label": "Station 4",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "Spielername",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": false,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 300,
+        "wires": [
+            [
+                "91edbb2ce8241327"
+            ]
+        ]
+    },
+    {
+        "id": "9443c40ef8e11704",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_5",
+        "label": "Station 5",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "Spielername",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": false,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 340,
+        "wires": [
+            [
+                "06e05dd232666a5c"
+            ]
+        ]
+    },
+    {
+        "id": "47ea4cc9d7e22d32",
+        "type": "ui-text-input",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "station_6",
+        "label": "Station 6",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "topic": "topic",
+        "topicType": "msg",
+        "mode": "text",
+        "tooltip": "Spielername",
+        "delay": 300,
+        "passthru": true,
+        "sendOnDelay": false,
+        "sendOnBlur": true,
+        "sendOnEnter": true,
+        "className": "",
+        "clearable": false,
+        "sendOnClear": false,
+        "icon": "",
+        "iconPosition": "left",
+        "iconInnerPosition": "inside",
+        "x": 240,
+        "y": 380,
+        "wires": [
+            [
+                "ff2558728bf604b2"
+            ]
+        ]
+    },
+    {
+        "id": "d241a9a6e9d88388",
+        "type": "ui-button",
+        "z": "49590b83b2d0e982",
+        "group": "09c585e1309e59e9",
+        "name": "start",
+        "label": "Spiel Starten",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 230,
+        "y": 420,
+        "wires": [
+            [
+                "8cb2dcce433b4f08"
+            ]
+        ]
+    },
+    {
+        "id": "8cb2dcce433b4f08",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Set Players",
+        "func": "msg.payload.station_1 = flow.get(\"station_1\") || \"\";\nmsg.payload.station_2 = flow.get(\"station_2\") || \"\";\nmsg.payload.station_3 = flow.get(\"station_3\") || \"\";\nmsg.payload.station_4 = flow.get(\"station_4\") || \"\";\nmsg.payload.station_5 = flow.get(\"station_5\") || \"\";\nmsg.payload.station_6 = flow.get(\"station_6\") || \"\";\n\nvar players = \"\";\nif ((flow.get(\"station_1\") || \"\") != \"\") {\n    players = players + \"1\";\n    global.set(\"players_1\", null);\n}\nif ((flow.get(\"station_2\") || \"\") != \"\") {\n    players = players + \"2\";\n    global.set(\"players_2\", null);\n}\nif ((flow.get(\"station_3\") || \"\") != \"\") {\n    players = players + \"3\";\n    global.set(\"players_3\", null);\n}\nif ((flow.get(\"station_4\") || \"\") != \"\") {\n    players = players + \"4\";\n    global.set(\"players_4\", null);\n}\nif ((flow.get(\"station_5\") || \"\") != \"\") {\n    players = players + \"5\";\n    global.set(\"players_5\", null);\n}\nif ((flow.get(\"station_6\") || \"\") != \"\") {\n    players = players + \"6\";\n    global.set(\"players_6\", null);\n}\nglobal.set(\"players\", players);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 460,
+        "wires": [
+            [
+                "206ca5f43aad2430",
+                "2fd633028a88a466",
+                "548de0a967abdcc7",
+                "09b30f8281711e6e",
+                "844fead18a2c0dd3"
+            ]
+        ]
+    },
+    {
+        "id": "bfc4d8a3d32ae728",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_1",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c61944c6ec1a61d4",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_2",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4c7c398788c33cb6",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_3",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "91edbb2ce8241327",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_4",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "06e05dd232666a5c",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_5",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ff2558728bf604b2",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "station_6",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "206ca5f43aad2430",
+        "type": "switch",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "property": "players",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "2",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "4",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "5",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "6",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 710,
+        "y": 420,
+        "wires": [
+            [
+                "f8fc538b5c05a267"
+            ],
+            [
+                "115691f831da71eb"
+            ],
+            [
+                "6eecddb0a574ec78"
+            ],
+            [
+                "6d802ee51f956ce9"
+            ],
+            [
+                "18d1215bbeb89b66"
+            ],
+            [
+                "60ca72878215630f"
+            ]
+        ]
+    },
+    {
+        "id": "791558e640ab95da",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/1",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "f8fc538b5c05a267",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 1",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_1\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 320,
+        "wires": [
+            [
+                "791558e640ab95da"
+            ]
+        ]
+    },
+    {
+        "id": "3af112fd831d9366",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/2",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "974b3c3efe39123a",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/3",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "88f94fe28f275f9f",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/4",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "be3fa57be0c520a2",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/5",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "d02a335406f9d12b",
+        "type": "mqtt out",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "topic": "ToStation/6",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1230,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "115691f831da71eb",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 2",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_2\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 360,
+        "wires": [
+            [
+                "3af112fd831d9366"
+            ]
+        ]
+    },
+    {
+        "id": "6eecddb0a574ec78",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 3",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_3\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 400,
+        "wires": [
+            [
+                "974b3c3efe39123a"
+            ]
+        ]
+    },
+    {
+        "id": "6d802ee51f956ce9",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 4",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_4\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 440,
+        "wires": [
+            [
+                "88f94fe28f275f9f"
+            ]
+        ]
+    },
+    {
+        "id": "18d1215bbeb89b66",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 5",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_5\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 480,
+        "wires": [
+            [
+                "be3fa57be0c520a2"
+            ]
+        ]
+    },
+    {
+        "id": "60ca72878215630f",
+        "type": "function",
+        "z": "49590b83b2d0e982",
+        "name": "Activate 6",
+        "func": "\nmsg.payload = {\n    \"event\": \"get ready\",\n    \"name\": flow.get(\"station_6\") || \"\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 520,
+        "wires": [
+            [
+                "d02a335406f9d12b"
+            ]
+        ]
+    },
+    {
+        "id": "a9ba7df4aef5d8bc",
+        "type": "inject",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 500,
+        "wires": [
+            [
+                "8cb2dcce433b4f08"
+            ]
+        ]
+    },
+    {
+        "id": "49deab86071b95cd",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "quiz",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1150,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2fd633028a88a466",
+        "type": "ui-text",
+        "z": "49590b83b2d0e982",
+        "group": "2068adf71f9272eb",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Aktive Spieler",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "players",
+        "valueType": "global",
+        "x": 740,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "548de0a967abdcc7",
+        "type": "ui-text",
+        "z": "49590b83b2d0e982",
+        "group": "2068adf71f9272eb",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Aktueller Quiz",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "quiz",
+        "valueType": "global",
+        "x": 740,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "cd530945165b66f6",
+        "type": "ui-text",
+        "z": "49590b83b2d0e982",
+        "group": "2068adf71f9272eb",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "status",
+        "valueType": "global",
+        "x": 710,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "09b30f8281711e6e",
+        "type": "change",
+        "z": "49590b83b2d0e982",
+        "name": "Waiting for Players",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status",
+                "pt": "global",
+                "to": "Warte auf Spieler",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "waiting_for",
+                "pt": "global",
+                "to": "players",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 300,
+        "wires": [
+            [
+                "cd530945165b66f6"
+            ]
+        ]
+    },
+    {
+        "id": "844fead18a2c0dd3",
+        "type": "link out",
+        "z": "49590b83b2d0e982",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "9e7ea650b5e5f706"
+        ],
+        "x": 635,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "56357a9250ccf8ce",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "UpdateStatus",
+        "links": [
+            "b41cbfed313f3593",
+            "245c866a948423da"
+        ],
+        "x": 555,
+        "y": 120,
+        "wires": [
+            [
+                "548de0a967abdcc7",
+                "2fd633028a88a466",
+                "cd530945165b66f6"
+            ]
+        ]
+    },
+    {
+        "id": "77291274c99982f6",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/1",
+        "links": [],
+        "x": 1115,
+        "y": 300,
+        "wires": [
+            [
+                "791558e640ab95da"
+            ]
+        ]
+    },
+    {
+        "id": "31406ffe580e1124",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/2",
+        "links": [],
+        "x": 1115,
+        "y": 340,
+        "wires": [
+            [
+                "3af112fd831d9366"
+            ]
+        ]
+    },
+    {
+        "id": "c23b64c0eabd853a",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/3",
+        "links": [],
+        "x": 1115,
+        "y": 380,
+        "wires": [
+            [
+                "974b3c3efe39123a"
+            ]
+        ]
+    },
+    {
+        "id": "26b3570b9ff9c823",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/4",
+        "links": [],
+        "x": 1115,
+        "y": 420,
+        "wires": [
+            [
+                "88f94fe28f275f9f"
+            ]
+        ]
+    },
+    {
+        "id": "479ffa1aa041403a",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/5",
+        "links": [],
+        "x": 1115,
+        "y": 460,
+        "wires": [
+            [
+                "be3fa57be0c520a2"
+            ]
+        ]
+    },
+    {
+        "id": "f584e650a4acefa6",
+        "type": "link in",
+        "z": "49590b83b2d0e982",
+        "name": "ToStation/6",
+        "links": [],
+        "x": 1115,
+        "y": 500,
+        "wires": [
+            [
+                "d02a335406f9d12b"
+            ]
+        ]
+    },
+    {
+        "id": "09c585e1309e59e9",
+        "type": "ui-group",
+        "name": "Quiz",
+        "page": "67244c8bcd187b58",
+        "width": "4",
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "7f727f1a9a94fd6d",
+        "type": "mqtt-broker",
+        "name": "Room MQ",
+        "broker": "127.0.0.1",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2068adf71f9272eb",
+        "type": "ui-group",
+        "name": "Aktuelles Spiel",
+        "page": "67244c8bcd187b58",
+        "width": 6,
+        "height": 1,
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "67244c8bcd187b58",
+        "type": "ui-page",
+        "name": "Room",
+        "ui": "545c0ab4c1f0987b",
+        "path": "/room",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "6a8d3c4583d56223",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "545c0ab4c1f0987b",
+        "type": "ui-base",
+        "name": "Mein Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "6a8d3c4583d56223",
+        "type": "ui-theme",
+        "name": "Standardthema",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "8a6992e1ca9ee198",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.29.0"
+        }
+    }
+]

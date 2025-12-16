@@ -1,0 +1,229 @@
+[
+    {
+        "id": "40dd24ab4d62381e",
+        "type": "tab",
+        "label": "Incoming Messages",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "042126f210573e07",
+        "type": "mqtt in",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "topic": "FromStation/1",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7f727f1a9a94fd6d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 200,
+        "wires": [
+            [
+                "bc6c1d22b91c0172"
+            ]
+        ]
+    },
+    {
+        "id": "2062bc16327b46a9",
+        "type": "switch",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Ready",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Answer:",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 200,
+        "wires": [
+            [
+                "ef83e748eea4fca7"
+            ],
+            [
+                "95da697b91c63c9f"
+            ]
+        ]
+    },
+    {
+        "id": "bc6c1d22b91c0172",
+        "type": "change",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "fromPlayer",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "2062bc16327b46a9"
+            ]
+        ]
+    },
+    {
+        "id": "600eb4ab8e10ac61",
+        "type": "mqtt in",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "topic": "FromStation/2",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7f727f1a9a94fd6d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 320,
+        "wires": [
+            [
+                "4946d4763af567a7"
+            ]
+        ]
+    },
+    {
+        "id": "0d9c7a034cfc2709",
+        "type": "switch",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Ready",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Answer",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 320,
+        "wires": [
+            [
+                "ef83e748eea4fca7"
+            ],
+            [
+                "95da697b91c63c9f"
+            ]
+        ]
+    },
+    {
+        "id": "4946d4763af567a7",
+        "type": "change",
+        "z": "40dd24ab4d62381e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "fromPlayer",
+                "pt": "msg",
+                "to": "2",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 320,
+        "wires": [
+            [
+                "0d9c7a034cfc2709"
+            ]
+        ]
+    },
+    {
+        "id": "ef83e748eea4fca7",
+        "type": "link out",
+        "z": "40dd24ab4d62381e",
+        "name": "link out 4",
+        "mode": "link",
+        "links": [
+            "d222eef07d08b77d"
+        ],
+        "x": 855,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "95da697b91c63c9f",
+        "type": "link out",
+        "z": "40dd24ab4d62381e",
+        "name": "link out 6",
+        "mode": "link",
+        "links": [
+            "75a1c8c6d0ba5ba3"
+        ],
+        "x": 855,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "7f727f1a9a94fd6d",
+        "type": "mqtt-broker",
+        "name": "Room MQ",
+        "broker": "127.0.0.1",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
