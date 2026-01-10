@@ -1,0 +1,119 @@
+[
+    {
+        "id": "b55eb1d8ca22eb39",
+        "type": "tab",
+        "label": "Lights",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f1f534ed797e51ee",
+        "type": "inject",
+        "z": "b55eb1d8ca22eb39",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "255",
+        "payloadType": "num",
+        "x": 270,
+        "y": 140,
+        "wires": [
+            [
+                "ce6609d8b4fe6b59",
+                "4bb313c216050f43"
+            ]
+        ]
+    },
+    {
+        "id": "ce6609d8b4fe6b59",
+        "type": "function",
+        "z": "b55eb1d8ca22eb39",
+        "name": "function 1",
+        "func": "import { SerialPort } from 'serialport';\nconsole.log(SerialPort);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d72059bfbf81a91c",
+        "type": "dmxusbpro",
+        "z": "b55eb1d8ca22eb39",
+        "name": "Test",
+        "port": "COM3",
+        "DMX_starting_address": 1,
+        "x": 490,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4bb313c216050f43",
+        "type": "udmx",
+        "z": "b55eb1d8ca22eb39",
+        "d": true,
+        "name": "test",
+        "x": 670,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "9e7ea650b5e5f706",
+        "type": "link in",
+        "z": "b55eb1d8ca22eb39",
+        "name": "LightsWaitingForPlayers",
+        "links": [
+            "844fead18a2c0dd3"
+        ],
+        "x": 175,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a0697cda05e884be",
+        "type": "link in",
+        "z": "b55eb1d8ca22eb39",
+        "name": "PlayerActivated",
+        "links": [
+            "d9d4e37c32c0fce7"
+        ],
+        "x": 145,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fdcf9a598e5d9288",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-dmxusbpro": "1.0.2",
+            "node-red-contrib-udmx": "1.0.6"
+        }
+    }
+]

@@ -1,0 +1,844 @@
+[
+    {
+        "id": "852d5bc711a1f34f",
+        "type": "tab",
+        "label": "Game",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3061e10c4f630349",
+        "type": "inject",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "0.4",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 350,
+        "y": 120,
+        "wires": [
+            [
+                "11e4c09f483e2b10"
+            ]
+        ]
+    },
+    {
+        "id": "11e4c09f483e2b10",
+        "type": "switch",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "property": "status",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "Warte auf Spieler",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Spiel gestartet",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Neue Sektion",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Neue Frage",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Warte auf Antworten",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Antworten auswerten",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Auswertung erfolgreich",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 570,
+        "y": 200,
+        "wires": [
+            [
+                "1a356d5adbc288ac"
+            ],
+            [
+                "4c612a6ed496e138"
+            ],
+            [
+                "58a1d281b3613ad4"
+            ],
+            [
+                "8bd5b233c50200cf"
+            ],
+            [],
+            [
+                "2c2af947ea68dda0"
+            ],
+            [
+                "9e17da64839595bf"
+            ],
+            [
+                "e14afa9d9e020337"
+            ]
+        ]
+    },
+    {
+        "id": "4c612a6ed496e138",
+        "type": "http request",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://quizzer.ch/api/quiz/list",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 950,
+        "y": 100,
+        "wires": [
+            [
+                "821a6c5f08e5d579"
+            ]
+        ]
+    },
+    {
+        "id": "821a6c5f08e5d579",
+        "type": "json",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1130,
+        "y": 100,
+        "wires": [
+            [
+                "4660790fd9dcef84"
+            ]
+        ]
+    },
+    {
+        "id": "4660790fd9dcef84",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "Questions to global",
+        "func": "var selected = global.get(\"quiz\");\nfor (var quiz in msg.payload) {\n    if (quiz == selected) {\n        var current = msg.payload[quiz];\n        global.set(\"current_sections\", current.sections);\n        global.set(\"current_question\", -1);\n        global.set(\"current_section\", 0);\n        global.set(\"status\", \"Neue Sektion\");\n        return msg;\n    }\n}\nglobal.set(\"status\", \"Quiz: \" + selected + \" nicht gefunden.\");\nreturn null;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1310,
+        "y": 100,
+        "wires": [
+            [
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "58a1d281b3613ad4",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "NeueSektion",
+        "func": "var sections = global.get(\"current_sections\");\nvar current_section = global.get(\"current_section\");\n\nif (current_section >= Object.keys(sections).length) {\n    global.set(\"status\", \"Quiz Fertig\");\n    return null;\n}\n\nvar section = sections[current_section];\nglobal.set(\"current_questions\", section.questions);\n\nsection.totalQuestions = section.questions.length;\nsection.questions = \"REMOVED\";\n\nmsg.payload = {\n    \"section\": section\n}\n\nglobal.set(\"current_section\", current_section + 1);\nglobal.set(\"status\", \"Sektionsinfo\");\nglobal.set(\"current_question\", -1);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 140,
+        "wires": [
+            [
+                "245c866a948423da",
+                "a5fd526e4cb8ef46",
+                "cd143670b4e07470"
+            ]
+        ]
+    },
+    {
+        "id": "a5fd526e4cb8ef46",
+        "type": "mqtt out",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "topic": "ToRoom/1",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1070,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "ae7be25901cb6d2f",
+        "type": "mqtt in",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "topic": "ToRoom/1",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7f727f1a9a94fd6d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 60,
+        "y": 200,
+        "wires": [
+            [
+                "f32e91d23fef99c1"
+            ]
+        ]
+    },
+    {
+        "id": "f32e91d23fef99c1",
+        "type": "switch",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Next question",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "817ede771dca9755"
+            ]
+        ]
+    },
+    {
+        "id": "817ede771dca9755",
+        "type": "change",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status",
+                "pt": "global",
+                "to": "Neue Frage",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 200,
+        "wires": [
+            [
+                "11e4c09f483e2b10"
+            ]
+        ]
+    },
+    {
+        "id": "8bd5b233c50200cf",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "NeueFrage",
+        "func": "if (global.get(\"status\") != \"Neue Frage\") {\n    return;\n}\n\nvar players = global.get(\"players\");\nglobal.set(\"status\", \"Warte auf Antwort von \" + players);\nglobal.set(\"waiting_for\", players);\n\nvar questions = global.get(\"current_questions\");\nvar current_question = global.get(\"current_question\");\n\ncurrent_question = current_question + 1;\nif (current_question >= Object.keys(questions).length) {\n    global.set(\"status\", \"Neue Sektion\");\n    return;\n}\n\nvar question = questions[current_question];\n\nglobal.set(\"current_question\", current_question);\n\n\nmsg.payload = {\n    \"question\": question\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 220,
+        "wires": [
+            [
+                "a5fd526e4cb8ef46",
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "245c866a948423da",
+        "type": "link out",
+        "z": "852d5bc711a1f34f",
+        "name": "link out 5",
+        "mode": "link",
+        "links": [
+            "56357a9250ccf8ce"
+        ],
+        "x": 1745,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "85240b9ca8a955ed",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "AnswerReceived",
+        "func": "var player = msg.fromPlayer;\nvar waiting = global.get(\"waiting_for\");\nwaiting = waiting.replace(player, \"\");\nglobal.set(\"waiting_for\", waiting);\n\n\nif (waiting == \"\") {\n    global.set(\"status\", \"Antworten auswerten\");\n} else {\n    var status = global.get(\"status\");\n    status = status.replace(player, \"\");\n    global.set(\"status\", status);\n}\n\nvar answer = msg.payload;\nanswer = answer.replace(\"Answer: \", \"\");\nnode.status({ fill: \"green\", shape: \"circle\", text: player });\n\nvar answers = global.get(\"answers\") || {};\nanswers[player] = answer;\nglobal.set(\"answers\", answers);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 540,
+        "wires": [
+            [
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "75a1c8c6d0ba5ba3",
+        "type": "link in",
+        "z": "852d5bc711a1f34f",
+        "name": "AnswerReceived",
+        "links": [
+            "95da697b91c63c9f"
+        ],
+        "x": 45,
+        "y": 540,
+        "wires": [
+            [
+                "85240b9ca8a955ed"
+            ]
+        ]
+    },
+    {
+        "id": "1a356d5adbc288ac",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "Update Status",
+        "func": "var missingPlayers = global.get(\"waiting_for\") || \"\";\nvar players = global.get(\"players\") || \"\";\nvar status = global.get(\"status\") || \"\";\n\nnode.status({ fill: \"red\", shape: \"ring\", text: status });\n\nif (status == \"\" || players == \"\") {\n    return null;\n}\n\nif (!status.startsWith(\"Warte auf Spieler\")) {\n    return null;   \n}\n\nif (missingPlayers == \"\") {\n    global.set(\"status\", \"Spiel gestartet\");\n} else {\n    global.set(\"status\", \"Warte auf Spieler \" + missingPlayers);\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 40,
+        "wires": [
+            [
+                "b41cbfed313f3593"
+            ]
+        ]
+    },
+    {
+        "id": "b41cbfed313f3593",
+        "type": "link out",
+        "z": "852d5bc711a1f34f",
+        "name": "link out 2",
+        "mode": "link",
+        "links": [
+            "56357a9250ccf8ce"
+        ],
+        "x": 1115,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "8dda1b8cd66ae633",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "Remove Player from waiting_for",
+        "func": "var waitingFor = global.get(\"waiting_for\");\nwaitingFor = waitingFor.replace(msg.fromPlayer, \"\");\nglobal.set(\"waiting_for\", waitingFor);\nnode.status({ fill: \"green\", shape: \"circle\", text: msg.fromPlayer });\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 480,
+        "wires": [
+            [
+                "d9d4e37c32c0fce7"
+            ]
+        ]
+    },
+    {
+        "id": "d9d4e37c32c0fce7",
+        "type": "link out",
+        "z": "852d5bc711a1f34f",
+        "name": "link out 3",
+        "mode": "link",
+        "links": [
+            "a0697cda05e884be"
+        ],
+        "x": 495,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "d222eef07d08b77d",
+        "type": "link in",
+        "z": "852d5bc711a1f34f",
+        "name": "RemoveFromWaitingList",
+        "links": [
+            "ef83e748eea4fca7"
+        ],
+        "x": 45,
+        "y": 480,
+        "wires": [
+            [
+                "8dda1b8cd66ae633"
+            ]
+        ]
+    },
+    {
+        "id": "cb66ce3bc4f530d1",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "AuswertenEveryone",
+        "func": "var answers = global.get(\"answers\");\nvar questionNumber = global.get(\"current_question\");\nvar question = global.get(\"current_questions\")[questionNumber];\nvar players = global.get(\"players\");\n\nvar correctAnswer = question[\"answer\" + question.correctAnswer];\nfor (var i = 0; i < players.length; i++) {\n    var playerNumber = players.substring(i, i + 1) \n    var player = global.get(\"player_\" + playerNumber) || {};\n    var score = player[\"score\"] || []\n    node.status({ fill: \"green\", shape: \"circle\", text: answers[playerNumber] });\n\n    if (answers[playerNumber] == correctAnswer) {\n        score.push(100);\n        player[\"correct\"] = true;\n    } else {\n        score.push(0);\n        player[\"correct\"] = false;\n    }\n    var total = 0;\n    for (var points in score) {\n        total = total + score[points];\n    }\n    player.score = score; \n    player.correctAnswer = correctAnswer;\n    player.explanation = \"EXPLANATION\";\n    player[\"total\"] = total;\n    global.set(\"player_\" + playerNumber, player);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 660,
+        "wires": [
+            [
+                "8549aa4e38e24d16"
+            ]
+        ]
+    },
+    {
+        "id": "419f18ef0ba5467c",
+        "type": "switch",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "property": "players",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "2",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "4",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "5",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "6",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 1310,
+        "y": 720,
+        "wires": [
+            [
+                "5caa1f35e2796292"
+            ],
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5caa1f35e2796292",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "SpielstandAn1",
+        "func": "msg.payload = {\n    \"answer\": global.get(\"player_1\")\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1480,
+        "y": 680,
+        "wires": [
+            [
+                "cc5ae65cf13bf80b"
+            ]
+        ]
+    },
+    {
+        "id": "761a0e1cd7a9d16f",
+        "type": "switch",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "everyone",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "fastest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "closest",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 510,
+        "y": 720,
+        "wires": [
+            [
+                "cb66ce3bc4f530d1"
+            ],
+            [
+                "588a70120a8ffd18"
+            ],
+            [
+                "b43d64f3aa7f4e7f"
+            ]
+        ]
+    },
+    {
+        "id": "2c2af947ea68dda0",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "FrageTyp Auswerten",
+        "func": "var sectionNumber = global.get(\"current_section\");\nvar section = global.get(\"current_sections\")[sectionNumber - 1];\nmsg.payload = section[\"pointCalculation\"]; \nnode.status({ fill: \"red\", shape: \"ring\", text: msg.payload });\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 260,
+        "wires": [
+            [
+                "5b77d931d8977e2f"
+            ]
+        ]
+    },
+    {
+        "id": "588a70120a8ffd18",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "AuswertenFastest",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 720,
+        "wires": [
+            [
+                "8549aa4e38e24d16"
+            ]
+        ]
+    },
+    {
+        "id": "b43d64f3aa7f4e7f",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "AuswertenClosest",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 760,
+        "wires": [
+            [
+                "8549aa4e38e24d16"
+            ]
+        ]
+    },
+    {
+        "id": "8549aa4e38e24d16",
+        "type": "change",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status",
+                "pt": "global",
+                "to": "Auswertung erfolgreich",
+                "tot": "str"
+            },
+            {
+                "t": "delete",
+                "p": "answers3",
+                "pt": "global"
+            },
+            {
+                "t": "set",
+                "p": "waiting_for",
+                "pt": "global",
+                "to": "players",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1010,
+        "y": 720,
+        "wires": [
+            [
+                "419f18ef0ba5467c",
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "cc5ae65cf13bf80b",
+        "type": "mqtt out",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "topic": "ToStation/1",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7f727f1a9a94fd6d",
+        "x": 1690,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "cd143670b4e07470",
+        "type": "delay",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1300,
+        "y": 160,
+        "wires": [
+            [
+                "e8f5378f0f5fd284"
+            ]
+        ]
+    },
+    {
+        "id": "e8f5378f0f5fd284",
+        "type": "change",
+        "z": "852d5bc711a1f34f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status",
+                "pt": "global",
+                "to": "Neue Frage",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1530,
+        "y": 160,
+        "wires": [
+            [
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "9e17da64839595bf",
+        "type": "function",
+        "z": "852d5bc711a1f34f",
+        "name": "Warte auf Spieler",
+        "func": "var missingPlayers = global.get(\"waiting_for\") || \"\";\nvar players = global.get(\"players\") || \"\";\nglobal.set(\"status\", \"Auswertung erfolgreich - warte auf: \" + missingPlayers);\n\nvar status = global.get(\"status\") || \"\"; \nnode.status({ fill: \"red\", shape: \"ring\", text: status });\n\nif (status == \"\" || players == \"\") {\n    return null;\n}\n\nif (!status.startsWith(\"Auswertung erfolgreich\")) {\n    return null;\n}\n\nif (missingPlayers == \"\") {\n    global.set(\"status\", \"Neue Frage\");\n} else {\n    global.set(\"status\", \"Auswertung erfolgreich - warte auf: \" + missingPlayers);\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 320,
+        "wires": [
+            [
+                "245c866a948423da"
+            ]
+        ]
+    },
+    {
+        "id": "e14afa9d9e020337",
+        "type": "debug",
+        "z": "852d5bc711a1f34f",
+        "name": "DoingNothing",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 680,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "dc887734f92b46a3",
+        "type": "link in",
+        "z": "852d5bc711a1f34f",
+        "name": "Auswerten",
+        "links": [
+            "5b77d931d8977e2f"
+        ],
+        "x": 405,
+        "y": 720,
+        "wires": [
+            [
+                "761a0e1cd7a9d16f"
+            ]
+        ]
+    },
+    {
+        "id": "5b77d931d8977e2f",
+        "type": "link out",
+        "z": "852d5bc711a1f34f",
+        "name": "link out 7",
+        "mode": "link",
+        "links": [
+            "dc887734f92b46a3"
+        ],
+        "x": 1155,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7f727f1a9a94fd6d",
+        "type": "mqtt-broker",
+        "name": "Room MQ",
+        "broker": "127.0.0.1",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

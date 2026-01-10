@@ -1,0 +1,14 @@
+{
+    "name"         : "@quizzer/lights",
+    "version"      : "0.0.1",
+    "description"  : "Lights for OLA",
+    "dependencies": {
+    },
+    "keywords": [ "DMX OLA node-red" ],
+    "node-red"     : {
+        "version": ">=2.0.0",
+        "nodes": {
+            "ledstrip": "lights/rgbw-ledstrip.js"
+        }
+    }
+}

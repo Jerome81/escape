@@ -148,10 +148,9 @@ def get_content():
     id = request.args["id"]
     folder = content_dir + id
     print("Requested content from: " + folder)
-    
 #    os.remove(temp_file)
     if os.path.isdir(folder):
         shutil.make_archive(folder, 'zip', folder)
         return send_file(folder + ".zip")
     else:
-        return "Directory not found", 404
+        return ("Directory not found", 404)

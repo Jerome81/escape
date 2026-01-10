@@ -1,0 +1,6 @@
+{
+    "room_id": "GameoramaQuiz", 
+    "station_id": "1", 
+    "mq_ip": "127.0.0.1",
+    "content_dir": "/var/lib/outposts/"
+}
