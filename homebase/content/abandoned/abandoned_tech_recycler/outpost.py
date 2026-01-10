@@ -87,6 +87,9 @@ def on_event(event):
 
     if event == "Produce cartridge":
         on_solved(mqttc)
+    
+    if event == "Stones set correctly":
+        play_sound("stones_correct.mp3 &")
 
 
 ### Global commands ###
