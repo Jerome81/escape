@@ -77,6 +77,7 @@ button3.when_released = lambda: on_stoned(2)
 def on_event(event):
     global _pressure_correct
     if event == "Pressure correct":
+        play_sound("stones_correct.mp3 &")
         _pressure_correct = True
     
     if event == "Pressure incorrect":
