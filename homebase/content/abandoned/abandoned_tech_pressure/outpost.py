@@ -19,6 +19,7 @@ _solution = [9, 4, 8, 7]
 _currentData = [ 0,0,0,0 ]
 _solved = False
 _pressureCorrect = False
+_last_correct_update = time.time()
 
 
 sensor_vals = [ 
@@ -59,12 +60,19 @@ def find_pressure(v, sensor):
 
 def update_servos(line):
     global _currentData
+    global _last_correct_update
+
     vals = line.split(",")
     if len(vals) < 4:
         print(line)
         print("Doesn't split into 4 tokens.")
         return
     
+    update_pressure = True
+    if _pressureCorrect and time.time() - _last_correct_update < 3:
+        print("Pressure was correct for less than 3 seconds, ignoring update to avoid flickering.")
+        update_pressure = False
+
     has_changes = False
     for i in range(0, 4):
         v = find_pressure(int(vals[i]), sensor_vals[i])
@@ -73,13 +81,19 @@ def update_servos(line):
                 has_changes = True
                 _currentData[i] = 10 - v
                 kit.servo[i].angle = v
-    if has_changes:
+    if update_pressure:
+        if has_changes:
+            print(_currentData)
+            if (_currentData == _solution):
+                _last_correct_update = time.time()
+                on_solved(mqttc)
+            else:
+                on_unsolved(mqttc)
+            sendUpdate()
+    else:
         print(_currentData)
         if (_currentData == _solution):
-            on_solved(mqttc)
-        else:
-            on_unsolved(mqttc)
-        sendUpdate()
+            _last_correct_update = time.time()
 
 def sendUpdate():
     print("Game is: %s - Puzzle is: %s" % (_gameState, _puzzleState))
