@@ -1,5 +1,6 @@
 from time import sleep
 from time import time
+import datetime
 from threading import Thread
 from random import randint
 
@@ -31,8 +32,15 @@ _jsonData = {
     "id": deviceId,
 }
 
-def play_message(file):
+def play_message(file, start_at):
     # Messages take precedence over sound files.
+    n = time() * 1000
+    delay = (start_at - n) / 1000.0
+    print("Current time: %s, start at: %s" % (n, start_at))
+    if delay > 0:
+        print("Waiting %s seconds to play message %s." % (delay, file))
+        sleep(delay)
+
     global _currently_running
     if _currently_running != None:
         _currently_running.kill()
@@ -71,23 +79,24 @@ def self_destruct():
     play_sound("self_destruct.mp3")
 
 ### Game events ###
-def on_event(event):
+def on_event(event, start_at):
     global _dock_door_unlocked
     try:
+        
         if event == "Intruder alert":
-            play_message("intruder_detected")
+            play_message("intruder_detected", start_at)
             sleep(1)
             intruder_alert_thread.start()
 
         if event == "Ripplis hint":
-            play_message("ripplis_hint")
+            play_message("ripplis_hint", start_at)
 
-        if event == "AI warning":
-            play_message("ai_warning")
+        if event == "AI Warning":
+            play_message("ai_warning", start_at)
 
         if event == "ISS Riddle intervention":
             intruder_alert_thread.do_run = False
-            play_message("iss_riddle_help")
+            play_message("iss_riddle_help", start_at)
             jsonData = {
                 "command": "SOLVED"
             }
@@ -97,7 +106,7 @@ def on_event(event):
         if event == "Dock door unlocked":
             intruder_alert_thread.do_run = False        
             _dock_door_unlocked = True
-            play_message("dock_door_unlocked")
+            play_message("dock_door_unlocked", start_at)
             if not t2.is_alive():
                 t2.start()
 
@@ -115,7 +124,7 @@ def on_event(event):
 
         if event == "Crew door open":
             play_sound("doors.mp3")
-            play_message("cooling_system_overheated")
+            play_message("cooling_system_overheated", start_at)
 
         if event == "Replicator ring production started" or event == "Replicator pyrometer production started" or event == "Replicator bubbles production started":
             play_sound("replicator.mp3")
@@ -134,34 +143,33 @@ def on_event(event):
             play_sound("keypad_approved.mp3")
 
         if event == "Overheat solved":
-            play_message("overheat_solved")
+            play_message("overheat_solved", start_at)
 
         if event == "Virus upload started":
             sleep(2)
-            play_message("virus_upload")
+            play_message("virus_upload", start_at)
 
         if event == "Self destruction activated":
-            play_message("self_destruction_activated")
+            play_message("self_destruction_activated", start_at)
 
 
         ##### ENDINGS #####
         if event == "Communication channel established":
-            play_message("saved_by_aliens")
+            play_message("saved_by_aliens", start_at)
             jsonData = {
                 "event": "Mystery solved"
             }
             mqttc.publish("ToDevice/All", json.dumps(jsonData))
     
         if event == "Out of oxygen":
-            play_message("out_of_oxygen")
+            play_message("out_of_oxygen", start_at)
 
         if event == "AI won":
-            play_message("ai_won")
+            play_message("ai_won", start_at)
             self_destruct()
 
         if event == "Core removed":
-            sleep(3)
-            play_message("core_removed")
+            play_message("core_removed", start_at)
             play_sound("exit_door_open.mp3")
         
     except Exception as e:
@@ -225,6 +233,7 @@ def on_message(client, userdata, msg):
     print(msg.payload)
     try:
         payload = json.loads(msg.payload.decode('utf-8'))
+        timestamp = payload.get("timestamp", time() * 1000) + 1500
 
         if msg.topic == "ToDevice/All":
             if 'gameState' in payload:
@@ -236,9 +245,10 @@ def on_message(client, userdata, msg):
                 if _gameState == "RESET":
                     on_reset()
             if 'event' in payload:
-                on_event(payload["event"])
+                on_event(payload["event"], timestamp)
         
         if msg.topic == "ToDevice/Comms":
+            
             if 'display' in payload:
                 display = payload["display"]
                 if display == "Cockpit overheated":
@@ -247,19 +257,18 @@ def on_message(client, userdata, msg):
                         _overheat_message_counter = _overheat_message_counter + 1
                         if _overheat_message_counter >= 10:
                             if _overheat_message_counter == 10:
-                                play_message("cockpit_overheated_super_annoyed")
+                                play_message("cockpit_overheated_super_annoyed", timestamp)
                         else:
                             if _overheat_message_counter > 4:
-                                play_message("cockpit_overheated_annoyed")
+                                play_message("cockpit_overheated_annoyed", timestamp)
                             else:
-                                play_message("cockpit_overheated")
+                                play_message("cockpit_overheated", timestamp)
                 else:
-                    play_message("notification")
+                    play_message("notification", timestamp)
 
             if 'movie' in payload:
                 movie = payload["movie"]
-                play_message(movie)
-
+                play_message(movie, timestamp)
             if 'language' in payload:
                 on_language_change(payload["language"])
                 
