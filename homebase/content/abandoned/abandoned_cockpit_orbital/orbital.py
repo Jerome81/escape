@@ -5,6 +5,7 @@ import gpiozero
 import neopixel
 import board
 from time import sleep
+from time import time
 from random import randint
 from random import shuffle
 
@@ -253,13 +254,15 @@ def on_solved(client):
     sendUpdate()
     if _easy_ending:
         jsonData = {
-            "event": "Communication channel established"
+            "event": "Communication channel established",
+            "timestamp": time() * 1000
         }
         print("Sending: Communication channel established")
         client.publish("ToDevice/All", json.dumps(jsonData))
     else:    
         jsonData = {
-            "event": "Access granted"
+            "event": "Access granted",
+            "timestamp": time() * 1000
         }
         print("Sending: Access granted")
         client.publish("ToDevice/All", json.dumps(jsonData))
