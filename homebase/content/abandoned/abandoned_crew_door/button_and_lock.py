@@ -7,6 +7,7 @@ import RPi.GPIO as GPIO
 import os
 
 from time import sleep
+from time import time
 
 deviceId = "abandoned_crew_door"
 
@@ -83,7 +84,8 @@ def on_solved(client):
     unlock_door()
     sendUpdate()
     jsonData = {
-        "event": "Crew door open"
+        "event": "Crew door open",
+        "timestamp": time() * 1000
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
