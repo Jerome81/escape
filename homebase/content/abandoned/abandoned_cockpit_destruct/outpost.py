@@ -5,6 +5,7 @@ import board
 import neopixel
 import RPi.GPIO as GPIO
 import os
+from time import time
 
 from time import sleep
 
@@ -54,7 +55,8 @@ def safety_activate():
     lightstrip.fill((255, 0, 0))
     _safety = False
     jsonData = {
-        "event": "Self destruction safety activated"
+        "event": "Self destruction safety activated",
+        "timestamp": time() * 1000
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData))
     sendUpdate()
@@ -109,7 +111,8 @@ def on_solved():
         _puzzleState = "SOLVED"            
         sendUpdate()
         jsonData = {
-            "event": "Self destruct"
+            "event": "Self destruct",
+            "timestamp": time() * 1000
         }
         mqttc.publish("ToDevice/All", json.dumps(jsonData))
 
@@ -118,7 +121,8 @@ def on_reset(client):
     _puzzleState = "INACTIVE"
     sendUpdate()
     jsonData = {
-        "event": "Undestruct spaceship"
+        "event": "Undestruct spaceship",
+        "timestamp": time() * 1000
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
