@@ -123,35 +123,40 @@
                 movie.loop = true;
             }   
 
-            function playMovie(name) {
-                console.log("Playing movie: " + name);
-                const movieContainer = document.getElementById('movie-container');
-                const movie = document.getElementById('movie');
-                movie.src = name;
-                movieContainer.style.display = 'block'; // Show the video container
-                movie.controls = false; //remove controls  
-                playPromise = movie.play(); // Start playing the video
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        console.log("movie started");
-                        // Automatic playback started!
-                        // Show playing UI.
-                    })
-                    .catch(error => {
-                        console.log("Error when starting video");
-                        console.error(error);
-                        // Auto-play was prevented
-                        // Show paused UI.
-                    });
-                }
+            function playMovie(name, timestamp) {
+                delay = timestamp - Date.now();
+                if (delay < 0) delay = 0;
+                console.log("Current time: " + Date.now() + ", message timestamp: " + timestamp + ", delay: " + delay);
+                setTimeout(function() {
+                    console.log("Playing movie: " + name);
+                    const movieContainer = document.getElementById('movie-container');
+                    const movie = document.getElementById('movie');
+                    movie.src = name;
+                    movieContainer.style.display = 'block'; // Show the video container
+                    movie.controls = false; //remove controls  
+                    playPromise = movie.play(); // Start playing the video
+                    if (playPromise !== undefined) {
+                        playPromise.then(_ => {
+                            console.log("movie started");
+                            // Automatic playback started!
+                            // Show playing UI.
+                        })
+                        .catch(error => {
+                            console.log("Error when starting video");
+                            console.error(error);
+                            // Auto-play was prevented
+                            // Show paused UI.
+                        });
+                    }
+                }, delay);
             }
 
-            function showMovie(name) {
+            function showMovie(name, timestamp) {
                 console.log("Showing movie: " + name);
                 const textContainer = document.getElementById('text-overlay');
                 last_display_tag_value = textContainer.style.display;
                 textContainer.style.display = "none";
-                playMovie(name);
+                playMovie(name, timestamp)
                 movie.loop = false;
             }
             
@@ -210,15 +215,17 @@
                 // message is Buffer
                 msg = JSON.parse(message);
                 console.log(msg);
+                timestamp = msg["timestamp"];
+                timestamp = timestamp + 1000; // compensate for delay
                 if (msg["event"] == "Overheat solved") {
-                    showMovie("overheat_solved_" + language + ".mp4");
+                    showMovie("overheat_solved_" + language + ".mp4", timestamp);
                 }
                 if (msg["event"] == "Ripplis hint") {
-                    showMovie("ripplis_hint_" + language + ".mp4");
+                    showMovie("ripplis_hint_" + language + ".mp4", timestamp);
                 }
 
                 if (msg["event"] == "Intruder alert") {
-                    showMovie("intruder_detected_" + language + ".mp4");
+                    showMovie("intruder_detected_" + language + ".mp4", timestamp);
                 }
 
 
@@ -232,63 +239,63 @@
                                 return;
                             }
                             if (overheat_message_counter == 10) {
-                                showMovie("cockpit_overheated_super_annoyed_" + language + ".mp4");
+                                showMovie("cockpit_overheated_super_annoyed_" + language + ".mp4", timestamp);
                             } else {
-                                showMovie("cockpit_overheated_annoyed_" + language + ".mp4");
+                                showMovie("cockpit_overheated_annoyed_" + language + ".mp4", timestamp);
                             }
                         } else {
-                            showMovie("cockpit_overheated_" + language + ".mp4");
+                            showMovie("cockpit_overheated_" + language + ".mp4", timestamp);
                         }
                     }
                     return;
                 }
 
                 if (msg["event"] == "ISS Riddle intervention") {
-                    showMovie("iss_riddle_help_" + language + ".mp4");
+                    showMovie("iss_riddle_help_" + language + ".mp4", timestamp);
                 }
 
                 if (msg["event"] == "AI Warning") {
-                    showMovie("ai_warning_" + language + ".mp4");
+                    showMovie("ai_warning_" + language + ".mp4", timestamp);
                 }
                 if (msg["event"] == "Dock door unlocked") {
-                    showMovie("dock_door_unlocked_" + language + ".mp4");
+                    showMovie("dock_door_unlocked_" + language + ".mp4", timestamp);
                 }
                 if (msg["event"] == "Crew door open") {
                     // Door open sound effect is played first.
                     setTimeout(function() {
-                        showMovie("cooling_system_overheated_" + language + ".mp4");
+                        showMovie("cooling_system_overheated_" + language + ".mp4", timestamp);
                     }, 3000);
                 }
 
                 if (msg["event"] == "Virus upload started") {
                     // Wait 2 seconds for upload to happen before playing
                     setTimeout(function() {
-                        showMovie("virus_upload_" + language + ".mp4"); 
+                        showMovie("virus_upload_" + language + ".mp4", timestamp); 
                     }, 2000);
 
                 } 
                 if (msg["event"] == "Communication channel established") {
-                    showMovie("saved_by_aliens_" + language + ".mp4");
+                    showMovie("saved_by_aliens_" + language + ".mp4", timestamp);
                 }
 
                 if (msg["event"] == "Self destruction activated") {
-                    showMovie("self_destruction_" + language + ".mp4"); 
+                    showMovie("self_destruction_activated_" + language + ".mp4", timestamp); 
                 }   
         
                 if (msg["event"] == "Self destruct") {
-                    showMovie("static.mp4");
+                    showMovie("static.mp4", timestamp);
                 }
                 
                 if (msg["event"] == "AI won") {
-                    showMovie("ai_won_" + language + ".mp4");
+                    showMovie("ai_won_" + language + ".mp4", timestamp);
                 }
                 
                 if (msg["event"] == "Core removed") {
-                    showMovie("core_removed_" + language + ".mp4");
+                    showMovie("core_removed_" + language + ".mp4", timestamp);
                 }
     
                 if (msg["event"] == "Out of oxygen") {
-                    showMovie("out_of_oxygen_" + language + ".mp4");
+                    showMovie("out_of_oxygen_" + language + ".mp4", timestamp);
                 }
 
 
@@ -297,7 +304,7 @@
                     if (!movie.endsWith("_")) {
                         movie = movie + "_";
                     }
-                    showMovie(movie + language + ".mp4");
+                    showMovie(movie + language + ".mp4", timestamp);
                 }
 
                 if (msg["display"] != null) {
