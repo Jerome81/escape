@@ -872,6 +872,28 @@
         "className": ""
     },
     {
+        "id": "53844703f075f175",
+        "type": "ui_group",
+        "name": "Logbuch Hans Olo",
+        "tab": "cf991fad40d41f0b",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4c8aa29a27f607dc",
+        "type": "ui_group",
+        "name": "Logbuch Helen Rippli",
+        "tab": "cf991fad40d41f0b",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
         "id": "dc689f6188d04642",
         "type": "inject",
         "z": "3a0b50343819716a",
@@ -1541,7 +1563,7 @@
         "type": "function",
         "z": "3a0b50343819716a",
         "name": "GameLogic",
-        "func": "/**\n * This function gets called:\n * 1. When time has passed (every second) for which it receives:\n *  - msg.timeRemaining\n *  - msg.formattedTimeRemaining\n *  - msg.oxygenRemaining (0 - 100 - x % of 1 h)\n * \n * 2. A message was received (ToDevice/All).\n */\n\nlet dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\nmsg.payload.dockdoorunlocked = dockdoorunlocked;\n//node.status({fill: \"green\", shape:\"dot\", text:dockdoorunlocked});\n\nif (msg.payload.event != null) {\n    var pe = global.get(\"past_events\") || \"\";\n    pe = msg.payload.event + \"\\r\\n\" + pe;\n    global.set(\"past_events\", pe);\n    //node.status({fill: \"green\", shape:\"dot\", text:msg.payload.event});\n\n    if (msg.payload.event == \"Dock door unlocked\") {\n        global.set(\"DockDoorUnlocked\", true);\n        msg.payload.dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\n    }\n\n    // Trigger difficult or easy ending if not already manually set\n    if (msg.payload.event == \"Cockpit door open\") {\n        let timeRemaining = global.get(\"timeRemaining\");\n        let ending = global.get(\"ending\");\n        if (ending == \"--- (default)\") {\n            node.status({fill: \"green\", shape:\"dot\", text:timeRemaining});\n            if (timeRemaining > 20 * 60 * 1000) {\n                global.set(\"ending\", \"Schwierig\");\n            } else {\n                global.set(\"ending\", \"Einfach\");\n            }\n        }\n    }\n\n    if (msg.payload.event == \"Power up\") {\n        msg.event = \"power_up\";\n    }\n\n    if (msg.payload.event == \"Easy ending\") {\n        global.set(\"ending\", \"Einfach\");\n    }\n    if (msg.payload.event == \"Hard ending\") {\n        global.set(\"ending\", \"Schwierig\");\n    }\n\n    if (msg.payload.event == \"Exit door unlocked\") {\n        msg.event = \"exit_door_unlocked\";\n    }\n\n    if (msg.payload.event == \"Virus upload started\") {\n        let timeRemaining = global.get(\"timeRemaining\");\n        timeRemaining = Math.min(timeRemaining, 15 * 60 * 1000);\n        // Maximum time remaining at this point is 15 min.\n        global.set(\"timeRemaining\", timeRemaining);\n        let repairSelfDestructAt = Math.max(60000, timeRemaining - 3 * 60 * 1000);\n        node.status({ fill: \"green\", shape: \"dot\", text: repairSelfDestructAt });\n    \n        global.set(\"repair_self_destruction_at\", repairSelfDestructAt);\n    }\n\n    if (msg.payload.event == \"Mystery solved\") {\n        msg.event = \"lightcontroller\";\n        global.set(\"paused\", true);\n        flow.set(\"effect\", \"rain\");\n        node.status({fill: \"green\", shape:\"dot\", text:msg.event});\n    }\n    \n    if (msg.payload.event == \"Self destruct\") {\n        msg.event = \"self_destruct\";        \n        global.set(\"paused\", true);\n    }\n    \n    if (msg.payload.event == \"AI won\") {\n        msg.event = \"ai_won\";\n        global.set(\"paused\", true);\n    }\n    if (msg.payload.event == \"Core removed\") {\n        msg.event = \"core_removed\";\n        global.set(\"paused\", true);\n    }\n    \n    return msg;\n} else {\n    let timeForRoom = global.get(\"timeForRoom\");\n    const MINUTES_MS = 60 * 1000;\n    const INTRUDER_ALERT = timeForRoom - 5000; \n    const RIPPLIS_HINT = timeForRoom - 4 * MINUTES_MS; /* 4 min */\n    const AI_WARNING = timeForRoom - 7 * MINUTES_MS; /* 7 min */\n    const RIDDLE_INTERVENTION = timeForRoom - 7.7 * MINUTES_MS; /* 7 min 40 s */\n\n    // After a few seconds, start intruder alarm\n    if (msg.timeRemaining > INTRUDER_ALERT && msg.timeRemaining < INTRUDER_ALERT + 5000) {\n        if (! (global.get(\"IntruderAlert\") || false)) {\n            global.set(\"IntruderAlert\", true);\n            msg.topic = \"ToDevice/All\";\n            msg.event = \"Intruder alert\";\n            return msg;\n        }\n    }\n\n    // These events only happen if the dock door is still locked.\n    if (! dockdoorunlocked) {\n        // After about 4 minutes, automatically trigger Ripplis hint\n        if (msg.timeRemaining > RIPPLIS_HINT && msg.timeRemaining < RIPPLIS_HINT + 2000) {\n        //if (msg.timeRemaining > 3590000 && msg.timeRemaining < 3592000) {\n            if (! (global.get(\"RipplisHint\") || false)) {\n                global.set(\"RipplisHint\", true);\n                node.status({ fill: \"green\", shape: \"dot\", text: \"Trigger Ripplis Hint\" });\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"Ripplis hint\";\n                return msg;\n            }\n        }\n        \n        // After 7 min, trigger AI warning\n        if (msg.timeRemaining > AI_WARNING && msg.timeRemaining < AI_WARNING + 2000) {\n            if (! (global.get(\"AIWarning\") || false)) {\n                global.set(\"AIWarning\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"AI warning\";\n                return msg;\n            }\n        }\n\n        // After 7 min 40, trigger help from ISS RIDDLE\n        if (msg.timeRemaining > RIDDLE_INTERVENTION && msg.timeRemaining < RIDDLE_INTERVENTION + 2000) {\n            if (!(global.get(\"ISSHelp\") || false)) {\n                global.set(\"ISSHelp\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"ISS Riddle intervention\";\n                return msg;\n            }\n        }\n    }\n\n    // Time ran out, trigger the correct game over sequence\n    if (msg.timeRemaining < 0) {\n        msg.topic = \"ToDevice/All\";\n        if (! global.get(\"paused\")) {\n            global.set(\"paused\", true);\n            if (global.get(\"ending\") == \"Schwierig\") {\n                msg.event = \"AI won\";\n            } else {\n                msg.event = \"Out of oxygen\";\n            }\n            return msg;\n        }\n    }\n\n    // Time-based events for difficult level\n    if  (global.get(\"ending\") == \"Schwierig\") {\n        const SELF_DESTRUCTION_ACTIVATION = global.get(\"repair_self_destruction_at\") || 0;\n        node.status({fill: \"green\", shape:\"dot\", text:SELF_DESTRUCTION_ACTIVATION});\n   \n        if (msg.timeRemaining > SELF_DESTRUCTION_ACTIVATION && msg.timeRemaining < SELF_DESTRUCTION_ACTIVATION + 2000) {\n            if (!(global.get(\"SelfDestructionActivated\") || false)) {\n                global.set(\"SelfDestructionActivated\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"Self destruction activated\";\n                return msg;\n            }\n        }\n    \n    }\n    return null;\n}\n\nreturn msg;",
+        "func": "/**\n * This function gets called:\n * 1. When time has passed (every second) for which it receives:\n *  - msg.timeRemaining\n *  - msg.formattedTimeRemaining\n *  - msg.oxygenRemaining (0 - 100 - x % of 1 h)\n * \n * 2. A message was received (ToDevice/All).\n */\n\nlet dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\nmsg.payload.dockdoorunlocked = dockdoorunlocked;\n//node.status({fill: \"green\", shape:\"dot\", text:dockdoorunlocked});\n\nif (msg.payload.event != null) {\n    var pe = global.get(\"past_events\") || \"\";\n    pe = msg.payload.event + \"\\r\\n\" + pe;\n    global.set(\"past_events\", pe);\n    //node.status({fill: \"green\", shape:\"dot\", text:msg.payload.event});\n\n    if (msg.payload.event == \"Dock door unlocked\") {\n        global.set(\"DockDoorUnlocked\", true);\n        msg.payload.dockdoorunlocked = global.get(\"DockDoorUnlocked\") || false;\n    }\n\n    // Trigger difficult or easy ending if not already manually set\n    if (msg.payload.event == \"Cockpit door open\") {\n        let timeRemaining = global.get(\"timeRemaining\");\n        let ending = global.get(\"ending\");\n        if (ending == \"--- (default)\") {\n            node.status({fill: \"green\", shape:\"dot\", text:timeRemaining});\n            if (timeRemaining > 20 * 60 * 1000) {\n                global.set(\"ending\", \"Schwierig\");\n            } else {\n                global.set(\"ending\", \"Einfach\");\n            }\n        }\n    }\n\n    if (msg.payload.event == \"Power up\") {\n        msg.event = \"power_up\";\n    }\n\n    if (msg.payload.event == \"Easy ending\") {\n        global.set(\"ending\", \"Einfach\");\n    }\n    if (msg.payload.event == \"Hard ending\") {\n        global.set(\"ending\", \"Schwierig\");\n    }\n\n    if (msg.payload.event == \"Exit door unlocked\") {\n        msg.event = \"exit_door_unlocked\";\n    }\n\n    if (msg.payload.event == \"Virus upload started\") {\n        let timeRemaining = global.get(\"timeRemaining\");\n        timeRemaining = Math.min(timeRemaining, 15 * 60 * 1000);\n        // Maximum time remaining at this point is 15 min.\n        global.set(\"timeRemaining\", timeRemaining);\n        let repairSelfDestructAt = Math.max(60000, timeRemaining - 3 * 60 * 1000);\n        node.status({ fill: \"green\", shape: \"dot\", text: repairSelfDestructAt });\n    \n        global.set(\"repair_self_destruction_at\", repairSelfDestructAt);\n    }\n\n    if (msg.payload.event == \"Mystery solved\") {\n        msg.event = \"lightcontroller\";\n        global.set(\"paused\", true);\n        flow.set(\"effect\", \"rain\");\n        node.status({fill: \"green\", shape:\"dot\", text:msg.event});\n    }\n    \n    if (msg.payload.event == \"Self destruct\") {\n        msg.event = \"self_destruct\";        \n        global.set(\"paused\", true);\n    }\n    \n    if (msg.payload.event == \"AI won\") {\n        msg.event = \"ai_won\";\n        global.set(\"paused\", true);\n    }\n    if (msg.payload.event == \"Core removed\") {\n        msg.event = \"core_removed\";\n        global.set(\"paused\", true);\n    }\n    \n    return msg;\n} else {\n    let timeForRoom = global.get(\"timeForRoom\");\n    const MINUTES_MS = 60 * 1000;\n    const INTRUDER_ALERT = timeForRoom - 5000; \n    const RIPPLIS_HINT = timeForRoom - 4 * MINUTES_MS; /* 4 min */\n    const AI_WARNING = timeForRoom - 7 * MINUTES_MS; /* 7 min */\n    const RIDDLE_INTERVENTION = timeForRoom - 7.7 * MINUTES_MS; /* 7 min 40 s */\n\n    // After a few seconds, start intruder alarm\n    if (msg.timeRemaining > INTRUDER_ALERT && msg.timeRemaining < INTRUDER_ALERT + 5000) {\n        if (! (global.get(\"IntruderAlert\") || false)) {\n            global.set(\"IntruderAlert\", true);\n            msg.topic = \"ToDevice/All\";\n            msg.event = \"Intruder alert\";\n            return msg;\n        }\n    }\n\n    // These events only happen if the dock door is still locked.\n    if (! dockdoorunlocked) {\n        // After about 4 minutes, automatically trigger Ripplis hint\n        if (msg.timeRemaining > RIPPLIS_HINT && msg.timeRemaining < RIPPLIS_HINT + 2000) {\n        //if (msg.timeRemaining > 3590000 && msg.timeRemaining < 3592000) {\n            if (! (global.get(\"RipplisHint\") || false)) {\n                global.set(\"RipplisHint\", true);\n                node.status({ fill: \"green\", shape: \"dot\", text: \"Trigger Ripplis Hint\" });\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"Ripplis hint\";\n                return msg;\n            }\n        }\n        \n        // After 7 min, trigger AI warning\n        if (msg.timeRemaining > AI_WARNING && msg.timeRemaining < AI_WARNING + 2000) {\n            if (! (global.get(\"AIWarning\") || false)) {\n                global.set(\"AIWarning\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"AI Warning\";\n                return msg;\n            }\n        }\n\n        // After 7 min 40, trigger help from ISS RIDDLE\n        if (msg.timeRemaining > RIDDLE_INTERVENTION && msg.timeRemaining < RIDDLE_INTERVENTION + 2000) {\n            if (!(global.get(\"ISSHelp\") || false)) {\n                global.set(\"ISSHelp\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"ISS Riddle intervention\";\n                return msg;\n            }\n        }\n    }\n\n    // Time ran out, trigger the correct game over sequence\n    if (msg.timeRemaining < 0) {\n        msg.topic = \"ToDevice/All\";\n        if (! global.get(\"paused\")) {\n            global.set(\"paused\", true);\n            if (global.get(\"ending\") == \"Schwierig\") {\n                msg.event = \"AI won\";\n            } else {\n                msg.event = \"Out of oxygen\";\n            }\n            return msg;\n        }\n    }\n\n    // Time-based events for difficult level\n    if  (global.get(\"ending\") == \"Schwierig\") {\n        const SELF_DESTRUCTION_ACTIVATION = global.get(\"repair_self_destruction_at\") || 0;\n        node.status({fill: \"green\", shape:\"dot\", text:SELF_DESTRUCTION_ACTIVATION});\n   \n        if (msg.timeRemaining > SELF_DESTRUCTION_ACTIVATION && msg.timeRemaining < SELF_DESTRUCTION_ACTIVATION + 2000) {\n            if (!(global.get(\"SelfDestructionActivated\") || false)) {\n                global.set(\"SelfDestructionActivated\", true);\n                msg.topic = \"ToDevice/All\";\n                msg.event = \"Self destruction activated\";\n                return msg;\n            }\n        }\n        \n        const ONE_MINUTE_WARNING = 60000; // 60 seconds before end\n        if (msg.timeRemaining > ONE_MINUTE_WARNING && msg.timeRemaining < ONE_MINUTE_WARNING + 1000) {\n            global.set(\"movie\", \"one_minute_warning\");\n            msg.event = \"one_minute_warning\"\n            return msg;\n        }\n    }\n    return null;\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1640,6 +1662,11 @@
                 "vt": "str"
             },
             {
+                "t": "eq",
+                "v": "one_minute_warning",
+                "vt": "str"
+            },
+            {
                 "t": "neq",
                 "v": "",
                 "vt": "str"
@@ -1647,7 +1674,7 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 7,
+        "outputs": 8,
         "x": 1120,
         "y": 240,
         "wires": [
@@ -1668,6 +1695,9 @@
             ],
             [
                 "6a691a0a5ded302e"
+            ],
+            [
+                "deb8f39b475ff233"
             ],
             [
                 "0c5548bb7f35c09e"
@@ -1880,8 +1910,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1750,
-        "y": 440,
+        "x": 1770,
+        "y": 400,
         "wires": [
             [
                 "db3f3730992f5862"
@@ -1956,7 +1986,7 @@
         "request": "on",
         "device": "cd71473f60411f8c",
         "x": 1410,
-        "y": 260,
+        "y": 200,
         "wires": [
             [
                 "4504d104b2499158"
@@ -1970,8 +2000,8 @@
         "name": "Nebel und Licht OFF",
         "request": "off",
         "device": "cd71473f60411f8c",
-        "x": 1420,
-        "y": 300,
+        "x": 1440,
+        "y": 240,
         "wires": [
             [
                 "4504d104b2499158"
@@ -2402,8 +2432,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1500,
-        "y": 440,
+        "x": 1540,
+        "y": 300,
         "wires": [
             [
                 "0e0c71f706c846ac",
@@ -2420,8 +2450,8 @@
         "links": [
             "3b8e2246807dc7cd"
         ],
-        "x": 1665,
-        "y": 360,
+        "x": 1705,
+        "y": 320,
         "wires": []
     },
     {
@@ -2441,8 +2471,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1370,
-        "y": 400,
+        "x": 1390,
+        "y": 320,
         "wires": [
             [
                 "98bec8cced06155c"
@@ -2462,7 +2492,7 @@
         "finalize": "",
         "libs": [],
         "x": 1460,
-        "y": 540,
+        "y": 380,
         "wires": [
             [
                 "0e0c71f706c846ac",
@@ -2479,8 +2509,8 @@
         "links": [
             "82ecb0214df4473e"
         ],
-        "x": 1635,
-        "y": 580,
+        "x": 1685,
+        "y": 500,
         "wires": []
     },
     {
@@ -2571,6 +2601,19 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "deb8f39b475ff233",
+        "type": "link out",
+        "z": "3a0b50343819716a",
+        "name": "link out 9",
+        "mode": "link",
+        "links": [
+            "bb09376c5b99c2ce"
+        ],
+        "x": 1415,
+        "y": 420,
+        "wires": []
     },
     {
         "id": "8b2e9b6e4e8e88e7",
@@ -8767,8 +8810,8 @@
         "name": "Hilfetexte",
         "order": 5,
         "width": "6",
-        "height": "1",
-        "format": "<div>\n\n        Die Dock-Tür ist freigeschaltet. Ihr müsst Euch nur noch als Hans Olo oder Helen Rippli identifizieren.</br>\n        The dock door is ready to open for a person identified as Hans Olo or Helen Rippli.\n\n</div>",
+        "height": "3",
+        "format": "<div>\n\n        Die Dock-Tür ist freigeschaltet. Ihr müsst Euch nur noch als Hans Olo oder Helen Rippli identifizieren.</br>\n        The dock door can be opened by a person identified as Hans Olo or Helen Rippli.\n\n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -10171,6 +10214,27 @@
         ]
     },
     {
+        "id": "8c1211f4572b7787",
+        "type": "ui_template",
+        "z": "e637eae7c0a3df4a",
+        "group": "5486b3a31dbd6b55",
+        "name": "Hilfetexte",
+        "order": 5,
+        "width": "6",
+        "height": "3",
+        "format": "<div>\nUm den Strom für alle Geräte zu aktivieren, müsst ihr die richtigen Knöpfe am Energy Supply System drücken.<br/>\nTo power all the devices, you have to press the right buttons on the energy supply system.<br/>\n\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 840,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "ca29a5849bd23eaa",
         "type": "ui_button",
         "z": "a6b52dac9d96aeee",
@@ -10985,6 +11049,90 @@
         "className": "",
         "x": 170,
         "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "87881094c518ad74",
+        "type": "mqtt in",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "topic": "FromDevice/hans_olo",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 1220,
+        "wires": [
+            [
+                "760cda7d84330145"
+            ]
+        ]
+    },
+    {
+        "id": "760cda7d84330145",
+        "type": "ui_template",
+        "z": "a6b52dac9d96aeee",
+        "group": "53844703f075f175",
+        "name": "Hans Olo",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card  style=\"height: 25px\">\n<md-card-title style=\"height: 25px\">\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id || \"Hans Olo (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</span></p>    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        Hinweis auf die Zahlen 2, 1, 4\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 1em;\">Letztes Video: {{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 500,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c52fe5c2c01b892b",
+        "type": "mqtt in",
+        "z": "a6b52dac9d96aeee",
+        "name": "",
+        "topic": "FromDevice/helen_rippli",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "125f6c81.60151b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 1300,
+        "wires": [
+            [
+                "f0ab56e6d5979e4e"
+            ]
+        ]
+    },
+    {
+        "id": "f0ab56e6d5979e4e",
+        "type": "ui_template",
+        "z": "a6b52dac9d96aeee",
+        "group": "4c8aa29a27f607dc",
+        "name": "Helen Rippli",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "format": "<md-card  style=\"height: 25px\">\n<md-card-title style=\"height: 25px\">\n    <md-card-title-text>\n        <p class=\"md-headline\">{{msg.payload.id || \"Helen Rippli (missing)\"}} <span style=\"font-size:9px\">{{msg.payload.state}}</span></p>    </md-card-title-text>\n    <span ng-class=\"msg.payload.state=='SOLVED' ? 'fa fa-unlock fa-2x' : 'fa fa-lock fa-2x'\"></span>\n</md-card-title>\n<md-card-content>\n    <div ng-style=\"{width:'100%',height:'8px','background-color':msg.payload.state=='SOLVED' ? 'green' : 'red'}\"></div>\n    <p>\n        Hinweis in Video 1:<br/>\n        Mars Mint (Grün)<br/>\n        Milky Way (Braun)<br/>\n        Saturn Berry (Blau)<br/>\n    </p>\n\n    <div style=\"text-align:center\">\n        <span style=\"font-size: 1em;\">Letztes Video: {{msg.payload.input}}&nbsp;</span>\n    </div>\n</md-card-content>\n</md-card>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 510,
+        "y": 1300,
         "wires": [
             []
         ]
@@ -13366,6 +13514,11 @@
                 "label": "Kommandant: Die ISS Riddle ist verloren [ Niederlage schwieriges Ende ]",
                 "value": "ai_won",
                 "type": "str"
+            },
+            {
+                "label": "[ AUTOMATISCH 1 min vor schwierigem Ende ] Kommandant: Ihr habt noch eine Minute",
+                "value": "one_minute_warning",
+                "type": "str"
             }
         ],
         "payload": "",
@@ -13809,6 +13962,51 @@
         "wires": [
             [
                 "61f2e22be1f6b5ad"
+            ]
+        ]
+    },
+    {
+        "id": "bb09376c5b99c2ce",
+        "type": "link in",
+        "z": "d3d6c783809cfa84",
+        "name": "PlayMovie",
+        "links": [
+            "deb8f39b475ff233"
+        ],
+        "x": 255,
+        "y": 300,
+        "wires": [
+            [
+                "cddff8c77748d3a2"
+            ]
+        ]
+    },
+    {
+        "id": "77937434f1d6cdf9",
+        "type": "inject",
+        "z": "d3d6c783809cfa84",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "cddff8c77748d3a2"
             ]
         ]
     }
