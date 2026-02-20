@@ -5,7 +5,7 @@ import json
 import gpiozero
 
 from random import randint
-from time import sleep
+from time import sleep, time
 
 
 mq_ip = "192.168.5.11"
@@ -95,7 +95,8 @@ def on_solved():
     _puzzleState = "SOLVED"
     sendUpdate()
     jsonData = {
-        "event": "Exit door unlocked"
+        "event": "Exit door unlocked",
+        "timestamp": time() * 1000
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData))
     unlock_door()
