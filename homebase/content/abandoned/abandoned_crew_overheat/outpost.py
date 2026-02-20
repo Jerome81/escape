@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import serial
 import os
 import time
+from time import time
 from time import sleep
 import json
 
@@ -82,7 +83,8 @@ def on_solved(client):
     sendUpdate()
     stop_heaters()
     jsonData = {
-        "event": ("Overheat solved")
+        "event": ("Overheat solved"),
+        "timestamp": time() * 1000
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
 
