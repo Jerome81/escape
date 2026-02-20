@@ -1,4 +1,6 @@
 from time import sleep
+from time import time
+
 from random import randint
 import json
 import paho.mqtt.client as mqtt
@@ -102,14 +104,16 @@ def on_solved():
     
     light.fill((255, 0, 0))
     jsonData = {
-        "event": "Power down"
+        "event": "Power down",
+        "timestamp": time() * 1000
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
 
     sleep(3)
 
     jsonData = {
-        "event": "Core removed"
+        "event": "Core removed",
+        "timestamp": time() * 1000
     }
     mqttc.publish("ToDevice/All", json.dumps(jsonData)) 
 
