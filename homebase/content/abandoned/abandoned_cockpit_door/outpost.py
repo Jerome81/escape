@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 
 from datetime import datetime, timedelta
 from time import sleep
+from time import time
 
 deviceId = "abandoned_cockpit_door"
 
@@ -88,13 +89,15 @@ def on_solved(client):
             unlock_door()
             sendUpdate()
             jsonData = {
-                "event": "Cockpit door open"
+                "event": "Cockpit door open",
+                "timestamp": time() * 1000
             }
             client.publish("ToDevice/All", json.dumps(jsonData))
         else:
             if datetime.now() >= next_overheat_send:
                 jsonData = {
-                    "display": "Cockpit overheated"
+                    "display": "Cockpit overheated",
+                    "timestamp": time() * 1000
                 }
                 next_overheat_send = datetime.now() + timedelta(seconds=7)
                 client.publish("ToDevice/Comms", json.dumps(jsonData))
