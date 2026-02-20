@@ -1,3 +1,4 @@
+import datetime
 import os
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
@@ -14,7 +15,7 @@ deviceId = "abandoned_dock_door"
 
 _gameState = "STOPPED"
 _puzzleState = "INACTIVE"
-_solution = [406868850262, 870035386129, 1006585081853, 662954143627, 455738683197, 595425390425]
+_solution = [406868850262, 870035386129, 1006585081853, 662954143627, 455738683197, 595425390425, 668724073906, 944660125085]
 _currentData = ""
 
 
@@ -106,7 +107,8 @@ def on_solved(client):
     led_state()
     sendUpdate()
     jsonData = {
-        "event": "Dock door unlocked"
+        "event": "Dock door unlocked",
+        "timestamp": int(datetime.datetime.now().timestamp() * 1000)
     }
     client.publish("ToDevice/All", json.dumps(jsonData))
     unlock_door()
