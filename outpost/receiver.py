@@ -47,3 +47,12 @@ def reboot():
         return "OK", 200
     else:
         return 404
+
+@receiver.get("/shutdown")
+@cross_origin()
+def shutdown():
+    if request.args["pwd"] == "why_not":
+        os.system('sudo shutdown -h now')
+        return "OK", 200
+    else:
+        return 404
