@@ -148,7 +148,7 @@ def on_message(client, userdata, msg):
             if _gameState == "STOPPED":
                 on_stopped()
             if _gameState == "RESET":
-                on_reset()
+                on_reset(client)
         if 'event' in payload:
             on_event(payload["event"])
         if 'language' in payload:
