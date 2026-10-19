@@ -28,7 +28,7 @@ _jsonData = {
 
 BUTTON_PIN = 14  #GPIO14
 
-button = gpiozero.Button(BUTTON_PIN, hold_time = 0.05, bounce_time = 0.2)
+button = gpiozero.Button(BUTTON_PIN, bounce_time = 0.05)
 
 
 # initialize door
