@@ -104,7 +104,7 @@ const options = {
     clean: true,
     connectTimeout: 4000,
     // Authentication
-    clientId: 'cockpit_floppy2',
+    clientId: `cockpit_floppy2_${Math.random().toString(16).substring(2, 8)}`,
     username: 'outpost',
     password: 'CallingHome',
 }
