@@ -246,6 +246,7 @@ print("starting message queue.")
 mqttc.loop_start()
 
 lock_trapdoor()
+sleep(0.5)
 lock_cartridgedoor()
 
 sendUpdate()
@@ -264,6 +265,6 @@ try:
 except Exception as e:
     print('An exception occurred: {}'.format(e))
 finally:
-    GPIO.cleanup
+    GPIO.cleanup()
         
    
