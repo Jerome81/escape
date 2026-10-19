@@ -20,7 +20,7 @@ const options = {
   clean: true,
   connectTimeout: 4000,
   // Authentication
-  clientId: 'replicator_ui',
+  clientId: `replicator_ui_${Math.random().toString(16).substring(2, 8)}`,
   username: 'outpost',
   password: 'CallingHome',
 }
