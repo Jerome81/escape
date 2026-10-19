@@ -7,8 +7,6 @@ from adafruit_servokit import ServoKit
 import json
 import RPi.GPIO as GPIO
 
-
-
 deviceId = "abandoned_tech_pressure"
 
 mq_ip = "192.168.5.11"
@@ -22,12 +20,14 @@ _pressureCorrect = False
 _last_correct_update = time.time()
 
 
-sensor_vals = [ 
-    [ 1000, 330, 310, 285, 230, 185, 140, 80, 40, 10, -10 ], 
-    [ 1000, 260, 230, 200, 180, 165, 115, 90, 60, 15, -10 ], 
-    [ 1000, 560, 500, 430, 290, 230, 180, 100, 50, 15, -10 ], 
-    [ 1000, 560, 520, 480, 380, 270, 180, 80, 40, 15, -10 ]
+sensor_vals = [
+    #     1           3          5           7           9
+    [[1000, 300], [300, 260], [260, 170], [170, 100], [100, -10]],
+    [[1000, 320], [320, 230], [230, 170], [170, 120], [120, -10]],
+    [[1000, 580], [580, 400], [400, 200], [200, 50], [50, -10]],
+    [[1000, 550], [550, 380], [380, 210], [210, 110], [110, -10]]
 ]
+
 
 _jsonData = {
     "id": deviceId,
@@ -53,9 +53,9 @@ def light_off():
     print("Recycler light off")
 
 def find_pressure(v, sensor):
-    for i in range(0, 10):
-        if v < sensor[i] and v > sensor[i + 1]:
-            return i
+    for i in range(len(sensor)):
+        if v <= sensor[i][0] and v > sensor[i][1]:
+            return i * 2
 
 
 def update_servos(line):
@@ -77,6 +77,8 @@ def update_servos(line):
     for i in range(0, 4):
         v = find_pressure(int(vals[i]), sensor_vals[i])
         if v != None:
+            if i == 0 or i == 3:
+                v = v + 1
             if _currentData[i] != 10 - v:
                 has_changes = True
                 _currentData[i] = 10 - v

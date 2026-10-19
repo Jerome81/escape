@@ -15,11 +15,22 @@ _puzzleState = "INACTIVE"
 _solution = [5, 1, 9, 3]
 _currentData = [ 0,0,0,0 ]
 
+
 sensor_vals = [
-    [ 1000, 390, 360, 300, 270, 200, 140, 80, 40, 10, -10 ],
-    [ 1000, 290, 220, 180, 150, 130, 100, 60, 30, 15, -10 ],
-    [ 1000, 620, 580, 500, 420, 250, 180, 100, 50, 15, -10 ],
-    [ 1000, 590, 550, 480, 380, 270, 180, 80, 40, 10, -10 ] ]
+    
+    #     1           3          5           7           9
+    [[1000, 300], [300, 260], [260, 170], [170, 100], [100, -10]],
+    [[1000, 320], [320, 260], [260, 200], [200, 120], [120, -10]],
+    [[1000, 580], [580, 400], [400, 200], [200, 50], [50, -10]],
+    [[1000, 550], [550, 380], [380, 210], [210, 110], [110, -10]]
+]
+
+#sensor_vals = [
+#    #      0,   1    2    3    4    5    6    7    8    9   
+#    [ 1000, 390, 390, 300, 300, 180, 180,  120,  120,  40, -10 ],
+#    [ 1000, 290, 220, 180, 150, 130, 100,  60,  30,  15, -10 ],
+#    [ 1000, 620, 580, 500, 420, 250, 180, 100,  50,  15, -10 ],
+#    [ 1000, 590, 550, 480, 380, 270, 180,  80,  40,  10, -10 ] ]
 
 _jsonData = {
     "id": deviceId,
@@ -33,9 +44,12 @@ kit.servo[2].actuation_range = 11
 kit.servo[3].actuation_range = 11
 
 def find_pressure(v, sensor):
-    for i in range(0, 10):
-        if v < sensor[i] and v > sensor[i + 1]:
-        return i
+    # sensor is:
+    # [[1000, 390], [390, 300], [300, 180], [180, 120], [120, -10]]
+    #vals = sensor_vals[sensor];
+    for i in range(len(sensor)):
+        if v <= sensor[i][0] and v > sensor[i][1]:
+            return (i * 2 + 1)
     return 11
 
 def update_servos(line):
@@ -52,6 +66,8 @@ def update_servos(line):
         if _currentData[i] != v:
             has_changes = True
             _currentData[i] = v
+            if i == 1:
+                v = v + 1  # Don't ask me why
             kit.servo[i].angle = v
     if has_changes:
         print(_currentData)
