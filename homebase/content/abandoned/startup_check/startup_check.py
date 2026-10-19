@@ -33,14 +33,14 @@ devices = {
     #"abandoned_tech_comm_1": "Kommunikator (Screen, LEDs) Technik Raum",
     #"abandoned_tech_comm_2": "LEDs über Recycler",
     #"abandoned_tech_comm_3": "LEDs von oben nach unten im Technik Raum",
-    "abandoned_crew_door": "Türe zum Crew Raum",
+    "abandoned_crew_door": "Türe zum Crew Raum (wird beim Drehschalter gestartet - wenn Türe schliesst, alles OK)",
     #"abandoned_crew_sound_fx": "Sound Effekte - Nachrichten (ohne Subwoofer)",
     "abandoned_crew_replicator": "Replikator (Subwoofer ist am gleichen Strom, braucht aber den Replikator nicht)",
     "replicator_ui": "Bildschirm vom Replikator",
     "abandoned_crew_overheat": "Kühlsystem",
     "abandoned_crew_exit": "Ausgangstür",
-    #"hans_olo": "Logbuch Hans Olo",
-    #"helen_rippli": "Logbuch Helen Rippli",
+    "hans_olo": "Logbuch Hans Olo",
+    "helen_rippli": "Logbuch Helen Rippli",
     #"abandoned_crew_comm": "Kommunikator Crew Raum",
     "abandoned_cockpit_keypad": "Keypad im Cockpit",
     "abandoned_cockpit_floppy": "Datenträger RFID in Mittelkonsole Cockpit",
@@ -80,6 +80,7 @@ def on_connect(client, userdata, flags, reason_code):
     jsonData = _jsonData
     jsonData["status"] = "Connected"
 
+    client.subscribe("FromDevice/#")
     for id, text in devices.items():
         client.subscribe("FromDevice/%s" % id)
     
@@ -93,9 +94,18 @@ def on_message(client, userdata, msg):
     deviceId = msg.topic[len("FromDevice/"):]
     #print(msg.payload)
     #payload = json.loads(msg.payload.decode('utf-8'))
+    target_device = None
     if deviceId in devices.keys():
+        target_device = deviceId
+    else:
+        for key in devices.keys():
+            if deviceId.startswith(key):
+                target_device = key
+                break
+
+    if target_device:
         try:
-            missing_devices.pop(deviceId)
+            missing_devices.pop(target_device)
         except:
             # sometimes puzzles reconnect or send multiple messages.
             pass
