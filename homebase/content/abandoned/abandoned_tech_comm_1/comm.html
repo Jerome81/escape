@@ -111,30 +111,33 @@
                 clean: true,
                 connectTimeout: 4000,
                 // Authentication
-                clientId: device_id, 
+                clientId: `${device_id}_${Math.random().toString(16).substring(2, 8)}`,
                 username: 'outpost',
                 password: 'CallingHome',
             }
             
-            function showMovieAndText(movie, text) {
-                console.log("Showing movie and text: " + movie + "/" + text);
+            function showMovieAndText(name, text) {
+                console.log("Showing movie and text: " + name + "/" + text);
                 showText(text);
-                playMovie(movie);
-                movie.loop = true;
+                playMovie(name);
             }   
 
             function playMovie(name, timestamp) {
-                delay = timestamp - Date.now();
-                if (delay < 0) delay = 0;
+                var delay = 0;
+                if (timestamp && typeof timestamp === 'number') {
+                    delay = timestamp - Date.now();
+                    if (delay < 0) delay = 0;
+                }
                 console.log("Current time: " + Date.now() + ", message timestamp: " + timestamp + ", delay: " + delay);
                 setTimeout(function() {
                     console.log("Playing movie: " + name);
                     const movieContainer = document.getElementById('movie-container');
                     const movie = document.getElementById('movie');
                     movie.src = name;
+                    movie.loop = (name === "background.mp4");
                     movieContainer.style.display = 'block'; // Show the video container
                     movie.controls = false; //remove controls  
-                    playPromise = movie.play(); // Start playing the video
+                    const playPromise = movie.play(); // Start playing the video
                     if (playPromise !== undefined) {
                         playPromise.then(_ => {
                             console.log("movie started");
@@ -156,8 +159,7 @@
                 const textContainer = document.getElementById('text-overlay');
                 last_display_tag_value = textContainer.style.display;
                 textContainer.style.display = "none";
-                playMovie(name, timestamp)
-                movie.loop = false;
+                playMovie(name, timestamp);
             }
             
             function showText(text) {  

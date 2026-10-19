@@ -103,7 +103,7 @@
                 clean: true,
                 connectTimeout: 4000,
                 // Authentication
-                clientId: device_id, 
+                clientId: `${device_id}_${Math.random().toString(16).substring(2, 8)}`,
                 username: 'outpost',
                 password: 'CallingHome',
             }
