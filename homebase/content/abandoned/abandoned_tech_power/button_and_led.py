@@ -86,6 +86,9 @@ def power_off_animation():
 ### Puzzle commands ###
 def on_solved(client):
     global _puzzleState
+    if _puzzleState == "SOLVED":
+        return
+    
     power_on_animation()
     _puzzleState = "SOLVED"
     sendUpdate()
@@ -102,8 +105,8 @@ def on_unsolved(client):
     jsonData = {
         "event": "Power down"
     }
-    client.publish("ToDevice/All", json.dumps(jsonData))
-    power_off_animation()
+    #client.publish("ToDevice/All", json.dumps(jsonData))
+    #power_off_animation()
 
 def on_reset(client):
     global _puzzleState
