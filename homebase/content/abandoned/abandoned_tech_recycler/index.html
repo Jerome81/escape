@@ -11,6 +11,7 @@
     var stones_correct = false;
     var powered = false;
     var cartridge_produced = false;
+    var production_in_progress = false;
     var correct_material_selected = false;
     var material = "";
 
@@ -120,7 +121,7 @@
             img = document.getElementById("main");
             img.src = "pressure_wrong_" + language + ".png";
           }
-          if (pressure_correct && stones_correct) {
+          if (pressure_correct && stones_correct && !production_in_progress) {
             img = document.getElementById("main");
             img.src = "recycler_ready_" + language + ".png";
           }
@@ -197,6 +198,7 @@
       if (msg["event"] == "Produce cartridge") {
         img = document.getElementById("main");
         img.src = "production_in_progress_" + language + ".png"
+        production_in_progress = true;
         return;
       }
       updateScreen();
